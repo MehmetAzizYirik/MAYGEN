@@ -1,0 +1,176 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>MAYGEN</groupId>
+  <artifactId>MAYGEN</artifactId>
+  <version>1.0</version>
+  <packaging>jar</packaging>
+
+  <name>MAYGEN</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+
+  <dependencies>  
+	<!-- https://mvnrepository.com/artifact/org.junit/junit -->
+	<dependency>
+    	<groupId>junit</groupId>
+    	<artifactId>junit</artifactId>
+    	<version>4.12</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-data -->
+
+	<dependency>
+    	<groupId>org.openscience.cdk</groupId>
+    	<artifactId>cdk-data</artifactId>
+    	<version>[2.3,)</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-pdb -->
+	<dependency>
+	    <groupId>org.openscience.cdk</groupId>
+	    <artifactId>cdk-pdb</artifactId>
+	    <version>[2.3,)</version>
+	    <scope>test</scope>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-qsarmolecular -->
+	<dependency>
+    	<groupId>org.openscience.cdk</groupId>
+    	<artifactId>cdk-qsarmolecular</artifactId>
+   		<version>[2.3,)</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
+	<dependency>
+    	<groupId>commons-cli</groupId>
+    	<artifactId>commons-cli</artifactId>
+    	<version>1.4</version>
+	</dependency>
+	<dependency>
+    	<groupId>org.openscience.cdk</groupId>
+    	<artifactId>cdk-interfaces</artifactId>
+    	<version>[2.3,)</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-standard -->
+	<dependency>
+    	<groupId>org.openscience.cdk</groupId>
+    	<artifactId>cdk-standard</artifactId>
+    	<version>[2.3,)</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-inchi -->
+	<dependency>
+    	<groupId>org.openscience.cdk</groupId>
+    	<artifactId>cdk-inchi</artifactId>
+    	<version>[2.3,)</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-group -->
+	<dependency>
+    	<groupId>org.openscience.cdk</groupId>
+    	<artifactId>cdk-group</artifactId>
+    	<version>[2.3,)</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-silent -->
+	<dependency>
+    	<groupId>org.openscience.cdk</groupId>
+    	<artifactId>cdk-silent</artifactId>
+    	<version>[2.3,)</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-io -->
+	<dependency>
+    	<groupId>org.openscience.cdk</groupId>
+    	<artifactId>cdk-io</artifactId>
+    	<version>[2.3,)</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-depict -->
+	<dependency>
+    	<groupId>org.openscience.cdk</groupId>
+    	<artifactId>cdk-depict</artifactId>
+    	<version>[2.3,)</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-ctab -->
+	<dependency>
+    	<groupId>org.openscience.cdk</groupId>
+    	<artifactId>cdk-ctab</artifactId>
+    	<version>[2.3,)</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-tool -->
+	<dependency>
+    	<groupId>org.openscience.cdk</groupId>
+    	<artifactId>cdk-tool</artifactId>
+    	<version>[2.3,)</version>
+    	<type>pom</type>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-formula -->
+	<dependency>
+    	<groupId>org.openscience.cdk</groupId>
+    	<artifactId>cdk-formula</artifactId>
+    	<version>[2.3,)</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-core -->
+	<dependency>
+	    <groupId>org.openscience.cdk</groupId>
+	    <artifactId>cdk-core</artifactId>
+	    <version>[2.3,)</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-structgen -->
+	<dependency>
+    	<groupId>org.openscience.cdk</groupId>
+    	<artifactId>cdk-structgen</artifactId>
+    	<version>[2.3,)</version>
+	</dependency>
+
+	<dependency>
+   		<groupId>org.openscience.cdk</groupId>
+   		<artifactId>cdk-valencycheck</artifactId>
+   		<version>[2.3,)</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
+	<dependency>
+    	<groupId>org.apache.commons</groupId>
+    	<artifactId>commons-compress</artifactId>
+    	<version>[1.19,)</version>
+	</dependency>
+  </dependencies>
+  <build>
+  	<directory>target</directory>
+    <outputDirectory>target/classes</outputDirectory>
+    <testOutputDirectory>target/test-classes</testOutputDirectory>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+	<plugins>
+		<plugin>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>3.3</version>
+			<configuration>
+				<source>1.8</source>
+				<target>1.8</target>
+			</configuration>
+		</plugin>
+		<plugin>
+    		<artifactId>maven-assembly-plugin</artifactId>
+    		<executions>
+      			<execution>
+        			<phase>package</phase>
+        			<goals>
+          				<goal>single</goal>
+        			</goals>
+      			</execution>
+    		</executions>
+    		<configuration>
+      			<archive>
+        			<manifest>
+         				<addClasspath>true</addClasspath>
+          				<mainClass>MAYGEN/MAYGEN</mainClass>
+        			</manifest>
+      			</archive>
+        		<finalName>MAYGEN</finalName> 
+        		<descriptorRefs>
+        			<descriptorRef>jar-with-dependencies</descriptorRef>
+      			</descriptorRefs>                 
+    		</configuration>
+  		</plugin> 
+	</plugins>
+  </build>
+</project>
