@@ -12,7 +12,7 @@ The project is an open source re-implementation of Dr. Grund's work [1]. The the
 
 ## Download jar File
 
-The main class of the current jar file is MAYGEN class. The file can be downloaded from [here](https://github.com/MehmetAzizYirik/AlgorithmicGroupTheory/blob/master/MORGEN.jar)
+The main class of the current jar file is MAYGEN class. The file can be downloaded from [here](https://github.com/MehmetAzizYirik/MAYGEN/releases/tag/V1.0)
 
 ## Download Source Code
 
