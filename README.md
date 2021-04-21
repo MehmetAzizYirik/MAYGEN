@@ -9,7 +9,7 @@ MAYGEN takes a molecular formula (such as C<sub>10</sub>H<sub>16</sub>O) as inpu
 
 ![Twelve out of 400k+ isomers of C10H16O](/resources/C10H16O.png)
 
-We benchmarked MAYGEN against the current state-of-the-art, but [closed-source structure generator Molgen](http://www.molgen.de) from the University of Bayreuth as well as against OMG, the only available open source structure generator:
+We benchmarked MAYGEN against the current state-of-the-art, but [closed-source structure generator Molgen](http://www.molgen.de) from the University of Bayreuth as well as against the [Open Molecule Generator (OMG)](https://sourceforge.net/projects/openmg/)[3], the only available open source structure generator. We did not test against the parallelised version of OMG - called PMG - to maintain the focus on algorithmic rather than technological speed. 
 
 ![A speed comparison of maygen against molgen. Maygen is consistently slower than molgen](/resources/maygen-molgen.png)
 
@@ -87,5 +87,9 @@ This project relies on the Chemistry Development Project (CDK), hosted under [CD
 1- Grund, R. and Müller, R., 1995. Konstruktion molekularer Graphen mit gegebenen Hybridisierungen und überlappungsfreien Fragmenten. Lehrstuhl II für Mathematik.
 
 2- Kerber, A., Laue, R., Meringer, M., Rücker, C. and Schymanski, E., 2013. Mathematical chemistry and chemoinformatics: structure generation, elucidation and quantitative structure-property relationships. Walter de Gruyter.
+
+3- Peironcely, J. E., Rojas-Chertó, M., Fichera, D., Reijmers, T., Coulier, L., Faulon, J.-L. & Hankemeier, T. OMG: Open Molecule Generator. J Cheminformatics 4, 21 (2012).
+  
+  
 
 
