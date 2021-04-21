@@ -4,11 +4,8 @@ Copyright 2021 Mehmet Aziz Yirik
 
 ## Introduction
 
-An open source structure generator based on the orderly graph generation method.
-
-## Method
-
-The project is an open source re-implementation of Dr. Grund's work [1]. The theoretical basis and the outlines of the functions can be found in [1,2].  
+MAYGEN is an open source chemical structure generator based on the orderly graph generation method. The principles of this method were outline in the work by Grund et al. [1]. The theoretical basis and the outlines of the functions can be found in [1,2].  
+MAYGEN takes a molecular formula (such as C10H16O) as input and generates all constitutional isomers of this formula, i. e. all non-isomorphic molecules that can be constructed with the set of atoms in the input formula. For the case of C10H16O, for example, there are 452,458 non-identical molecules.  
 
 ## Download jar File
 
@@ -16,7 +13,8 @@ The main class of the current jar file is MAYGEN class. The file can be download
 
 ## Download Source Code
 
-It is assumed that users have git on their system and have initialised their local directory. For more information [set-up-git](https://help.github.com/articles/set-up-git/ )
+You can download the source code as a ZIP file from the landing page of this repository. 
+Alternatively, you can clone the repository using GIT. For more information [set-up-git](https://help.github.com/articles/set-up-git/ )
 
 To download MAYGEN source code:
 
@@ -29,7 +27,7 @@ To compile MAYGEN, Apache Maven and Java 1.8 (or later) are required.
 ```
 MAYGEN/$ mvn package
 ```
-This command will create jar file named as "MAYGEN-jar-with-dependencies" under target folder.
+This command will create jar file named as "MAYGEN-jar-with-dependencies" under the target folder.
 
 ## Usage
 
