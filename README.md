@@ -5,7 +5,7 @@ Copyright 2021 Mehmet Aziz Yirik
 ## Introduction
 
 MAYGEN is an open source chemical structure generator based on the orderly graph generation method. The principles of this method were outlined in the works by Grund et al. [1]. The theoretical basis and the outlines of the functions can be found in [1,2].  
-MAYGEN takes a molecular formula (such as C<sub>10</sub>H<sub>16</sub>O) as input and generates all constitutional isomers of this formula, i. e. all non-isomorphic molecules that can be constructed with the set of atoms in the input formula. For the case of C10H16O, for example, there are 452,458 non-identical molecules. Here are 12 out of those.
+MAYGEN takes a molecular formula (such as C<sub>10</sub>H<sub>16</sub>O) as input and generates all constitutional isomers of this formula, i. e. all non-isomorphic molecules that can be constructed with the set of atoms in the input formula. For the case of C<sub>10</sub>H<sub>16</sub>O, for example, there are 452,458 non-identical molecules. Here are 12 out of those.
 
 ![Twelve out of 400k+ isomers of C10H16O](/resources/C10H16O.png)
 
@@ -13,7 +13,7 @@ We benchmarked MAYGEN against the current state-of-the-art, but [closed-source s
 
 ![A speed comparison of maygen against molgen. Maygen is consistently slower than molgen](/resources/maygen-molgen.png)
 
-MAYGEN is consistently slower than Molgen, but gets close to its performance for pure carbohydrates (Factor 1.4 slower). For example, MAYGEN generates the 400 mio isomers of C13H8 in 14h on a current unix machine, whereas Molgen takes 11h.
+MAYGEN is consistently slower than Molgen, but gets close to its performance for pure carbohydrates (Factor 1.4 slower). For example, MAYGEN generates the 400 mio isomers of C<sup>13</sup>H<sup>8</sup> in 14h on a current unix machine, whereas Molgen takes 11h.
 
 ## Download jar File
 
