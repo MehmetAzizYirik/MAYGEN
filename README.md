@@ -1,4 +1,4 @@
-# MAYGEN
+# MAYGEN - A chemical structure generator for constiutional isomers based on the orderly generation principle
 
 Copyright 2021 Mehmet Aziz Yirik
 
