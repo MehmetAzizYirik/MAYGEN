@@ -9,6 +9,12 @@ MAYGEN takes a molecular formula (such as C10H16O) as input and generates all co
 
 ![Twelve out of 400k+ isomers of C10H16O](/resources/C10H16O.png)
 
+We benchmarked MAYGEN against the current state-of-the-art, but [closed-source structure generator Molgen](http://www.molgen.de) from the University of Bayreuth as well as against OMG, the only available open source structure generator:
+
+![A speed comparison of maygen against molgen. Maygen is consistently slower than molgen](/resources/maygen-molgen.png)
+
+MAYGEN is consistently slower than Molgen.
+
 ## Download jar File
 
 The main class of the current jar file is MAYGEN class. The file can be downloaded from [here](https://github.com/MehmetAzizYirik/MAYGEN/releases/tag/V1.0)
