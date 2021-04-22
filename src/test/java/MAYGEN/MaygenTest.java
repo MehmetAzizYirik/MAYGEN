@@ -1,4 +1,4 @@
-package MAYGEN.MAYGEN;
+package MAYGEN;
 
 import static org.junit.Assert.assertEquals;
 
