@@ -9,6 +9,8 @@ MAYGEN takes a molecular formula (such as C<sub>10</sub>H<sub>16</sub>O) as inpu
 
 ![Twelve out of 400k+ isomers of C10H16O](/resources/C10H16O.png)
 
+As can be seen from these examples, MAYGEN makes no assumptions on chemical stability. In particular in small ring systems, this may lead to unlikely structures, such as C=1C=C1. 
+
 We benchmarked MAYGEN against the current state-of-the-art, but [closed-source structure generator Molgen](http://www.molgen.de) from the University of Bayreuth as well as against the [Open Molecule Generator (OMG)](https://sourceforge.net/projects/openmg/)[3], the only available open source structure generator. We did not test against the parallelised version of OMG - called PMG - to maintain the focus on algorithmic rather than technological speed. 
 
 ![A speed comparison of maygen against molgen. Maygen is consistently slower than molgen](/resources/maygen-molgen.png)
