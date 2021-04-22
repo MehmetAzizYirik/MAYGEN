@@ -15,7 +15,7 @@ We benchmarked MAYGEN against the current state-of-the-art, but [closed-source s
 
 MAYGEN is consistently slower than Molgen, but gets close to its performance for pure carbohydrates (Factor 1.4 slower). For example, MAYGEN generates the 400 mio isomers of C<sub>13</sub>H<sub>8</sub> in 14h on a current unix machine, whereas Molgen takes 11h. 
 
-![Results for the carbohydrates with oxygens](/resources/MOLGEN vs MAYGEN (Carbohydrates with oxygens).png)
+![Results for the carbohydrates with oxygens](/resources/CarbohydratesWithOxygens.png)
 
 ## Download jar File
 
