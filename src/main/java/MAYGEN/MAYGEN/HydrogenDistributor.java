@@ -46,8 +46,6 @@ import org.openscience.cdk.exception.CDKException;
 
 public class HydrogenDistributor {
 	public static Map<Integer, Integer> capacities;
-	public static boolean verbose = false;
-	public static int size;
 	public static int isotopes;
 	public static int[] capacity;
 	public static int[] valences;
@@ -96,27 +94,6 @@ public class HydrogenDistributor {
 			sum=sum+list.get(i);
 		}
 		return sum;
-	}
-	
-	public static int[] setValues(int[] partition, int[] degrees) {
-		int partitionSize= partition.length;
-		int[] capacity = new int[partitionSize];
-		int[] valences = new int[partitionSize];
-		int[] totalAtom = new int[partitionSize];
-		int i=0;
-		int sum=0;
-		for(int j=0;j<partitionSize;j++) {
-			totalAtom[i]=partition[i];
-			sum=sum(partition,i);
-			valences[i]=degrees[sum-1]-1;
-			capacity[i]=(degrees[sum-1]-1)*partition[i];
-			i++;
-		}
-		
-		HydrogenDistributor.capacity=capacity;
-		HydrogenDistributor.valences=valences;
-		HydrogenDistributor.totalAtom=totalAtom;
-		return capacity;
 	}
 	
 	public static int[] setValues(ArrayList<Integer> partition, int[] degrees) {
@@ -169,15 +146,7 @@ public class HydrogenDistributor {
 		arrays.add(b);
 		return mergeArrays(arrays);
 	}
-	
-	public static List<List<int[]>> buildLists(int n){
-		List<List<int[]>> lists= new ArrayList<List<int[]>>();
-		for (int i=0; i<n; ++i) {
-			List<int[]> ilist= new ArrayList<int[]>();
-			lists.add(ilist);
-		}
-		return lists;
-	}
+
 	public static List<int[]> combineArrays(LinkedList<List <int[]>> lists) {
 		List<int[]> comb = new ArrayList<int[]>();
 	    for (int[] s: lists.removeFirst()) {
@@ -198,14 +167,12 @@ public class HydrogenDistributor {
 	
 	/**
 	 * To initialise the inputs and run the functions while recording the duration time.
-	 * @throws CDKException 
 	 */
 	
-	public static List<int[]> run(ArrayList<Integer> partition, int[] degrees) throws FileNotFoundException, UnsupportedEncodingException, CloneNotSupportedException, CDKException {
+	public static List<int[]> run(ArrayList<Integer> partition, int[] degrees) throws CloneNotSupportedException {
 		int partitionSize= partition.size();
 		int hydrogen= partition.get(partitionSize-1);
 		HydrogenDistributor.isotopes=partitionSize-1;
-		HydrogenDistributor.size=partitionSize-1;
 		setValues(partition,degrees);
 		HydrogenDistributor.totalHydrogen=hydrogen;
 		List<int[]> result= new ArrayList<int[]>();
@@ -280,7 +247,7 @@ public class HydrogenDistributor {
 		return Arrays.stream(arr).boxed().sorted().mapToInt(Integer::intValue).toArray();
 	}
 	
-	public static void distribute(List<int[]> arrays,int hydrogen,int[]arr,int valence, int numAtom) throws CloneNotSupportedException {
+	public static void distribute(List<int[]> arrays,int hydrogen,int[]arr,int valence, int numAtom) {
 		if(hydrogen==0 && sum(arr)==hydrogens2distribute){
 			if(arr.length!=numAtom) {
 				arr=addZeros(arr,(numAtom-arr.length));
