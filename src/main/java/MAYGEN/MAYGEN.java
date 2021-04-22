@@ -51,15 +51,15 @@ public class MAYGEN {
 	public static boolean flag=true;
 	public static boolean learningFromCanonicalTest=false;
 	public static boolean biggest=true;
-	public static ArrayList<ArrayList<Permutation>> formerPermutations= new ArrayList<ArrayList<Permutation>>();
+	public static ArrayList<List<Permutation>> formerPermutations= new ArrayList<List<Permutation>>();
 	public static int[] degrees;
 	public static int[] initialDegrees;
-	public static ArrayList<Integer> initialPartition;
+	public static List<Integer> initialPartition;
 	public static IChemObjectBuilder builder=SilentChemObjectBuilder.getInstance();
 	public static IAtomContainer atomContainer= builder.newInstance(IAtomContainer.class);
-	public static ArrayList<ArrayList<Integer>> partitionList = new ArrayList<ArrayList<Integer>>();
+	public static ArrayList<List<Integer>> partitionList = new ArrayList<List<Integer>>();
 	public static List<String> symbols = new ArrayList<String>();
-	public static ArrayList<Integer> occurrences  = new ArrayList<Integer>();
+	public static List<Integer> occurrences  = new ArrayList<Integer>();
 	public static Map<String, Integer> valences; 
 	public static int[][] max;
 	public static int[][] L;
@@ -129,7 +129,7 @@ public class MAYGEN {
 	 * @return int sum
 	 */
 	
-	public static int sum(ArrayList<Integer> list, int index) {
+	public static int sum(List<Integer> list, int index) {
 		int sum=0;
 		for(int i=0;i<=index;i++) {
 			sum+=list.get(i);
@@ -351,7 +351,7 @@ public class MAYGEN {
 	  * ********************************************************************
 	  */
 
-	 public static boolean equalSetCheck(int[] original, int[] permuted, ArrayList<Integer> partition) {
+	 public static boolean equalSetCheck(int[] original, int[] permuted, List<Integer> partition) {
 		 int[] temp= cloneArray(permuted);
 		 temp=descendingSortWithPartition(temp, partition);
 		 return equalSetCheck(partition, original, temp);
@@ -361,7 +361,7 @@ public class MAYGEN {
 		 return IntStream.range(begin, end).mapToObj(i->row[i]).toArray(Integer[]::new);
 	 }
 
-	 public static boolean equalSetCheck(ArrayList<Integer> partition, int[] original, int[] permuted){
+	 public static boolean equalSetCheck(List<Integer> partition, int[] original, int[] permuted){
 		 boolean check=true;		 
 		 int i=0;
 		 if(partition.size()==size) {
@@ -422,7 +422,7 @@ public class MAYGEN {
 		 return array;
 	 }
 	 
-	 public static int[] descendingSortWithPartition(int[] array, ArrayList<Integer> partition) {
+	 public static int[] descendingSortWithPartition(int[] array, List<Integer> partition) {
 		 int i=0;
 		 for(Integer p:partition) {
 			 array=descendingSort(array,i,i+p);
@@ -431,13 +431,13 @@ public class MAYGEN {
 		 return array;
 	 }
 	 
-	 public static boolean biggerCheck(int index, int[] original, int[] permuted, ArrayList<Integer> partition) {
+	 public static boolean biggerCheck(int index, int[] original, int[] permuted, List<Integer> partition) {
 		 int[] sorted= cloneArray(permuted);
 		 sorted=descendingSortWithPartition(sorted, partition);
 		 return descendingOrderUpperMatrix(index,partition, original, sorted);
 	 }
 	 
-	 public static void setBiggest(int index, int[][] A, Permutation permutation, ArrayList<Integer> partition) {
+	 public static void setBiggest(int index, int[][] A, Permutation permutation, List<Integer> partition) {
 		 biggest=true;
 		 int[] check = row2compare(index, A, permutation);
 		 if(!biggerCheck(index, A[index],check,partition)) {
@@ -445,7 +445,7 @@ public class MAYGEN {
 		 }
 	 }
 	 
-	 public static void getLernenIndices(int index, int[][] A, List<Permutation> cycles, ArrayList<Integer> partition) {
+	 public static void getLernenIndices(int index, int[][] A, List<Permutation> cycles, List<Integer> partition) {
 		 for(Permutation cycle: cycles) {
 			 int[] check = row2compare(index, A, cycle);
 			 if(!biggerCheck(index, A[index],check,partition)) {
@@ -455,7 +455,7 @@ public class MAYGEN {
 		 }
 	 }
 
-	 public static void setLernenIndices(int rowIndex1, Permutation cycle, int[][] A, int[] mapped, ArrayList<Integer> partition) {
+	 public static void setLernenIndices(int rowIndex1, Permutation cycle, int[][] A, int[] mapped, List<Integer> partition) {
 		 nonCanonicalIndices= new int[2];
 		 learningFromCanonicalTest=false;
 		 int rowIndex2 = cycle.get(rowIndex1);
@@ -464,14 +464,14 @@ public class MAYGEN {
 		 nonCanonicalIndices = upperIndex(rowIndex1, rowIndex2, A, permutation);
 	 }
 	 
-	 public static Permutation getNonCanonicalMakerPermutation(int[] array, Permutation cycle, ArrayList<Integer> partition) {
+	 public static Permutation getNonCanonicalMakerPermutation(int[] array, Permutation cycle, List<Integer> partition) {
 		 int[] sorted= cloneArray(array);
 		 sorted=descendingSortWithPartition(sorted, partition);
 		 Permutation permutation = getCanonicalPermutation(sorted, array, partition);
 		 return permutation.multiply(cycle);
 	 }
 	 
-	 public static boolean firstCheck(int index, int[][]A, ArrayList<Integer> partition) {
+	 public static boolean firstCheck(int index, int[][]A, List<Integer> partition) {
 		 boolean check = true;
 		 if(partition.size()!=size) {
 			 if(!descendingOrdercomparison(partition,A[index])) {
@@ -655,7 +655,7 @@ public class MAYGEN {
 		 return check;
 	 }
 	
-	 public static boolean descendingOrderUpperMatrix(int index, ArrayList<Integer> partition, int[] original, int[] permuted){
+	 public static boolean descendingOrderUpperMatrix(int index, List<Integer> partition, int[] original, int[] permuted){
 		 boolean check=true;		 
 		 int i=index+1;
 		 int p=0;
@@ -686,7 +686,7 @@ public class MAYGEN {
 		 return check;
 	 }
 	 
-	 public static boolean descendingOrdercomparison(ArrayList<Integer> partition, int[] row){
+	 public static boolean descendingOrdercomparison(List<Integer> partition, int[] row){
 		 boolean check=true;		 
 		 int i=0;
 		 for(Integer part: partition) {
@@ -1175,8 +1175,8 @@ public class MAYGEN {
 	 * @return ArrayList<Integer>
 	 */
 	
-	public static ArrayList<Integer> getPartition(int[] degrees, ArrayList<Integer> partition){
-    	 ArrayList<Integer> newPartition = new ArrayList<Integer>();
+	public static List<Integer> getPartition(int[] degrees, List<Integer> partition){
+    	 List<Integer> newPartition = new ArrayList<Integer>();
 		 int i=0;
     	 for(Integer p:partition) {
     		 Integer[] subArray= getBlocks(degrees,i,p+i);
@@ -1193,8 +1193,8 @@ public class MAYGEN {
 	 * @return ArrayList<Integer> 
 	 */
 	
-	 public static ArrayList<Integer> getSubPartition(Integer[] degrees){
-		 ArrayList<Integer> partition = new ArrayList<Integer>();
+	 public static List<Integer> getSubPartition(Integer[] degrees){
+		 List<Integer> partition = new ArrayList<Integer>();
 		 int i=0;
 	     int size= degrees.length;
 	     int count=0;
@@ -1221,7 +1221,7 @@ public class MAYGEN {
 	  * @return int
 	  */
 	 
-	 public static int nextCount(int i, int size, Integer[] degrees, ArrayList<Integer> partition) {
+	 public static int nextCount(int i, int size, Integer[] degrees, List<Integer> partition) {
 		 int count=1;
 		 if(i==(size-1)) {
 			 partition.add(1);
@@ -1290,8 +1290,8 @@ public class MAYGEN {
 		 count=0;
 		 matrixSize=0;
 		 verbose = true;
-		 formerPermutations= new ArrayList<ArrayList<Permutation>>();
-		 partitionList = new ArrayList<ArrayList<Integer>>();
+		 formerPermutations= new ArrayList<List<Permutation>>();
+		 partitionList = new ArrayList<List<Integer>>();
 		 symbols = new ArrayList<String>();
 		 occurrences  = new ArrayList<Integer>();
 		 r=0; 
@@ -1611,8 +1611,8 @@ public class MAYGEN {
 	
 	public static void clearFormers(boolean check, int y) {
 		if(check==false) {
-			ArrayList<ArrayList<Permutation>> newPerms= new ArrayList<ArrayList<Permutation>>();
-			ArrayList<ArrayList<Integer>> newPart= new ArrayList<ArrayList<Integer>>();
+			ArrayList<List<Permutation>> newPerms= new ArrayList<List<Permutation>>();
+			ArrayList<List<Integer>> newPart= new ArrayList<List<Integer>>();
 			for(int i=0;i<y;i++) {
 				newPerms.add(formerPermutations.get(i));
 			}
@@ -1685,7 +1685,7 @@ public class MAYGEN {
 	 * @return boolean 
 	 */
 	
-	public static boolean rowCanonicalTest(int index, int r,int[][] A, ArrayList<Integer> partition, ArrayList<Integer> newPartition) {
+	public static boolean rowCanonicalTest(int index, int r,int[][] A, List<Integer> partition, List<Integer> newPartition) {
 		boolean check= true;
 		if(!firstCheck(index, A, newPartition)){
 			check=false;
@@ -1719,8 +1719,8 @@ public class MAYGEN {
 	  * @param A int[][] adjacency matrix
 	  */
 	 
-	 public static void addPartition(int index, ArrayList<Integer> newPartition, int[][] A) {
-		 ArrayList<Integer> refinedPartition= new ArrayList<Integer>();
+	 public static void addPartition(int index, List<Integer> newPartition, int[][] A) {
+		 List<Integer> refinedPartition= new ArrayList<Integer>();
 		 if(newPartition.size()==size) {
 			 refinedPartition=newPartition;
 		 }else {
@@ -1741,8 +1741,8 @@ public class MAYGEN {
 	  * @return ArrayList<Integer>
 	  */
 	 
-	 public static ArrayList<Integer> refinedPartitioning(ArrayList<Integer> partition, int[] row){
-		 ArrayList<Integer> refined= new ArrayList<Integer>();
+	 public static List<Integer> refinedPartitioning(List<Integer> partition, int[] row){
+		 List<Integer> refined= new ArrayList<Integer>();
 		 int index=0;
 		 int count=1;
 		 for(Integer p:partition) {
@@ -1879,7 +1879,7 @@ public class MAYGEN {
 	  * @return Permutation
 	  */
 	 
-	 public static 	Permutation getCanonicalPermutation(int[] originalRow, int[] rowToCheck, ArrayList<Integer> partition) {
+	 public static 	Permutation getCanonicalPermutation(int[] originalRow, int[] rowToCheck, List<Integer> partition) {
 		 int[] cycles= getCanonicalPermutation(partition, originalRow, rowToCheck);
     	 int[] perm= new int[size];
 		 for(int i=0;i<size;i++) {
@@ -1905,7 +1905,7 @@ public class MAYGEN {
 	  * @return int[]
 	  */
 	 	 	 
-	 public static int[] getCanonicalPermutation(ArrayList<Integer> partition, int[] max, int[] check) {
+	 public static int[] getCanonicalPermutation(List<Integer> partition, int[] max, int[] check) {
     	 int[] values= idValues(sum(partition));
     	 int i=0;
     	 if(!equalSetCheck(max,check,partition)) {
@@ -1962,13 +1962,13 @@ public class MAYGEN {
     	 return index;
      }
 	 
-	 public static Permutation getEqualPerm(Permutation cycleTransposition, int index, int[][] A, ArrayList<Integer> newPartition) {
+	 public static Permutation getEqualPerm(Permutation cycleTransposition, int index, int[][] A, List<Integer> newPartition) {
 		 int[] check=row2compare(index, A, cycleTransposition);
 		 Permutation canonicalPermutation = getCanonicalPermutation(A[index],check,newPartition);
 		 return canonicalPermutation;
 	 }
 	 	 
-	public static Permutation getCanonicalCycle(int index, int y, int total, int[][] A, ArrayList<Integer> newPartition,Permutation cycleTransposition) {
+	public static Permutation getCanonicalCycle(int index, int y, int total, int[][] A, List<Integer> newPartition,Permutation cycleTransposition) {
 		biggest=true;
 		Permutation canonicalPermutation = idPermutation(total);
 		if(!equalBlockCheck(index, A,cycleTransposition, canonicalPermutation)) {
@@ -1979,10 +1979,10 @@ public class MAYGEN {
 		 return canonicalPermutation;
 	 }
 	
-	public static boolean check(int index, int y, int total, int[][] A, ArrayList<Integer> newPartition) {
+	public static boolean check(int index, int y, int total, int[][] A, List<Integer> newPartition) {
 		 boolean check=true;
-		 ArrayList<Permutation> formerList= new ArrayList<Permutation>();
-		 ArrayList<Permutation> form=formerPermutations.get(index);
+		 List<Permutation> formerList= new ArrayList<Permutation>();
+		 List<Permutation> form=formerPermutations.get(index);
 		 for(Permutation permutation:form) { 
 			 setBiggest(index, A, permutation, newPartition);
 			 if(biggest) {
@@ -2016,7 +2016,7 @@ public class MAYGEN {
 		 return check;
 	 }
 	
-	public static List<Permutation> cycleTranspositions(int index, ArrayList<Integer> partition) {
+	public static List<Permutation> cycleTranspositions(int index, List<Integer> partition) {
 		 List<Permutation> perms= new ArrayList<Permutation>();
 		 int lValue = LValue(partition,index);
 		 int[] values;
@@ -2041,7 +2041,7 @@ public class MAYGEN {
 	  * @return
 	  */
 	 
-	 public static int LValue(ArrayList<Integer> partEx, int degree) {
+	 public static int LValue(List<Integer> partEx, int degree) {
 		 return (sum(partEx,(degree))-(degree)); 
 	 }
 	
@@ -2053,7 +2053,7 @@ public class MAYGEN {
 	  * @return
 	  */
 	 
-	public static ArrayList<Integer> canonicalPartition(int i, ArrayList<Integer> partition){
+	public static List<Integer> canonicalPartition(int i, List<Integer> partition){
 		 return partitionCriteria(partition,i+1);
 	}
 	 
@@ -2061,7 +2061,7 @@ public class MAYGEN {
 	  * Add number of 1s into an ArrayList
 	  */
 		 
-	 public static void addOnes(ArrayList<Integer> list, int number) {
+	 public static void addOnes(List<Integer> list, int number) {
 		 for(int i=0;i<number;i++) {
 			 list.add(1);
 		 }
@@ -2074,8 +2074,8 @@ public class MAYGEN {
 	  * @return
 	  */
 		 
-	 public static ArrayList<Integer> partitionCriteria(ArrayList<Integer> partEx, int degree){
-		 ArrayList<Integer> partNew = new ArrayList<Integer>();
+	 public static List<Integer> partitionCriteria(List<Integer> partEx, int degree){
+		 List<Integer> partNew = new ArrayList<Integer>();
 		 if(partEx.size()!=size) {
 			 addOnes(partNew,degree); 
 			 int oldValue= partEx.get(degree-1);
