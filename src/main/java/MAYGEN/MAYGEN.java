@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -242,7 +243,7 @@ public class MAYGEN {
 		 }
 	 }
 
-	private static String normalizeFormula(String formula) {
+	public static String normalizeFormula(String formula) {
 		String[] from = {"c", "n", "o", "s", "p", "f", "i", "cl", "CL", "br", "BR", "h"};
 		String[] to = {"C", "N", "O", "S", "P", "F", "I", "Cl", "Cl", "Br", "Br", "H"};
 	 	return StringUtils.replaceEach(formula, from, to);
@@ -1073,8 +1074,10 @@ public class MAYGEN {
 				if(canonicalTest(A)) {
 					if(connectivityTest(A)){						
 						count++;
-						IAtomContainer mol= buildC(addHydrogens(A,hIndex));
-						outFile.write(mol);
+						if (Objects.nonNull(filedir)) {
+							IAtomContainer mol = buildC(addHydrogens(A, hIndex));
+							outFile.write(mol);
+						}
 						callForward=false;
 					}else {
 						callForward=false;
@@ -1296,7 +1299,7 @@ public class MAYGEN {
 		 hIndex=0;
 		 count=0;
 		 matrixSize=0;
-		 verbose = true;
+		 verbose = false;
 		 formerPermutations= new ArrayList<List<Permutation>>();
 		 partitionList = new ArrayList<List<Integer>>();
 		 symbols = new ArrayList<String>();
