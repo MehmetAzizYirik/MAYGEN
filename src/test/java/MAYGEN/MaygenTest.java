@@ -41,7 +41,7 @@ public class MaygenTest {
 		assertEquals(217,MAYGEN.count);
 	}
 
-        @Test
+	/**@Test
 
 	public void test_C3O3H4() throws IOException, CDKException, CloneNotSupportedException {
 		MAYGEN.formula="C3O3H4";
@@ -335,6 +335,6 @@ public class MaygenTest {
 		MAYGEN.formula="C5H5POBr2";
 		MAYGEN.run();
 		assertEquals(62886, MAYGEN.count);
-	}
+	}**/
 }
 
