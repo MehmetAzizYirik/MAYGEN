@@ -44,7 +44,7 @@ public class MAYGEN {
 	public static int count=0;
 	public static int matrixSize=0;
 	public static boolean verbose = false;
-	public static boolean csvoutput = true;
+	public static boolean tsvoutput = true;
 	public static boolean writeSDF = false;
 	public static boolean callForward=true;
 	public static int[] connectivityIndices=new int[2];
@@ -1285,7 +1285,7 @@ public class MAYGEN {
 		    	 System.out.println("The number of structures is: "+count);
 			     System.out.println("Time: "+d.format(seconds)+" seconds");
 		     }
-		     if(csvoutput) 
+		     if(tsvoutput) 
 		     {
 		    	 System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
 		     }
@@ -2130,7 +2130,7 @@ public class MAYGEN {
 			}
 			 			
 			 if (cmd.hasOption("verbose")) MAYGEN.verbose = true;		
-			 if (cmd.hasOption("csvoutput")) MAYGEN.csvoutput = true;		
+			 if (cmd.hasOption("tsvoutput")) MAYGEN.tsvoutput = true;		
 		 } catch (ParseException e) {
 			 HelpFormatter formatter = new HelpFormatter();
 			 formatter.setOptionComparator(null);
@@ -2159,12 +2159,12 @@ public class MAYGEN {
 								.desc("Output more verbose")
 								.build();
 		 options.addOption(verbose);	
-		 Option cvsoutput = Option.builder("c")
+		 Option tvsoutput = Option.builder("t")
 					.required(false)
-					.longOpt("csvoutput")
+					.longOpt("tsvoutput")
 					.desc("Output formula, number of structures and execution time in CSV format")
 					.build();
-		 options.addOption(cvsoutput);
+		 options.addOption(tvsoutput);
 		 Option filename = Option.builder("o")
 					 			.required(false)
 					 			.hasArg()
