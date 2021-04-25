@@ -1279,7 +1279,7 @@ public class MAYGEN {
 			 if (writeSDF) outFile.close();
 			 long endTime = System.nanoTime() - startTime;
 			 double seconds = (double) endTime / 1000000000.0;
-		     DecimalFormat d = new DecimalFormat(".###");
+		     DecimalFormat d = new DecimalFormat(".#");
 		     if(verbose) 
 		     {
 		    	 System.out.println("The number of structures is: "+count);
@@ -1287,7 +1287,7 @@ public class MAYGEN {
 		     }
 		     if(csvoutput) 
 		     {
-		    	 System.out.println(formula + ";" + count + ";"+seconds);
+		    	 System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
 		     }
 		     
 		    
