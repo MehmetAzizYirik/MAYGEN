@@ -44,12 +44,14 @@ public class MAYGEN {
 	public static int count=0;
 	public static int matrixSize=0;
 	public static boolean verbose = false;
+	public static boolean csvoutput = true;
+	public static boolean writeSDF = false;
 	public static boolean callForward=true;
 	public static int[] connectivityIndices=new int[2];
 	public static boolean learningFromConnectivity=false; 
 	public static SDFWriter outFile;
 	public static String formula;
-	public static String filedir;
+	public static String filename;
 	public static boolean flag=true;
 	public static boolean learningFromCanonicalTest=false;
 	public static boolean biggest=true;
@@ -1074,7 +1076,7 @@ public class MAYGEN {
 				if(canonicalTest(A)) {
 					if(connectivityTest(A)){						
 						count++;
-						if (Objects.nonNull(filedir)) {
+						if (writeSDF && Objects.nonNull(filename)) {
 							IAtomContainer mol = buildC(addHydrogens(A, hIndex));
 							outFile.write(mol);
 						}
@@ -1271,14 +1273,24 @@ public class MAYGEN {
 			 getSymbolsOccurrences(formula);
 			 initialDegrees();			 
 			 build();
-			 outFile = new SDFWriter(new FileWriter(filedir+"output.sdf"));
+			 if (writeSDF) outFile = new SDFWriter(new FileWriter(filename));
 			 structureGenerator();
-			 if(verbose) System.out.println("The number of structures is: "+count);
-			 outFile.close();
+			 
+			 if (writeSDF) outFile.close();
 			 long endTime = System.nanoTime() - startTime;
 			 double seconds = (double) endTime / 1000000000.0;
 		     DecimalFormat d = new DecimalFormat(".###");
-		     if(verbose) System.out.println("Time: "+d.format(seconds)+" seconds");
+		     if(verbose) 
+		     {
+		    	 System.out.println("The number of structures is: "+count);
+			     System.out.println("Time: "+d.format(seconds)+" seconds");
+		     }
+		     if(csvoutput) 
+		     {
+		    	 System.out.println(formula + ";" + count + ";"+seconds);
+		     }
+		     
+		    
 		 }else {
 			 if(verbose) System.out.println("The input formula, "+formula+", does not represent any molecule.");
 		 }
@@ -2111,16 +2123,21 @@ public class MAYGEN {
 		 try {
 			 CommandLine cmd = parser.parse(options, args);
 			 MAYGEN.formula = cmd.getOptionValue("formula");
-			 MAYGEN.filedir = cmd.getOptionValue("filedir");				 
+			 if (cmd.hasOption("filename")) 
+				 {
+				 MAYGEN.writeSDF = true;
+				 MAYGEN.filename = cmd.getOptionValue("filename");
+			}
+			 			
 			 if (cmd.hasOption("verbose")) MAYGEN.verbose = true;		
+			 if (cmd.hasOption("csvoutput")) MAYGEN.csvoutput = true;		
 		 } catch (ParseException e) {
 			 HelpFormatter formatter = new HelpFormatter();
 			 formatter.setOptionComparator(null);
 			 String header = "\nGenerates 	molecular structures for a given molecular formula."
 						 + " The input is a molecular formula string."
 						 + "For example 'C2OH4'."
-						 + "Besides this formula, the directory is needed to be specified for the output"
-						 + "file. \n\n";
+						 + "\n\n";
 			 String footer = "\nPlease report issues at https://github.com/MehmetAzizYirik/AlgorithmicGroupTheory";
 			 formatter.printHelp( "java -jar MAYGEN.jar", header, options, footer, true );
 			 throw new ParseException("Problem parsing command line");
@@ -2139,16 +2156,22 @@ public class MAYGEN {
 		 Option verbose = Option.builder("v")
 								.required(false)
 								.longOpt("verbose")
-								.desc("print message")
+								.desc("Output more verbose")
 								.build();
 		 options.addOption(verbose);	
-		 Option filedir = Option.builder("d")
+		 Option cvsoutput = Option.builder("c")
+					.required(false)
+					.longOpt("csvoutput")
+					.desc("Output formula, number of structures and execution time in CSV format")
+					.build();
+		 options.addOption(cvsoutput);
+		 Option filename = Option.builder("o")
 					 			.required(false)
 					 			.hasArg()
-					 			.longOpt("filedir")
-					 			.desc("Creates and store the output txt file in the directory (required)")
+					 			.longOpt("filename")
+					 			.desc("Store output in given file")
 					 			.build();
-		 options.addOption(filedir);
+		 options.addOption(filename);
 		 return options;
 	 }
 	
