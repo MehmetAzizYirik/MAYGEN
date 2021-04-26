@@ -132,6 +132,12 @@
     	<artifactId>commons-compress</artifactId>
     	<version>[1.19,)</version>
 	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+	<dependency>
+	<groupId>org.apache.commons</groupId>
+	<artifactId>commons-lang3</artifactId>
+	<version>3.12.0</version>
+	</dependency>
   </dependencies>
   <build>
   	<directory>target</directory>
@@ -165,7 +171,8 @@
           				<mainClass>MAYGEN/MAYGEN</mainClass>
         			</manifest>
       			</archive>
-        		<finalName>MAYGEN</finalName> 
+        		<finalName>MAYGEN</finalName>
+                        <appendAssemblyId>false</appendAssemblyId> 
         		<descriptorRefs>
         			<descriptorRef>jar-with-dependencies</descriptorRef>
       			</descriptorRefs>                 
