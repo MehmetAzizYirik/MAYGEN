@@ -3,14 +3,17 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -21,7 +24,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-
+import org.apache.log4j.chainsaw.Main;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
@@ -31,11 +34,14 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.IBond.Order;
 import org.openscience.cdk.io.SDFWriter;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public class MAYGEN {
 	public static int size=0;
 	public static int total=0;
+	public static boolean tsvoutput = false;
+	public static boolean SDF = false;
 	public static int[] ys;
 	public static int[] zs;
 	public static int[] nonCanonicalIndices = new int[2];
@@ -56,7 +62,7 @@ public class MAYGEN {
 	public static int[] degrees;
 	public static int[] initialDegrees;
 	public static ArrayList<Integer> initialPartition;
-	public static IChemObjectBuilder builder=DefaultChemObjectBuilder.getInstance();
+	public static IChemObjectBuilder builder=SilentChemObjectBuilder.getInstance();
 	public static IAtomContainer atomContainer= builder.newInstance(IAtomContainer.class);
 	public static ArrayList<ArrayList<Integer>> partitionList = new ArrayList<ArrayList<Integer>>();
 	public static List<String> symbols = new ArrayList<String>();
@@ -87,6 +93,15 @@ public class MAYGEN {
 	/**
 	 * Basic functions
 	 */
+	
+	/**
+	 * Permuting two entries of an Integer array.
+	 * 
+	 * @param array Integer[] array 
+	 * @param i 	int first index
+	 * @param j		int second index
+	 * @return 		Integer[]
+	 */
 
 	 public static Integer[] permuteArray(Integer[] array, int i, int j) {
     	 int temp=0;
@@ -98,8 +113,9 @@ public class MAYGEN {
 	 
 	/**
 	 * Summing entries of a list.
+	 * 
 	 * @param list List<Integer>
-	 * @return int sum
+	 * @return int 
 	 */
 	
 	public static int sum(List<Integer> list) {
@@ -112,6 +128,7 @@ public class MAYGEN {
 	
 	/**
 	 * Summing entries of an array.
+	 * 
 	 * @param array int[]
 	 * @return int sum
 	 */
@@ -126,6 +143,7 @@ public class MAYGEN {
 	
 	/**
 	 * Summing entries of a list until a given index.
+	 * 
 	 * @param list List<Integer>
 	 * @return int sum
 	 */
@@ -138,6 +156,12 @@ public class MAYGEN {
 		return sum;
 	}
 	
+	/**
+	 * Getting the number of atoms' occurrences.
+	 * 
+	 * @param info String[] atom info
+	 * @return int
+	 */
 	
 	public static int atomOccurrunce(String[] info) {
 		 int number=1;
@@ -147,23 +171,33 @@ public class MAYGEN {
 		 return number;
 	}
 	
-	public static int[] actArray(int[] strip, Permutation p) {
-		int permLength= p.size();
+	/**
+	 * Performing the permutation action on an int array.
+	 * 
+	 * @param array			int[] array
+	 * @param permutation	Permutation permutation
+	 * @return int[]
+	 */
+	
+	public static int[] actArray(int[] array, Permutation permutation) {
+		int permLength= permutation.size();
 		int newIndex=0;
-		int arrayLength=strip.length;
+		int arrayLength=array.length;
 		int[] modified = new int[arrayLength];
 		for(int i=0; i<permLength;i++) {
-			newIndex=p.get(i);
-			modified[newIndex]=strip[i]; 
+			newIndex=permutation.get(i);
+			modified[newIndex]=array[i]; 
 		}
 		return modified;
 	}
 	
 	/**
-	  * Values for an id permutation for a given size
-	  * @param size 
-	  * @return
-	  */
+	 * Values for an id permutation for a given size
+	 * 
+	 * @param size		int permutation size
+	 * @return int[]
+	 */
+	
 	 public static int[] idValues(int size) {
 		 int[] id= new int[size];
 		 for(int i=0;i<size;i++) {
@@ -173,7 +207,10 @@ public class MAYGEN {
 	 }
 	 
 	 /**
-	  * Build id permutation
+	  * Builds id permutation.
+	  * 
+	  * @param size 	int Permutation size
+	  * @return	Permutation
 	  */
 	 
 	 public static Permutation idPermutation(int size) {
@@ -183,16 +220,7 @@ public class MAYGEN {
 	 /**
 	  * The initializer function, reading the formula to set the degrees,
 	  * partition and file directory variables.
-	  * @param formula String molecular formula
-	  * @param filedir String file directory
-	  * @throws IOException
-	  * @throws CDKException
-	  * @throws CloneNotSupportedException
-	  */
-	 
-	
-	 /**
-	  * Setting the symbols and occurrences global variables.
+	  * 
 	  * @param formula  String molecular formula
 	  */
 	 
@@ -202,24 +230,119 @@ public class MAYGEN {
 	 public static ArrayList<Integer> firstOccurrences = new ArrayList<Integer>();
 	 public static boolean callHydrogenDistributor=false;
 	 public static boolean justH=false;
-	 public static void getSymbolsOccurrences(String formula) {
+	 
+	 public static void sortAscending(int[] degree, ArrayList<Integer> partition) {
+		 HashMap<Integer, Integer> inputs = new HashMap<Integer, Integer>();
+	     for (int i = 0; i < degree.length; i++) {
+	        if (inputs.containsKey(degree[i])) {
+	            Integer count = inputs.get(degree[i]) + 1;
+	            inputs.put(degree[i], count);
+	        } else {
+	        	inputs.put(degree[i], 1);
+	        }
+	    }
+
+	    Set<Entry<Integer, Integer>> set = inputs.entrySet();
+	    sort(degree,set);
+	 }
+	 
+	 public static void sortAscending(int[] degree) {
+		 HashMap<Integer, Integer> inputs = new HashMap<Integer, Integer>();
+	     for (int i = 0; i < degree.length; i++) {
+	        if (inputs.containsKey(degree[i])) {
+	            Integer count = inputs.get(degree[i]) + 1;
+	            inputs.put(degree[i], count);
+	        } else {
+	        	inputs.put(degree[i], 1);
+	        }
+	    }
+
+	    Set<Entry<Integer, Integer>> set = inputs.entrySet();
+	    sort(degree,set);
+	 }
+	 public static int[] sort(int[] degree, Set<Entry<Integer, Integer>> set) {
+		 int index=0;
+		 int value=0;
+		 ArrayList<Entry<Integer, Integer>> list = new ArrayList<Entry<Integer, Integer>>(set);
+		 Collections.sort(list, new Comparator<Map.Entry<Integer, Integer>>() {
+			 public int compare(Map.Entry<Integer, Integer> value1, Map.Entry<Integer, Integer> value2) {
+				 return -(value2.getValue()).compareTo(value1.getValue());
+		     }
+		 });
+		 for (Entry<Integer, Integer> entry : list) {
+			 value=entry.getValue();
+			 for(int i=0;i<value;i++) {
+				 degree[index+i]=entry.getKey();
+			 }
+			 index+=value;
+		 }
+		 return degree;
+	 }
+	 public static void sortAscending(ArrayList<String> symbols) {
+		 HashMap<String, Integer> inputs = new HashMap<String, Integer>();
+	     for (int i = 0; i < symbols.size(); i++) {
+	        if (inputs.containsKey(symbols.get(i))) {
+	            Integer count = inputs.get(symbols.get(i)) + 1;
+	            inputs.put(symbols.get(i), count);
+	        } else {
+	        	inputs.put(symbols.get(i), 1);
+	        }
+	    }
+
+	    Set<Entry<String, Integer>> set = inputs.entrySet();
+	    sort(symbols,set);
+	 }
+
+	 public static ArrayList<String> sort(ArrayList<String> symbols, Set<Entry<String, Integer>> set) {
+		 int index=0;
+		 int value=0;
+		 ArrayList<Entry<String, Integer>> list = new ArrayList<Entry<String, Integer>>(set);
+		 Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+			 public int compare(Map.Entry<String, Integer> value1, Map.Entry<String, Integer> value2) {
+				 int comparison=(value2.getValue()).compareTo(value1.getValue());
+				 if(comparison==0) {
+					 return -(valences.get(value2.getKey())).compareTo(valences.get(value1.getKey())); 
+				 }else {
+					 return -(value2.getValue()).compareTo(value1.getValue());
+				 }
+		     }
+		 });
+		
+		 for (Entry<String, Integer> entry : list) {
+			 value=entry.getValue();
+			 for(int i=0;i<value;i++) {
+				 symbols.set(index+i,entry.getKey());
+			 }
+			 index+=value;
+		 }
+		 return symbols;
+	 }
+	 
+	 public static boolean noHydrogen= false;
+	 public static void getSymbolOccurrences() {
+		 ArrayList<String> symbolList= new ArrayList<String>();
 		 String[] atoms = formula.split("(?=[A-Z])");
 		 String[] info;
+		 int occur=0;
 		 int hydrogens=0;
 		 for(String atom : atoms) {
-			 info = atom.split("(?=[0-9])", 2); 
+			 info = atom.split("(?=[0-9])", 2);
 			 if(!info[0].equals("H")) {
-				 matrixSize=matrixSize+atomOccurrunce(info);
-				 firstSymbols.add(info[0]);
-				 firstOccurrences.add(atomOccurrunce(info));
-				 symbols.add(info[0]);
-				 occurrences.add(atomOccurrunce(info));
-				 hIndex=hIndex+atomOccurrunce(info);
+				 occur=atomOccurrunce(info);
+				 for(int i=0;i<occur;i++) {
+					 symbolList.add(info[0]);
+				 }
 			 }else {
 				 hydrogens=atomOccurrunce(info);
 			 }
 		 }
+		 sortAscending(symbolList);
+		 firstOccurrences=getPartition(symbolList);
+		 matrixSize=sum(firstOccurrences);
 		 
+		 setSymbols(symbolList);
+		 occurrences=getPartition(symbolList);
+		 hIndex=matrixSize;
 		 if(hydrogens!=0) {
 			 totalHydrogen+=hydrogens;
 			 if(matrixSize!=0) {
@@ -231,18 +354,83 @@ public class MAYGEN {
 				 justH=true;
 				 callHydrogenDistributor=false;
 				 matrixSize=matrixSize+hydrogens;
-				 occurrences.add(hydrogens);
-				 symbols.add("H");
 				 hIndex=hydrogens;
 				 firstSymbols.add("H");
 				 firstOccurrences.add(hydrogens);
-			 } 
+			 }
 		 }else {
 			 callHydrogenDistributor=false;
+			 noHydrogen=true;
 		 }
 	 }
 	 
-	
+	 public static int nextCount(int i, int size, ArrayList<String> symbols, ArrayList<Integer> partition) {
+		 int count=1;
+		 if(i==(size-1)) {
+			 partition.add(1);
+		 }else {
+			 for(int j = i+1; j < size; j++){
+	         	 if(symbols.get(i).equals(symbols.get(j))){
+	        		 count++;
+	        		 if(j==(size-1)){
+	        			 partition.add(count);
+	        			 break;
+	        		 }
+	             }else{
+	            	 partition.add(count);
+	            	 break;
+	             }
+	         }
+		 }
+		 return count;
+	 }
+	 
+	 public static ArrayList<Integer> getPartition(ArrayList<String> symbols){
+		 ArrayList<Integer> partition = new ArrayList<Integer>();
+		 int i=0;
+	     int size= symbols.size();
+	     int count=0;
+	     int next=0;
+		 while(i<size) {
+			 count=nextCount(i,size,symbols,partition);
+			 next=(i+count);
+			 if(next==size) {
+				 break;
+			 }else {
+				 i=next;
+			 }
+	     }
+	     return partition;
+	 }
+	 /**
+	  * Setting the firstSymbols and symbols global variables for 
+	  * the initial sorted list of symbols.
+	  * 
+	  * @param symbolList ArrayList<String> sorted list of atom symbols
+	  */
+	 public static String[] symbolArray;
+	 public static void setSymbols(ArrayList<String> symbolList) {
+		 symbolArray= new String[symbolList.size()];
+		 int index=0;
+		 for(String symbol:symbolList) {
+			symbolArray[index]=symbol;
+			index++;
+			if(!firstSymbols.contains(symbol)) {
+				firstSymbols.add(symbol);
+			}
+		 }
+	 }
+	 
+	 /**
+	  * Checking whether a molecular formula can represent a graph or not.
+	  * 
+	  * For a graph with n nodes, the sum of all its node degrees should be equal or bigger 
+	  * than 2*(n-1). Thus, the minimum number of nodes.
+	  * 
+	  * @param formula 	String molecular formula 
+	  * @return boolean 
+	  */
+	 
 	 public static boolean canBuildGraph(String formula) {
 		 boolean check=true;
 		 String[] atoms = formula.split("(?=[A-Z])");
@@ -265,57 +453,40 @@ public class MAYGEN {
 		 }
 		 return check;
 	 }
+
 	 /**
-	  * Degree sequence is set from formula
-	  * @param formula String molecular formula
-	  * @return int[] valences 
+	  * Initial degree arrays are set based on the molecular formula.
+	  * 
 	  */
+	 
 	 public static int[] firstDegrees;
 	 public static void initialDegrees(){
-		 int size= sum(occurrences);
-		 initialDegrees= new int[size];
-		 firstDegrees= new int[sum(firstOccurrences)];
+		 firstDegrees= new int[matrixSize];
 		 int index=0;
-		 int firstIndex=0;
-		 for(int i=0;i<symbols.size();i++) {
-			 String symbol= symbols.get(i);
-			 if(justH) {
-				 for(int j=0;j<occurrences.get(i);j++) {
-					 initialDegrees[index]=valences.get(symbol);
-					 index++; 
-			     } 
-			 }else {
-				 for(int j=0;j<occurrences.get(i);j++) {
-			    	 if(!symbol.equals("H")) {
-			    		 initialDegrees[index]=valences.get(symbol);
-				    	 index++; 
-			    	 }
-			     }
-			 }
-		 }
-		 for(int i=0; i<firstSymbols.size();i++) {
-			 String symbol= firstSymbols.get(i);
+		 String symbol;
+		 int length=firstSymbols.size();
+		 for(int i=0;i<length;i++) {
+			 symbol= firstSymbols.get(i);
 			 for(int j=0;j<firstOccurrences.get(i);j++) {
-		    	 firstDegrees[firstIndex]=valences.get(symbol);
-		    	 firstIndex++; 
-		     }
+				 firstDegrees[index]=valences.get(symbol);
+				 index++; 
+		     } 
 		 }
 	 }
 	
 	 /**
-	  * Building an atom container from a string of atom-implicit hydrogen information.
-	  * If provided, fragments are also added.
-	  * @return atom container new atom container
+	  * Building an atom container from a string of atom-implicit hydrogen
+	  * information.
+	  * 
 	  * @throws IOException
 	  * @throws CloneNotSupportedException
 	  * @throws CDKException
 	  */
 		
 	 public static void build() {
-		 for(int i=0;i<firstSymbols.size();i++) {
-			 for(int j=0;j<firstOccurrences.get(i);j++) {
-				 atomContainer.addAtom(new Atom(firstSymbols.get(i)));
-			 }
+		 atomContainer=builder.newInstance(IAtomContainer.class);
+		 for(int i=0;i<symbolArrayCopy.length;i++) {
+			 atomContainer.addAtom(new Atom(symbolArrayCopy[i]));
 		 }
 		    
 		 for(IAtom atom: atomContainer.atoms()) {
@@ -324,9 +495,11 @@ public class MAYGEN {
 	 }
 	
 	 /**
-	  * Building an atom container for an adjacency matrix
-	  * @param mat int[][] adjacency matrix
-	  * @return
+	  * Building an atom container for an adjacency matrix.
+	  * 
+	  * @param mat	int[][] adjacency matrix
+	  * @return IAtomContainer
+	  * 
 	  * @throws CloneNotSupportedException
 	  */
 		
@@ -349,32 +522,54 @@ public class MAYGEN {
 	 }
 	 
 	 /**
-	  * ********************************************************************
+	  * Checks two int[] arrays are equal with respect to an atom partition.
+	  * 
+	  * @param array1		int[] first array	 
+	  * @param array2		int[] second array
+	  * @param partition 	ArrayList<Integer> atom partition
+	  * @return boolean
 	  */
-
-	 public static boolean equalSetCheck(int[] original, int[] permuted, ArrayList<Integer> partition) {
-		 int[] temp= cloneArray(permuted);
+	 
+	 public static boolean equalSetCheck(int[] array1, int[] array2, ArrayList<Integer> partition) {
+		 int[] temp= cloneArray(array2);
 		 temp=descendingSortWithPartition(temp, partition);
-		 return equalSetCheck(partition, original, temp);
+		 return equalSetCheck(partition, array1, temp);
 	 }
 	 
-	 public static Integer [] getBlocks(int[] row, int begin, int end) {
-		 return IntStream.range(begin, end).mapToObj(i->row[i]).toArray(Integer[]::new);
+	 /**
+	  * Getting a part of a int array specified by two entry indices
+	  * @param array	int[] array	
+	  * @param begin	int beginning index
+	  * @param end		int ending index
+	  * @return Integer[]
+	  */
+	 
+	 public static Integer [] getBlocks(int[] array, int begin, int end) {
+		 return IntStream.range(begin, end).mapToObj(i->array[i]).toArray(Integer[]::new);
 	 }
 
-	 public static boolean equalSetCheck(ArrayList<Integer> partition, int[] original, int[] permuted){
+	 /**
+	  * Checks two int[] arrays are equal with respect to an atom partition.
+	  * 
+	  * @param partition 	ArrayList<Integer> atom partition	
+	  * @param array1		int[] array
+	  * @param array2		int[] array
+	  * @return boolean
+	  */
+	 
+	 public static boolean equalSetCheck(ArrayList<Integer> partition, int[] array1, int[] array2){
 		 boolean check=true;		 
 		 int i=0;
 		 if(partition.size()==size) {
 			 for(int d=0;d<size;d++) {
-				 if(original[d]!=permuted[d]) {
+				 if(array1[d]!=array2[d]) {
 					 check=false;
 					 break;
 				 }
 			 }
 		 }else {
 			 for(Integer p:partition) {
-				 if(compareIndexwise(original, permuted, i, (p+i))) {
+				 if(compareIndexwise(array1, array2, i, (p+i))) {
 					 i=i+p;
 				 }else {
 					 check=false;
@@ -384,6 +579,16 @@ public class MAYGEN {
 		 }
 		 return check;
 	 }
+	 
+	 /**
+	  * Comparing two int arrays are equal or not for given range of entries.
+	  * 
+	  * @param array	int[] array	
+	  * @param array2	int[] array
+	  * @param index1	int beginning index
+	  * @param index2	int last index
+	  * @return boolean 
+	  */
 	 
 	 public static boolean compareIndexwise(int[] array, int[] array2, int index1, int index2) {
 		 boolean check=true;
@@ -395,12 +600,24 @@ public class MAYGEN {
 		 }
 		 return check;
 	 }
-	 public static boolean equalBlockCheck(int index, int[][] A, Permutation cycleTransposition, Permutation perm){
+	 
+	 /**
+	  * Comparing two arrays are equal. The second row's index and entries
+	  * are permuted based on cycle transposition and given permutation.
+	  *   
+	  * @param index				int row index
+	  * @param A					int[][] adjacency matrix
+	  * @param cycleTransposition	Permutation cycle transposition
+	  * @param permutation			Permutation permutation
+	  * @return boolean 
+	  */
+	 
+	 public static boolean equalRowsCheck(int index, int[][] A, Permutation cycleTransposition, Permutation permutation){
 		 boolean check=true;
 		 int[] canonical= A[index];
 		 int[] original= A[index];
 		 int newIndex= findIndex(index, cycleTransposition);		 
-		 Permutation pm=perm.multiply(cycleTransposition);
+		 Permutation pm=permutation.multiply(cycleTransposition);
 		 original=cloneArray(A[newIndex]);
 		 original=actArray(original,pm); 
 		 if(!Arrays.equals(canonical,original)) {
@@ -408,6 +625,15 @@ public class MAYGEN {
 		 }
 		 return check;
 	 }
+	 
+	 /**
+	  * Sorting entries of a subarray specified by indices.
+	  * 
+	  * @param array	int[] array
+	  * @param index0	int beginning index
+	  * @param index1	int last index
+	  * @return int[]
+	  */
 	 
 	 public static int[] descendingSort(int[] array, int index0, int index1) {
 		 int temp=0;
@@ -423,6 +649,14 @@ public class MAYGEN {
 		 return array;
 	 }
 	 
+	 /**
+	  * Sorting entries of a int array for a given atom partition.
+	  * 
+	  * @param array 		int[] array
+	  * @param partition	ArrayList<Integer> atom partition
+	  * @return int[]
+	  */
+	 
 	 public static int[] descendingSortWithPartition(int[] array, ArrayList<Integer> partition) {
 		 int i=0;
 		 for(Integer p:partition) {
@@ -432,11 +666,33 @@ public class MAYGEN {
 		 return array;
 	 }
 	 
-	 public static boolean biggerCheck(int index, int[] original, int[] permuted, ArrayList<Integer> partition) {
-		 int[] sorted= cloneArray(permuted);
+	 /**
+	  * Checks two arrays in descending order. The second row is sorted in
+	  * descending order just to check whether there is a possible permutations
+	  * making the first row non-maximal. 
+	  * 
+	  * @param index 		int row index
+	  * @param array1		int[] array		
+	  * @param array2		int[] array
+	  * @param partition	Arraylist<Integer> atom partition
+	  * @return boolean 
+	  */
+	 
+	 public static boolean biggerCheck(int index, int[] array1, int[] array2, ArrayList<Integer> partition) {
+		 int[] sorted= cloneArray(array2);
 		 sorted=descendingSortWithPartition(sorted, partition);
-		 return descendingOrderUpperMatrix(index,partition, original, sorted);
+		 return descendingOrderUpperMatrixCheck(index,partition, array1, sorted);
 	 }
+	 
+	 /**
+	  * Checks whether there is a permutation making the row bigger
+	  * in descending order.
+	  * 
+	  * @param index		int row index
+	  * @param A			int[][] adjacency matrix
+	  * @param permutation	Permutation permutation	
+	  * @param partition	ArrayList<Integer> atom partition
+	  */
 	 
 	 public static void setBiggest(int index, int[][] A, Permutation permutation, ArrayList<Integer> partition) {
 		 biggest=true;
@@ -445,6 +701,17 @@ public class MAYGEN {
 			 biggest=false;
 		 }
 	 }
+	 
+	 /**
+	  * Get indices from "learning from canonical test" method.
+	  * Here, the entry makes the row non-canonical is detected.
+	  * Its indices are set to nonCanonicalIndices global variables.
+	  *  
+	  * @param index		int row index
+	  * @param A			int[][] adjacency matrix
+	  * @param cycles		List<Permutation> list of cycle transpositions
+	  * @param partition 	ArrayList<Integer> atom partition
+	  */
 	 
 	 public static void getLernenIndices(int index, int[][] A, List<Permutation> cycles, ArrayList<Integer> partition) {
 		 for(Permutation cycle: cycles) {
@@ -456,14 +723,34 @@ public class MAYGEN {
 		 }
 	 }
 
-	 public static void setLernenIndices(int rowIndex1, Permutation cycle, int[][] A, int[] mapped, ArrayList<Integer> partition) {
+	 /**
+	  * Setting the nonCanonicalIndices global variable.
+	  * 
+	  * @param rowIndex1	int first row index
+	  * @param cycle		Permutation	cycle transposition	
+	  * @param A			int[][] adjacency matrix
+	  * @param secondRow	int[] second row 		
+	  * @param partition	ArrayList<Integer> atom partition
+	  */
+	 
+	 public static void setLernenIndices(int rowIndex1, Permutation cycle, int[][] A, int[] secondRow, ArrayList<Integer> partition) {
 		 nonCanonicalIndices= new int[2];
 		 learningFromCanonicalTest=false;
 		 int rowIndex2 = cycle.get(rowIndex1);
-		 Permutation permutation = getNonCanonicalMakerPermutation(mapped, cycle, partition);
+		 Permutation permutation = getNonCanonicalMakerPermutation(secondRow, cycle, partition);
 		 learningFromCanonicalTest = true;
 		 nonCanonicalIndices = upperIndex(rowIndex1, rowIndex2, A, permutation);
 	 }
+	 
+	 /**
+	  * Calculating the permutation, permuting the second row
+	  * and making first row non maximal.
+	  * 
+	  * @param array
+	  * @param cycle
+	  * @param partition
+	  * @return
+	  */
 	 
 	 public static Permutation getNonCanonicalMakerPermutation(int[] array, Permutation cycle, ArrayList<Integer> partition) {
 		 int[] sorted= cloneArray(array);
@@ -472,10 +759,20 @@ public class MAYGEN {
 		 return permutation.multiply(cycle);
 	 }
 	 
-	 public static boolean firstCheck(int index, int[][]A, ArrayList<Integer> partition) {
+	 /**
+	  * For a row given by index, checking whether it is in maximal form or not.
+	  * If not, the nonCanonicalIndices is set.
+	  * 
+	  * @param index		int row index
+	  * @param A			int[][] adjacency matrix
+	  * @param partition	ArrayList<Integer> partition
+	  * @return	boolean 
+	  */
+	 
+	 public static boolean rowDescendingTest(int index, int[][]A, ArrayList<Integer> partition) {
 		 boolean check = true;
 		 if(partition.size()!=size) {
-			 if(!descendingOrdercomparison(partition,A[index])) {
+			 if(!descendingOrderCheck(partition,A[index])) {
 				 check=false;
 				 int[] array = cloneArray(A[index]);
 				 array = descendingSortWithPartition(array, partition);
@@ -486,38 +783,37 @@ public class MAYGEN {
 		 }
 		 return check;
 	 }
-	 
-	 /**
-	  * Learning from the canonical test - Grund  Chapter 3.4.1
-	  */
 		 
 	 /**
 	  * By a given permutation, checking which entry is mapped to the index.
-	  * @param perm Permutation
-	  * @param index int entry index in the row
+	  * 
+	  * @param permutation 	Permutation permutation
+	  * @param index 		int entry index in the row
 	  * @return int
 	  */
 	 
-	 public static int getPermutedIndex(Permutation perm, int index) {
+	 public static int getPermutedIndex(Permutation permutation, int index) {
 		 int out=0;
-		 for(int i=0; i<perm.size();i++) {
-			 if(perm.get(i)==index) {
+		 for(int i=0; i<permutation.size();i++) {
+			 if(permutation.get(i)==index) {
 				 out+=i;
 				 break;
 			 }
 		 }
 		 return out;
 	 }
+	 
 	 /**
 	  * Looking for the upper limit where the original entry
 	  * is smaller. 
-	  * @param index int row index
-	  * @param A int[] original row to compare
-	  * @param permutation Permutation permutation from canonical test
-	  * @return int upper limit.
+	  * 
+	  * @param index 			int row index
+	  * @param nextRowIndex 	int index of the row to compare	
+	  * @param A 				int[][] adjacency matrix
+	  * @param permutation 		Permutation permutation from canonical test
+	  * @return int[]
 	  */
 		
-	 
 	 public static int[] limit(int index, int nextRowIndex, int[][] A, Permutation permutation) {
 		 int[] original= A[index];
 		 int[] permuted= A[nextRowIndex];
@@ -538,13 +834,16 @@ public class MAYGEN {
 		 return limit;
 		}
 		
+	 
 		/**
+		 * 
 		 * Looking for the maximum index where the entry is not zero.
-		 * @param index int row index
-		 * @param size int row size
-		 * @param original int[] original row to compare
-		 * @param perm Permutation permutation from canonical test
-		 * @return int lowerIndex
+		 * 
+		 * @param index 		int row index
+		 * @param nextRowIndex 	int index of the row to compare	
+		 * @param A 			int[][] adjacency matrix	
+		 * @param permutation 	Permutation permutation from canonical test
+		 * @return int[]
 		 */
 		
 		public static int[] lowerIndex(int index, int nextRowIndex, int[][] A, Permutation permutation) {
@@ -568,20 +867,19 @@ public class MAYGEN {
 		}
 		
 		/**
-		 * As explained in Grund 3.4.1; we need to calculate upperIndex.
-		 * First, we need our j index where the original row become 
-		 * smaller, then calculating the lower index. Based on these two
-		 * values and the value of j in the permutation, we calculate
-		 * our upper index. 
+		 * We need to calculate upperIndex. First, we need our j index where
+		 * the original row become smaller, then calculating the lower index.
+		 * Based on these two values and the value of j in the permutation,
+		 * we calculate our upper index. 
 		 * 
 		 * This upper index is used for the 'learning from canonical test'
 		 * method. 
 		 * 
-		 * @param index int row index
-		 * @param size  int row size
-		 * @param original int[] original row to compare
-		 * @param perm Permutation permutation from canonical test
-		 * @return int upper index
+		 * @param index 		int row index
+		 * @param nextRowIndex 	int index of the row to compare	
+		 * @param A 			int[][] adjacency matrix	
+		 * @param permutation 	Permutation permutation from canonical test
+		 * @return int[]
 		 */
 		
 		public static int[] upperIndex(int index, int nextRowIndex, int[][] A, Permutation permutation) {
@@ -594,6 +892,15 @@ public class MAYGEN {
 			maximalIndices=maximalIndexWithNonZeroEntry(A, maximalIndices);	
 			return getTranspose(maximalIndices);
 		}
+		
+		/**
+		 * In case if the index' entry is zero, updating the index with next index
+		 * with non-zero entry.
+		 *  
+		 * @param A					int[][] adjacency matrix
+		 * @param maximalIndices	int[] maximal indices for canonical test
+		 * @return int[]					
+		 */
 		
 		public static int[] maximalIndexWithNonZeroEntry(int[][] A, int[] maximalIndices) {
 			int rowIndex= maximalIndices[0];
@@ -613,6 +920,13 @@ public class MAYGEN {
 			}
 		}
 		
+		/**
+		 * For an index pair, getting its transpose.
+		 * 
+		 * @param indices	int[] indices
+		 * @return	int[]
+		 */
+		
 		public static int[] getTranspose(int[] indices) {
 			int[] out= new int[2];
 			if(indices[0]>indices[1]) {
@@ -623,6 +937,14 @@ public class MAYGEN {
 				return indices;
 			}
 		}
+		
+		/**
+		 * Between two index pairs, getting the bigger indices.
+		 * 
+		 * @param a	int[] indices
+		 * @param b	int[] indices	
+		 * @return int[]
+		 */
 		
 		public static int[] getMaximumPair(int[] a, int[] b) {
 			if(a[0]>b[0]) {
@@ -639,15 +961,27 @@ public class MAYGEN {
 				}
 			}
 		}
-
-	 public static boolean compare(int[] arr, int[] arr2, int index1, int index2) {
+	 
+	 /**
+	  * Comparing two arrays for specific range of entries,
+	  * whether the first array is bigger than the second one
+	  * or not.
+	  * 
+	  * @param array1	int[] first array
+	  * @param array2	int[] second array	
+	  * @param index1	int beginning index
+	  * @param index2	int last index
+	  * @return boolean 
+	  */
+		
+	 public static boolean compare(int[] array1, int[] array2, int index1, int index2) {
 		 boolean check=true;
 		 for(int i=index1;i<index2;i++) {
-			 if(arr[i]!=arr2[i]) {
-				 if(arr[i]<arr2[i]) {
+			 if(array1[i]!=array2[i]) {
+				 if(array1[i]<array2[i]) {
 					 check=false;
 					 break; 
-				 }else if(arr[i]>arr2[i]) {
+				 }else if(array1[i]>array2[i]) {
 					 check=true;
 					 break;
 				 }
@@ -655,16 +989,27 @@ public class MAYGEN {
 		 }
 		 return check;
 	 }
-	
-	 public static boolean descendingOrderUpperMatrix(int index, ArrayList<Integer> partition, int[] original, int[] permuted){
+	 
+	 /**
+	  * Checks the first row is bigger than the second
+	  * row just in the upper matrix.
+	  * 
+	  * @param index		int row index
+	  * @param partition	ArrayList<Integer> atom partition
+	  * @param firstRow		int[] first row
+	  * @param secondRow	int[] second row
+	  * @return boolean 
+	  */
+	 
+	 public static boolean descendingOrderUpperMatrixCheck(int index, ArrayList<Integer> partition, int[] firstRow, int[] secondRow){
 		 boolean check=true;		 
 		 int i=index+1;
 		 int p=0;
 		 for(int k=index+1;k<partition.size();k++) {
 			 p = partition.get(k);
-			 if(desOrderCheck(original,i,(i+p))) {	 
-				 if(!compareIndexwise(original, permuted, i, (i+p))){
-			 		 check=compare(original, permuted, i, (i+p));
+			 if(descendingOrderCheck(firstRow,i,(i+p))) {	 
+				 if(!compareIndexwise(firstRow, secondRow, i, (i+p))){
+			 		 check=compare(firstRow, secondRow, i, (i+p));
 			 		 break;
 				 }
 				 i=i+p;
@@ -676,7 +1021,17 @@ public class MAYGEN {
 		 return check;
 	 }
 
-	 public static boolean desOrderCheck(int[] array, int f, int l) {
+	 /**
+	  * Checks subarray of specified range of entries,
+	  * the array is descending order or not. 
+	  *  
+	  * @param array	int[] array	
+	  * @param f		int first index
+	  * @param l		int last index
+	  * @return boolean 
+	  */
+	 
+	 public static boolean descendingOrderCheck(int[] array, int f, int l) {
 		 boolean check=true;
 		 for(int i=f;i<l-1;i++) {
 			 if(array[i]<array[i+1]) {
@@ -687,11 +1042,20 @@ public class MAYGEN {
 		 return check;
 	 }
 	 
-	 public static boolean descendingOrdercomparison(ArrayList<Integer> partition, int[] row){
+	 /**
+	  * Checks a int array is in descending order or not with 
+	  * respect to a given atom partition.
+	  * 
+	  * @param partition	ArrayList<Integer> atom partition
+	  * @param row			int[]
+	  * @return boolean 
+	  */
+	 
+	 public static boolean descendingOrderCheck(ArrayList<Integer> partition, int[] array){
 		 boolean check=true;		 
 		 int i=0;
 		 for(Integer part: partition) {
-			 if(!desOrderCheck(row,i,(part+i))) {
+			 if(!descendingOrderCheck(array,i,(part+i))) {
 				 check=false;
 				 break;
 			 }else {
@@ -938,7 +1302,8 @@ public class MAYGEN {
 			int limit=0;
 			int hydrogen=0;
 			for(int i=0;i<index;i++) {
-				hydrogen=initialDegrees[i]-sum(A[i]);
+				//hydrogen=initialDegrees[i]-sum(A[i]);
+				hydrogen=newDegreeList[i]-sum(A[i]);
 				limit=hIndex+hydrogen;
 				for(int j=hIndex;j<limit;j++) {
 					A[i][j]=1;
@@ -1065,10 +1430,12 @@ public class MAYGEN {
 			A[j][i]=maximalX;
 			if(i==(max.length-2) && j==(max.length-1)) {
 				if(canonicalTest(A)) {
-					if(connectivityTest(A)){						
+					if(connectivityTest(A)){
 						count++;
-						IAtomContainer mol= buildC(addHydrogens(A,hIndex));
-						outFile.write(mol);
+						if(SDF) {
+							IAtomContainer mol= buildC(addHydrogens(A,hIndex));
+							outFile.write(mol);
+						}
 						callForward=false;
 					}else {
 						callForward=false;
@@ -1176,10 +1543,18 @@ public class MAYGEN {
 	 * @return ArrayList<Integer>
 	 */
 	
-	public static ArrayList<Integer> getPartition(int[] degrees, ArrayList<Integer> partition){
+	public static ArrayList<Integer> getPartition(int[] degrees){
     	 ArrayList<Integer> newPartition = new ArrayList<Integer>();
 		 int i=0;
-    	 for(Integer p:partition) {
+		 int p=0;
+		 int length =0;
+		 if(justH || noHydrogen ) {
+			 length=firstOccurrences.size();
+		 }else {
+			 length=firstOccurrences.size()-1;
+		 }
+    	 for(int part=0;part<length;part++) {
+    		 p=firstOccurrences.get(part);
     		 Integer[] subArray= getBlocks(degrees,i,p+i);
     		 newPartition.addAll(getSubPartition(subArray));
     		 i=i+p; 
@@ -1247,29 +1622,38 @@ public class MAYGEN {
 	  * Main function to initialize the global variables and calling
 	  * the generate function.
 	  * 
-	  * @return List<int[][]>
 	  * 
 	  * @throws IOException
 	  * @throws CDKException
 	  * @throws CloneNotSupportedException
+	 * @throws URISyntaxException 
 	  */
 	 
-	 public static void run() throws IOException, CDKException, CloneNotSupportedException {
+	 public static void run() throws IOException, CDKException, CloneNotSupportedException, URISyntaxException {
 		 if(canBuildGraph(formula)) {
 			 clearGlobals();
 			 long startTime = System.nanoTime(); 
 			 if(verbose) System.out.println("MAYGEN is generating isomers of "+formula+"...");
-			 getSymbolsOccurrences(formula);
-			 initialDegrees();			 
-			 build();
-			 outFile = new SDFWriter(new FileWriter(filedir+"output.sdf"));
+			 getSymbolOccurrences();
+			 initialDegrees();	
+			 if(SDF) outFile = new SDFWriter(new FileWriter(filedir+"output.sdf"));
+			 //File jarFile = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+		     //String outputFilePath = jarFile.getParent() + File.separator + formula+".sdf";
+		     //outFile = new SDFWriter(new FileWriter(outputFilePath));
 			 structureGenerator();
-			 if(verbose) System.out.println("The number of structures is: "+count);
-			 outFile.close();
+			 if(SDF) outFile.close();
 			 long endTime = System.nanoTime() - startTime;
 			 double seconds = (double) endTime / 1000000000.0;
 		     DecimalFormat d = new DecimalFormat(".###");
-		     if(verbose) System.out.println("Time: "+d.format(seconds)+" seconds");
+		     if(verbose) 
+		     {
+		    	 System.out.println("The number of structures is: "+count);
+			     System.out.println("Time: "+d.format(seconds)+" seconds");
+		     }
+		     if(tsvoutput) 
+		     {
+		    	 System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
+		     }
 		 }else {
 			 if(verbose) System.out.println("The input formula, "+formula+", does not represent any molecule.");
 		 }
@@ -1290,7 +1674,9 @@ public class MAYGEN {
 		 hIndex=0;
 		 count=0;
 		 matrixSize=0;
-		 verbose = true;
+		 noHydrogen=false;
+		 //verbose = false;
+		 //tsvoutput=false;
 		 formerPermutations= new ArrayList<ArrayList<Permutation>>();
 		 partitionList = new ArrayList<ArrayList<Integer>>();
 		 symbols = new ArrayList<String>();
@@ -1377,21 +1763,34 @@ public class MAYGEN {
 	  * @throws CDKException
 	  */
 	 
+	 public static String[] symbolArrayCopy;
+	 public static int[] newDegreeList;
 	 public static void structureGenerator() throws IOException, CloneNotSupportedException, CDKException{
-		size=initialDegrees.length;
+		symbolArrayCopy= new String[symbolArray.length];
+		if(noHydrogen) {
+			size=sum(firstOccurrences,firstOccurrences.size()-1);
+		}else {
+			size=sum(firstOccurrences,firstOccurrences.size()-2);
+		}
+		
 		List<int[]> newDegrees= distributeHydrogens();
 		nonCanonicalIndices= new int[2];
+		newDegreeList= new int[size];
 		learningFromCanonicalTest=false;
 		learningFromConnectivity=false;
-		for(int[] degree: newDegrees) {
+		for(int[] degree: newDegrees) {			
 			System.gc();
 			System.runFinalization();
+			ArrayList<Integer> po=getPartition(degree);
+			symbolArrayCopy=Arrays.copyOf(symbolArray, symbolArray.length);
+			sortWithPartition(po, degree, symbolArrayCopy);	
+			newDegreeList=degree;
+			build();
 			partSize=0;
 			nonCanonicalIndices= new int[2];
 			connectivityIndices= new int[2];
 			learningFromConnectivity=false;
 			learningFromCanonicalTest=false;
-			initialPartition=getPartition(degree,occurrences);
 			partitionList.clear();
 			formerPermutations.clear();
 			partSize+=(initialPartition.size()-1);
@@ -1400,7 +1799,8 @@ public class MAYGEN {
 			generate(degree);
 		}
 	 } 
-	 	 
+	 
+	 
 	 /**
 	  * 3.6.2. Connectivity Test
 	  */
@@ -1688,7 +2088,7 @@ public class MAYGEN {
 	
 	public static boolean rowCanonicalTest(int index, int r,int[][] A, ArrayList<Integer> partition, ArrayList<Integer> newPartition) {
 		boolean check= true;
-		if(!firstCheck(index, A, newPartition)){
+		if(!rowDescendingTest(index, A, newPartition)){
 			check=false;
 	    }else {
 	    	y = ys[r];
@@ -1972,7 +2372,7 @@ public class MAYGEN {
 	public static Permutation getCanonicalCycle(int index, int y, int total, int[][] A, ArrayList<Integer> newPartition,Permutation cycleTransposition) {
 		biggest=true;
 		Permutation canonicalPermutation = idPermutation(total);
-		if(!equalBlockCheck(index, A,cycleTransposition, canonicalPermutation)) {
+		if(!equalRowsCheck(index, A,cycleTransposition, canonicalPermutation)) {
 			 canonicalPermutation = getEqualPerm(cycleTransposition, index, A, newPartition);
 			 int[] check= row2compare(index, A, cycleTransposition);
 			 check = actArray(check,canonicalPermutation);
@@ -1990,7 +2390,7 @@ public class MAYGEN {
 				 Permutation canonicalPermutation = getCanonicalCycle(index, y, total, A, newPartition, permutation);
 				 int[] test=row2compare(index, A, permutation);
 				 test= actArray(test,canonicalPermutation);	
-				 if(descendingOrderUpperMatrix(index, newPartition, A[index], test)) {
+				 if(descendingOrderUpperMatrixCheck(index, newPartition, A[index], test)) {
 					 if(canonicalPermutation.isIdentity()) {
 						 if(equalSetCheck(newPartition,A[index],test)) {
 							formerList.add(permutation); 
@@ -2096,6 +2496,84 @@ public class MAYGEN {
 		 }
 	 }
 	
+	 public static int[] orderDegreeSymbols(int[] degree, String[] symbol, int index0, int index1) {
+		 int temp=0;
+		 for (int i = index0; i < index1; i++) {     
+			 for (int j = i+1; j < index1; j++) { 
+				 if(degree[i] > degree[j]) { 
+					 swap(symbol, i, j);
+					 temp = degree[i];    
+	                 degree[i] = degree[j];    
+	                 degree[j] = temp;    
+	             }     
+	         }     
+		 }
+		 return degree;
+	 }
+	 
+	 public static void swap(String[] array, int i, int j) {
+		 String temp="";    
+		 temp = array[i];    
+	     array[i] = array[j];    
+	     array[j] = temp; 
+	 }
+	 
+	 public static void swap(int[] array, int i, int j) {
+		 int swapString = array[i];
+         array[i] = array[j];
+         array[j] = swapString;
+	 }
+	 
+	 public static void sortWithPartition(ArrayList<Integer> partitionList, int[] degrees, String[] symbols) {
+		 int[] partition = buildArray(partitionList);
+		 int size= partition.length;
+		 for (int n = 0; n < size; n++) {
+			 for (int m = 0; m < (size-1)- n; m++) {
+				 if ((partition[m]>partition[m + 1])) {
+					 swap(partition,m,(m+1));
+			         swap(degrees,m,(m+1));
+			         swap(symbols,m,(m+1));
+				 }
+			 }
+		 }
+		 reOrder(partition, degrees, symbols);
+		 initialPartition(partition);
+	 }
+	 
+	public static void initialPartition(int[] partition){
+		ArrayList<Integer> init= new ArrayList<Integer>();
+		int index=0;
+		int part;
+		while(index!=hIndex) {
+			part=partition[index];
+			init.add(part);
+			index+=part;
+		}
+		initialPartition=init;
+	}
+	
+	public static int[] buildArray(ArrayList<Integer> partition) {
+		int[] partitionArray = new int[sum(partition)];
+		int index=0;
+		for(Integer p: partition) {
+			for(int i=0;i<p;i++) {
+				partitionArray[index]=p;
+				index++;
+			}
+		}
+		return partitionArray;
+	}
+	
+	public static void reOrder(int[] partition, int[] degrees, String[] symbols) {
+		int index=0;
+		int part;
+		while(index!=(hIndex)) {
+			part=partition[index];
+			orderDegreeSymbols(degrees,symbols,index,(index+part)); 
+			index=index+part;
+		}
+	}
+	
 	 private void parseArgs(String[] args) throws ParseException{
 		 Options options = setupOptions();
 		 CommandLineParser parser = new DefaultParser();
@@ -2103,7 +2581,9 @@ public class MAYGEN {
 			 CommandLine cmd = parser.parse(options, args);
 			 MAYGEN.formula = cmd.getOptionValue("formula");
 			 MAYGEN.filedir = cmd.getOptionValue("filedir");				 
-			 if (cmd.hasOption("verbose")) MAYGEN.verbose = true;		
+			 if (cmd.hasOption("verbose")) MAYGEN.verbose = true;
+			 if (cmd.hasOption("filedir")) MAYGEN.SDF = true;
+			 if (cmd.hasOption("tsvoutput")) MAYGEN.tsvoutput = true;
 		 } catch (ParseException e) {
 			 HelpFormatter formatter = new HelpFormatter();
 			 formatter.setOptionComparator(null);
@@ -2133,17 +2613,23 @@ public class MAYGEN {
 								.desc("print message")
 								.build();
 		 options.addOption(verbose);	
-		 Option filedir = Option.builder("d")
+		 Option filedir = Option.builder("o")
 					 			.required(false)
 					 			.hasArg()
 					 			.longOpt("filedir")
 					 			.desc("Creates and store the output txt file in the directory (required)")
 					 			.build();
 		 options.addOption(filedir);
+		 Option tvsoutput = Option.builder("t")
+					.required(false)
+					.longOpt("tsvoutput")
+					.desc("Output formula, number of structures and execution time in CSV format")
+					.build();
+		 options.addOption(tvsoutput);
 		 return options;
 	 }
-	
-	public static void main(String[] args) {
+	 
+	public static void main(String[] args) throws CloneNotSupportedException, CDKException, IOException {
 		MAYGEN gen = new MAYGEN();
 		try {
 			gen.parseArgs(args);
