@@ -12,12 +12,14 @@ MAYGEN takes a molecular formula (such as C<sub>10</sub>H<sub>16</sub>O) as inpu
 As can be seen from these examples, MAYGEN makes no assumptions on chemical stability. In particular in small ring systems, this may lead to unlikely structures, such as C=1C=C1. 
 
 We benchmarked MAYGEN against the current state-of-the-art, but [closed-source structure generator Molgen](http://www.molgen.de) from the University of Bayreuth as well as against the [Open Molecule Generator (OMG)](https://sourceforge.net/projects/openmg/)[3], the only available open source structure generator. We did not test against the parallelised version of OMG - called PMG - to maintain the focus on algorithmic rather than technological speed. The following plot compares the timings. The generated numbers  of structures are identical for MAYGEN and Molgen 3.5.
+For structures with C, H, O, MAYGEN performs as well as Molgen, as indicated by the following benchmark.
+
+![Results for the carbohydrates with oxygens](/resources/CarbohydratesWithOxygens.png)
+
+For a more general set of MF with the full allowed element set (C, H, N, O, P, S, F, Cl, Br, I), MAYGEN is consistently slower than Molgen., but gets close to its performance for pure carbohydrates (Factor 1.4 slower). For example, MAYGEN generates the 400 mio isomers of C<sub>13</sub>H<sub>8</sub> in 14h on a current unix machine, whereas Molgen takes 11h. 
 
 ![A speed comparison of maygen against molgen. Maygen is consistently slower than molgen](/resources/maygen-molgen.png)
 
-MAYGEN is consistently slower than Molgen, but gets close to its performance for pure carbohydrates (Factor 1.4 slower). For example, MAYGEN generates the 400 mio isomers of C<sub>13</sub>H<sub>8</sub> in 14h on a current unix machine, whereas Molgen takes 11h. 
-
-![Results for the carbohydrates with oxygens](/resources/CarbohydratesWithOxygens.png)
 
 ## Download jar File
 
