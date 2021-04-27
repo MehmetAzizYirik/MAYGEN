@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -24,6 +25,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.chainsaw.Main;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.DefaultChemObjectBuilder;
@@ -41,7 +43,7 @@ public class MAYGEN {
 	public static int size=0;
 	public static int total=0;
 	public static boolean tsvoutput = false;
-	public static boolean SDF = false;
+	public static boolean writeSDF = false;
 	public static int[] ys;
 	public static int[] zs;
 	public static int[] nonCanonicalIndices = new int[2];
@@ -54,7 +56,7 @@ public class MAYGEN {
 	public static boolean learningFromConnectivity=false; 
 	public static SDFWriter outFile;
 	public static String formula;
-	public static String filedir;
+	public static String filename;
 	public static boolean flag=true;
 	public static boolean learningFromCanonicalTest=false;
 	public static boolean biggest=true;
@@ -321,7 +323,7 @@ public class MAYGEN {
 	 public static boolean noHydrogen= false;
 	 public static void getSymbolOccurrences() {
 		 ArrayList<String> symbolList= new ArrayList<String>();
-		 String[] atoms = formula.split("(?=[A-Z])");
+		 String[] atoms = normalizeFormula(formula).split("(?=[A-Z])");
 		 String[] info;
 		 int occur=0;
 		 int hydrogens=0;
@@ -420,7 +422,12 @@ public class MAYGEN {
 			}
 		 }
 	 }
-	 
+
+	public static String normalizeFormula(String formula) {
+		String[] from = {"c", "n", "o", "s", "p", "f", "i", "cl", "CL", "br", "BR", "h"};
+		String[] to = {"C", "N", "O", "S", "P", "F", "I", "Cl", "Cl", "Br", "Br", "H"};
+		return StringUtils.replaceEach(formula, from, to);
+	}
 	 /**
 	  * Checking whether a molecular formula can represent a graph or not.
 	  * 
@@ -433,7 +440,7 @@ public class MAYGEN {
 	 
 	 public static boolean canBuildGraph(String formula) {
 		 boolean check=true;
-		 String[] atoms = formula.split("(?=[A-Z])");
+		 String[] atoms = normalizeFormula(formula).split("(?=[A-Z])");
 		 String[] info;
 		 String symbol;
 		 int occur, valence;
@@ -1432,8 +1439,8 @@ public class MAYGEN {
 				if(canonicalTest(A)) {
 					if(connectivityTest(A)){
 						count++;
-						if(SDF) {
-							IAtomContainer mol= buildC(addHydrogens(A,hIndex));
+						if (writeSDF && Objects.nonNull(filename)) {
+							IAtomContainer mol = buildC(addHydrogens(A, hIndex));
 							outFile.write(mol);
 						}
 						callForward=false;
@@ -1636,12 +1643,12 @@ public class MAYGEN {
 			 if(verbose) System.out.println("MAYGEN is generating isomers of "+formula+"...");
 			 getSymbolOccurrences();
 			 initialDegrees();	
-			 if(SDF) outFile = new SDFWriter(new FileWriter(filedir+"output.sdf"));
+			 if(writeSDF) outFile = new SDFWriter(new FileWriter(filename));
 			 //File jarFile = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
 		     //String outputFilePath = jarFile.getParent() + File.separator + formula+".sdf";
 		     //outFile = new SDFWriter(new FileWriter(outputFilePath));
 			 structureGenerator();
-			 if(SDF) outFile.close();
+			 if(writeSDF) outFile.close();
 			 long endTime = System.nanoTime() - startTime;
 			 double seconds = (double) endTime / 1000000000.0;
 		     DecimalFormat d = new DecimalFormat(".###");
@@ -2580,9 +2587,12 @@ public class MAYGEN {
 		 try {
 			 CommandLine cmd = parser.parse(options, args);
 			 MAYGEN.formula = cmd.getOptionValue("formula");
-			 MAYGEN.filedir = cmd.getOptionValue("filedir");				 
+			 if (cmd.hasOption("filename"))
+			 {
+				 MAYGEN.writeSDF = true;
+				 MAYGEN.filename = cmd.getOptionValue("filename");
+			 }
 			 if (cmd.hasOption("verbose")) MAYGEN.verbose = true;
-			 if (cmd.hasOption("filedir")) MAYGEN.SDF = true;
 			 if (cmd.hasOption("tsvoutput")) MAYGEN.tsvoutput = true;
 		 } catch (ParseException e) {
 			 HelpFormatter formatter = new HelpFormatter();
@@ -2626,6 +2636,13 @@ public class MAYGEN {
 					.desc("Output formula, number of structures and execution time in CSV format")
 					.build();
 		 options.addOption(tvsoutput);
+		 Option filename = Option.builder("o")
+				 .required(false)
+				 .hasArg()
+				 .longOpt("filename")
+				 .desc("Store output in given file")
+				 .build();
+		 options.addOption(filename);
 		 return options;
 	 }
 	 
