@@ -2623,13 +2623,6 @@ public class MAYGEN {
 								.desc("print message")
 								.build();
 		 options.addOption(verbose);	
-		 Option filedir = Option.builder("o")
-					 			.required(false)
-					 			.hasArg()
-					 			.longOpt("filedir")
-					 			.desc("Creates and store the output txt file in the directory (required)")
-					 			.build();
-		 options.addOption(filedir);
 		 Option tvsoutput = Option.builder("t")
 					.required(false)
 					.longOpt("tsvoutput")
