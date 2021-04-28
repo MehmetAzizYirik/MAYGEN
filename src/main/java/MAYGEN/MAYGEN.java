@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -26,9 +25,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.chainsaw.Main;
 import org.openscience.cdk.Atom;
-import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -67,7 +64,7 @@ public class MAYGEN {
 	public static IChemObjectBuilder builder=SilentChemObjectBuilder.getInstance();
 	public static IAtomContainer atomContainer= builder.newInstance(IAtomContainer.class);
 	public static ArrayList<ArrayList<Integer>> partitionList = new ArrayList<ArrayList<Integer>>();
-	public static List<String> symbols = new ArrayList<String>();
+	public static ArrayList<String> symbols = new ArrayList<String>();
 	public static ArrayList<Integer> occurrences  = new ArrayList<Integer>();
 	public static Map<String, Integer> valences; 
 	public static int[][] max;
@@ -120,7 +117,7 @@ public class MAYGEN {
 	 * @return int 
 	 */
 	
-	public static int sum(List<Integer> list) {
+	public static int sum(ArrayList<Integer> list) {
 		int sum=0;
 		for(int i=0;i<list.size();i++) {
 			sum=sum+list.get(i);
@@ -228,7 +225,7 @@ public class MAYGEN {
 	 
 	 public static int partSize=0;
 	 public static int totalHydrogen=0;
-	 public static List<String> firstSymbols= new ArrayList<String>();
+	 public static ArrayList<String> firstSymbols= new ArrayList<String>();
 	 public static ArrayList<Integer> firstOccurrences = new ArrayList<Integer>();
 	 public static boolean callHydrogenDistributor=false;
 	 public static boolean justH=false;
@@ -720,7 +717,7 @@ public class MAYGEN {
 	  * @param partition 	ArrayList<Integer> atom partition
 	  */
 	 
-	 public static void getLernenIndices(int index, int[][] A, List<Permutation> cycles, ArrayList<Integer> partition) {
+	 public static void getLernenIndices(int index, int[][] A, ArrayList<Permutation> cycles, ArrayList<Integer> partition) {
 		 for(Permutation cycle: cycles) {
 			 int[] check = row2compare(index, A, cycle);
 			 if(!biggerCheck(index, A[index],check,partition)) {
@@ -1709,12 +1706,12 @@ public class MAYGEN {
 	 * @throws CDKException
 	 */
 	
-	 public static List<int[]> distributeHydrogens() throws FileNotFoundException, UnsupportedEncodingException, CloneNotSupportedException, CDKException{
-		 List<int[]> degreeList= new ArrayList<int[]>();
+	 public static ArrayList<int[]> distributeHydrogens() throws FileNotFoundException, UnsupportedEncodingException, CloneNotSupportedException, CDKException{
+		 ArrayList<int[]> degreeList= new ArrayList<int[]>();
 		 if(!callHydrogenDistributor) {
 			 degreeList.add(firstDegrees);
 		 }else {
-			 List<int[]> distributions = HydrogenDistributor.run(firstOccurrences, firstDegrees);
+			 ArrayList<int[]> distributions = HydrogenDistributor.run(firstOccurrences, firstDegrees);
 			 for(int[] dist: distributions) {
 				 int[] newDegree= new int[size];
 				 for(int i=0;i<size;i++) {
@@ -1779,8 +1776,8 @@ public class MAYGEN {
 		}else {
 			size=sum(firstOccurrences,firstOccurrences.size()-2);
 		}
-		
-		List<int[]> newDegrees= distributeHydrogens();
+
+		 ArrayList<int[]> newDegrees= distributeHydrogens();
 		nonCanonicalIndices= new int[2];
 		newDegreeList= new int[size];
 		learningFromCanonicalTest=false;
@@ -2045,25 +2042,25 @@ public class MAYGEN {
 	 * @param cycles 	List<Permutation> cycle transpositions
 	 */
 	
-	public static void candidatePermutations(int index, List<Permutation> cycles) {
+	public static void candidatePermutations(int index, ArrayList<Permutation> cycles) {
 		 ArrayList<Permutation> newList= new ArrayList<Permutation>();
 		 for(Permutation cycle: cycles) {
 			 newList.add(cycle);
 		 }
 		 if(index!=0) {
-			 List<Permutation> formers = formerPermutations.get(index-1); 
+			 ArrayList<Permutation> formers = formerPermutations.get(index-1);
 			 for(Permutation form: formers) {
 				 if(!form.isIdentity()) {
 					 newList.add(form);
 				 }
 			 }
-			 List<Permutation> newForm = new ArrayList<Permutation>();
+			 ArrayList<Permutation> newForm = new ArrayList<Permutation>();
 			 for(Permutation frm: formers) {
 				 if(!frm.isIdentity()) {
 					 newForm.add(frm);
 				 }
 			 }
-			 List<Permutation> newCycles = new ArrayList<Permutation>();
+			 ArrayList<Permutation> newCycles = new ArrayList<Permutation>();
 			 if(cycles.size()!=1) {
 				 for(Permutation cyc: cycles) {
 					 if(!cyc.isIdentity()) {
@@ -2099,7 +2096,7 @@ public class MAYGEN {
 			check=false;
 	    }else {
 	    	y = ys[r];
-	    	List<Permutation> cycles= new ArrayList<Permutation>();
+			ArrayList<Permutation> cycles= new ArrayList<Permutation>();
 			if(partition.size()==size) {
 				Permutation id= new Permutation(size);
 				cycles.add(id); 
@@ -2424,8 +2421,8 @@ public class MAYGEN {
 		 return check;
 	 }
 	
-	public static List<Permutation> cycleTranspositions(int index, ArrayList<Integer> partition) {
-		 List<Permutation> perms= new ArrayList<Permutation>();
+	public static ArrayList<Permutation> cycleTranspositions(int index, ArrayList<Integer> partition) {
+		ArrayList<Permutation> perms= new ArrayList<Permutation>();
 		 int lValue = LValue(partition,index);
 		 int[] values;
 		 int former;
