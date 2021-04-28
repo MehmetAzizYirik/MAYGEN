@@ -32,8 +32,6 @@ package MAYGEN;
  * @author Mehmet Aziz Yirik
  */
 
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,8 +39,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
-
-import org.openscience.cdk.exception.CDKException;
 
 public class HydrogenDistributor {
 	public static Map<Integer, Integer> capacities;
@@ -125,7 +121,7 @@ public class HydrogenDistributor {
 		return sum;
 	}
 	
-	public static int[] mergeArrays(List<int[]> arrays) {
+	public static int[] mergeArrays(ArrayList<int[]> arrays) {
 		int size = 0;
 		for (int[] array : arrays) {
 			size += array.length;
@@ -141,20 +137,20 @@ public class HydrogenDistributor {
 	}
 	
 	public static int[] arraySum(int[] a, int[] b) {
-		List<int[]> arrays= new ArrayList<int[]>();
+		ArrayList<int[]> arrays= new ArrayList<int[]>();
 		arrays.add(a);
 		arrays.add(b);
 		return mergeArrays(arrays);
 	}
 
-	public static List<int[]> combineArrays(LinkedList<List <int[]>> lists) {
-		List<int[]> comb = new ArrayList<int[]>();
+	public static ArrayList<int[]> combineArrays(LinkedList<ArrayList <int[]>> lists) {
+		ArrayList<int[]> comb = new ArrayList<int[]>();
 	    for (int[] s: lists.removeFirst()) {
 	    	comb.add(s);
 	    }
 	    while (!lists.isEmpty()) {
 	        List<int[]> list = lists.removeFirst();
-	        List<int[]> newComb =  new ArrayList<int[]>();
+			ArrayList<int[]> newComb =  new ArrayList<int[]>();
 	        for (int[] arr1: comb) { 
 	            for (int[] arr2 : list) { 
 	            	newComb.add(arraySum(arr1,arr2));
@@ -169,31 +165,31 @@ public class HydrogenDistributor {
 	 * To initialise the inputs and run the functions while recording the duration time.
 	 */
 	
-	public static List<int[]> run(ArrayList<Integer> partition, int[] degrees) throws CloneNotSupportedException {
+	public static ArrayList<int[]> run(ArrayList<Integer> partition, int[] degrees) throws CloneNotSupportedException {
 		int partitionSize= partition.size();
 		int hydrogen= partition.get(partitionSize-1);
 		HydrogenDistributor.isotopes=partitionSize-1;
 		setValues(partition,degrees);
 		HydrogenDistributor.totalHydrogen=hydrogen;
-		List<int[]> result= new ArrayList<int[]>();
+		ArrayList<int[]> result= new ArrayList<int[]>();
 		if(isotopes==1) {
-			List<int[]> iarrays= new ArrayList<int[]>();
+			ArrayList<int[]> iarrays= new ArrayList<int[]>();
 			int[] array = new int[0];
 			HydrogenDistributor.hydrogens2distribute=totalHydrogen;
 			distribute(iarrays,totalHydrogen,array,valences[0],totalAtom[0]);
 			result= iarrays;
 		}else {
-			List<int[]> distributions= new ArrayList<int[]>();
+			ArrayList<int[]> distributions= new ArrayList<int[]>();
 			for(int[] dene:partition(totalHydrogen,isotopes,0)){
-				LinkedList<List<int[]>> lists = new LinkedList<List <int[]>>();
+				LinkedList<ArrayList<int[]>> lists = new LinkedList<ArrayList <int[]>>();
 				for(int i=0;i<dene.length;i++) {
 					HydrogenDistributor.hydrogens2distribute=dene[i];
-					List<int[]> iarrays= new ArrayList<int[]>();
+					ArrayList<int[]> iarrays= new ArrayList<int[]>();
 					int[] array = new int[0];
 					distribute(iarrays,dene[i],array,valences[i],totalAtom[i]);
 					lists.add(iarrays);
-				}	
-				List<int[]> combined=combineArrays(lists);
+				}
+				ArrayList<int[]> combined=combineArrays(lists);
 				distributions.addAll(combined);
 			}
 			result=distributions;
@@ -216,8 +212,8 @@ public class HydrogenDistributor {
 		
 	}
 	
-	public static List<int[]> buildArray(int n,int d, int depth){
-		List<int[]> array= new ArrayList<int[]>();
+	public static ArrayList<int[]> buildArray(int n,int d, int depth){
+		ArrayList<int[]> array= new ArrayList<int[]>();
 		IntStream range = IntStream.rangeClosed(0,n);
 		for(int i:range.toArray()) {
 			for(int[] item: partition(n-i,d,depth+1)) {
@@ -247,7 +243,7 @@ public class HydrogenDistributor {
 		return Arrays.stream(arr).boxed().sorted().mapToInt(Integer::intValue).toArray();
 	}
 	
-	public static void distribute(List<int[]> arrays,int hydrogen,int[]arr,int valence, int numAtom) {
+	public static void distribute(ArrayList<int[]> arrays,int hydrogen,int[]arr,int valence, int numAtom) {
 		if(hydrogen==0 && sum(arr)==hydrogens2distribute){
 			if(arr.length!=numAtom) {
 				arr=addZeros(arr,(numAtom-arr.length));
