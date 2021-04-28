@@ -70,7 +70,7 @@ java -jar MAYGEN.jar -f C2OH4 -v -d C:\Users\UserName\Desktop\
 ```
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/MehmetAzizYirik/MAYGEN/blob/master/LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/MehmetAzizYirik/MAYGEN/blob/main/LICENSE) file for details
 
 ## Authors
 
