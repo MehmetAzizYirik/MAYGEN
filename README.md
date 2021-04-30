@@ -21,7 +21,7 @@ MAYGEN is consistently slower than Molgen, but gets close to its performance for
 
 ## Download jar File
 
-The main class of the current jar file is MAYGEN class. The file can be downloaded from [here](https://github.com/MehmetAzizYirik/MAYGEN/releases/tag/V1.0)
+Executable JAR files can be downloaded from [the release page](https://github.com/MehmetAzizYirik/MAYGEN/releases)
 
 ## Download Source Code
 
