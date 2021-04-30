@@ -4,7 +4,7 @@ Copyright 2021 Mehmet Aziz Yirik
 
 ## Introduction
 
-MAYGEN is an open source chemical structure generator based on the orderly graph generation method. The principles of this method were outlined in the works by Grund et al. [1]. The theoretical basis and the outlines of the functions can be found in [1,2].  
+MAYGEN is an open source chemical structure generator based on the orderly graph generation method. The principles of this method were outlined in the works by Grund et al. [1]. The theoretical basis and the outlines of the functions can be found in [1,2]. The pre-print of MAYGEN article is published in [ChemRxiv](https://bit.ly/3xwpzO7).
 MAYGEN takes a molecular formula (such as C<sub>10</sub>H<sub>16</sub>O) as input and generates all constitutional isomers of this formula, i. e. all non-isomorphic molecules that can be constructed with the set of atoms in the input formula. For the case of C<sub>10</sub>H<sub>16</sub>O, for example, there are 452,458 non-identical molecules. Here are 12 out of those.
 
 ![Twelve out of 400k+ isomers of C10H16O](/resources/C10H16O.png)
