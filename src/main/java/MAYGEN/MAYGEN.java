@@ -1739,8 +1739,6 @@ public class MAYGEN {
         learningFromCanonicalTest = false;
         learningFromConnectivity = false;
         for (int[] degree : newDegrees) {
-            //System.gc();
-            //System.runFinalization();
             ArrayList<Integer> po = getPartition(degree);
             if(writeSDF) symbolArrayCopy = Arrays.copyOf(symbolArray, symbolArray.length);
             sortWithPartition(po, degree, symbolArrayCopy);
