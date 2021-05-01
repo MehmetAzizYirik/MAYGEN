@@ -1,21 +1,16 @@
 package MAYGEN;
 
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.IntStream;
 import org.apache.commons.cli.CommandLine;
@@ -102,7 +97,7 @@ public class MAYGEN {
      * @return Integer[]
      */
     public static Integer[] permuteArray(Integer[] array, int i, int j) {
-        int temp = 0;
+        int temp;
         temp = array[i];
         array[i] = array[j];
         array[j] = temp;
@@ -117,8 +112,8 @@ public class MAYGEN {
      */
     public static int sum(ArrayList<Integer> list) {
         int sum = 0;
-        for (int i = 0; i < list.size(); i++) {
-            sum = sum + list.get(i);
+        for (Integer integer : list) {
+            sum = sum + integer;
         }
         return sum;
     }
@@ -131,8 +126,8 @@ public class MAYGEN {
      */
     public static int sum(int[] array) {
         int sum = 0;
-        for (int i = 0; i < array.length; i++) {
-            sum = sum + array[i];
+        for (int value : array) {
+            sum = sum + value;
         }
         return sum;
     }
@@ -224,12 +219,12 @@ public class MAYGEN {
 
     public static void sortAscending(int[] degree, ArrayList<Integer> partition) {
         HashMap<Integer, Integer> inputs = new HashMap<Integer, Integer>();
-        for (int i = 0; i < degree.length; i++) {
-            if (inputs.containsKey(degree[i])) {
-                Integer count = inputs.get(degree[i]) + 1;
-                inputs.put(degree[i], count);
+        for (int value : degree) {
+            if (inputs.containsKey(value)) {
+                Integer count = inputs.get(value) + 1;
+                inputs.put(value, count);
             } else {
-                inputs.put(degree[i], 1);
+                inputs.put(value, 1);
             }
         }
 
@@ -239,12 +234,12 @@ public class MAYGEN {
 
     public static void sortAscending(int[] degree) {
         HashMap<Integer, Integer> inputs = new HashMap<Integer, Integer>();
-        for (int i = 0; i < degree.length; i++) {
-            if (inputs.containsKey(degree[i])) {
-                Integer count = inputs.get(degree[i]) + 1;
-                inputs.put(degree[i], count);
+        for (int value : degree) {
+            if (inputs.containsKey(value)) {
+                Integer count = inputs.get(value) + 1;
+                inputs.put(value, count);
             } else {
-                inputs.put(degree[i], 1);
+                inputs.put(value, 1);
             }
         }
 
@@ -258,13 +253,7 @@ public class MAYGEN {
         ArrayList<Entry<Integer, Integer>> list = new ArrayList<Entry<Integer, Integer>>(set);
         Collections.sort(
                 list,
-                new Comparator<Map.Entry<Integer, Integer>>() {
-                    public int compare(
-                            Map.Entry<Integer, Integer> value1,
-                            Map.Entry<Integer, Integer> value2) {
-                        return -(value2.getValue()).compareTo(value1.getValue());
-                    }
-                });
+                (value1, value2) -> -(value2.getValue()).compareTo(value1.getValue()));
         for (Entry<Integer, Integer> entry : list) {
             value = entry.getValue();
             for (int i = 0; i < value; i++) {
@@ -277,12 +266,12 @@ public class MAYGEN {
 
     public static void sortAscending(ArrayList<String> symbols) {
         HashMap<String, Integer> inputs = new HashMap<String, Integer>();
-        for (int i = 0; i < symbols.size(); i++) {
-            if (inputs.containsKey(symbols.get(i))) {
-                Integer count = inputs.get(symbols.get(i)) + 1;
-                inputs.put(symbols.get(i), count);
+        for (String symbol : symbols) {
+            if (inputs.containsKey(symbol)) {
+                Integer count = inputs.get(symbol) + 1;
+                inputs.put(symbol, count);
             } else {
-                inputs.put(symbols.get(i), 1);
+                inputs.put(symbol, 1);
             }
         }
 
@@ -297,16 +286,13 @@ public class MAYGEN {
         ArrayList<Entry<String, Integer>> list = new ArrayList<Entry<String, Integer>>(set);
         Collections.sort(
                 list,
-                new Comparator<Map.Entry<String, Integer>>() {
-                    public int compare(
-                            Map.Entry<String, Integer> value1, Map.Entry<String, Integer> value2) {
-                        int comparison = (value2.getValue()).compareTo(value1.getValue());
-                        if (comparison == 0) {
-                            return -(valences.get(value2.getKey()))
-                                    .compareTo(valences.get(value1.getKey()));
-                        } else {
-                            return -(value2.getValue()).compareTo(value1.getValue());
-                        }
+                (value1, value2) -> {
+                    int comparison = (value2.getValue()).compareTo(value1.getValue());
+                    if (comparison == 0) {
+                        return -(valences.get(value2.getKey()))
+                                .compareTo(valences.get(value1.getKey()));
+                    } else {
+                        return -(value2.getValue()).compareTo(value1.getValue());
                     }
                 });
 
@@ -487,8 +473,8 @@ public class MAYGEN {
      */
     public static void build() {
         atomContainer = builder.newInstance(IAtomContainer.class);
-        for (int i = 0; i < symbolArrayCopy.length; i++) {
-            atomContainer.addAtom(new Atom(symbolArrayCopy[i]));
+        for (String s : symbolArrayCopy) {
+            atomContainer.addAtom(new Atom(s));
         }
 
         for (IAtom atom : atomContainer.atoms()) {
@@ -1376,12 +1362,11 @@ public class MAYGEN {
      * @param A int[][] adjacency matrix
      * @param indices int[] entry indices
      * @return int[][]
-     * @throws IOException
      * @throws CloneNotSupportedException
      * @throws CDKException
      */
     public static int[][] forward(int[][] A, int[] indices)
-            throws IOException, CloneNotSupportedException, CDKException {
+            throws CloneNotSupportedException, CDKException {
         int i = indices[0];
         int j = indices[1];
         int lInverse = LInverse(i, j, A);
@@ -1567,7 +1552,7 @@ public class MAYGEN {
             partition.add(1);
         } else {
             for (int j = i + 1; j < size; j++) {
-                if (degrees[i] == degrees[j]) {
+                if (degrees[i].equals(degrees[j])) {
                     count++;
                     if (j == (size - 1)) {
                         partition.add(count);
@@ -1588,10 +1573,9 @@ public class MAYGEN {
      * @throws IOException
      * @throws CDKException
      * @throws CloneNotSupportedException
-     * @throws URISyntaxException
      */
     public static void run()
-            throws IOException, CDKException, CloneNotSupportedException, URISyntaxException {
+            throws IOException, CDKException, CloneNotSupportedException {
         if (canBuildGraph(formula)) {
             clearGlobals();
             long startTime = System.nanoTime();
@@ -1655,14 +1639,8 @@ public class MAYGEN {
      * distribution.
      *
      * @return List<int[]>
-     * @throws FileNotFoundException
-     * @throws UnsupportedEncodingException
-     * @throws CloneNotSupportedException
-     * @throws CDKException
      */
-    public static ArrayList<int[]> distributeHydrogens()
-            throws FileNotFoundException, UnsupportedEncodingException, CloneNotSupportedException,
-                    CDKException {
+    public static ArrayList<int[]> distributeHydrogens() {
         ArrayList<int[]> degreeList = new ArrayList<int[]>();
         if (!callHydrogenDistributor) {
             degreeList.add(firstDegrees);
@@ -1916,8 +1894,8 @@ public class MAYGEN {
      */
     public static boolean allIs0(int[] list) {
         boolean check = true;
-        for (int i = 0; i < list.length; i++) {
-            if (list[i] != 0) {
+        for (int value : list) {
+            if (value != 0) {
                 check = false;
                 break;
             }
@@ -1993,10 +1971,7 @@ public class MAYGEN {
      * @param cycles List<Permutation> cycle transpositions
      */
     public static void candidatePermutations(int index, ArrayList<Permutation> cycles) {
-        ArrayList<Permutation> newList = new ArrayList<Permutation>();
-        for (Permutation cycle : cycles) {
-            newList.add(cycle);
-        }
+        ArrayList<Permutation> newList = new ArrayList<Permutation>(cycles);
         if (index != 0) {
             ArrayList<Permutation> formers = formerPermutations.get(index - 1);
             for (Permutation form : formers) {
@@ -2275,7 +2250,7 @@ public class MAYGEN {
         int i = 0;
         int permutationIndex = 0;
         while (i < max.length && max[i] != 0) {
-            if (max[i] != non[i]) {
+            if (!max[i].equals(non[i])) {
                 permutationIndex = findMatch(max, non, max[i], i);
                 if (i != permutationIndex) {
                     non = permuteArray(non, i, permutationIndex);
@@ -2301,7 +2276,7 @@ public class MAYGEN {
         int index = start;
         for (int i = start; i < size; i++) {
             if (non[i] == value) {
-                if (max[i] != non[i]) {
+                if (!max[i].equals(non[i])) {
                     index = i;
                     break;
                 }
@@ -2449,7 +2424,7 @@ public class MAYGEN {
     }
 
     public static int[] orderDegreeSymbols(int[] degree, String[] symbol, int index0, int index1) {
-        int temp = 0;
+        int temp;
         for (int i = index0; i < index1; i++) {
             for (int j = i + 1; j < index1; j++) {
                 if (degree[i] > degree[j]) {
@@ -2464,7 +2439,7 @@ public class MAYGEN {
     }
 
     public static void swap(String[] array, int i, int j) {
-        String temp = "";
+        String temp;
         temp = array[i];
         array[i] = array[j];
         array[j] = temp;
@@ -2591,8 +2566,7 @@ public class MAYGEN {
         return options;
     }
 
-    public static void main(String[] args)
-            throws CloneNotSupportedException, CDKException, IOException {
+    public static void main(String[] args) {
         MAYGEN gen = new MAYGEN();
         try {
             gen.parseArgs(args);
