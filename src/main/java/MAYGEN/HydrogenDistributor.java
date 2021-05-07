@@ -2,7 +2,7 @@ package MAYGEN;
 /**
  * MIT License
  *
- * Copyright (c) 2018 Mehmet Aziz Yirik
+ * Copyright (c) 2021 Mehmet Aziz Yirik
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,6 @@ package MAYGEN;
  * @author Mehmet Aziz Yirik
  */
 
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,8 +39,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
-
-import org.openscience.cdk.exception.CDKException;
 
 public class HydrogenDistributor {
 	public static Map<Integer, Integer> capacities;
@@ -55,7 +51,7 @@ public class HydrogenDistributor {
 	
 	static {
 		//The atom capacities from MOLGEN book. Capacity of an atom equals to 
-		capacities = new HashMap<Integer, Integer>();
+		capacities = new HashMap<>();
 		capacities.put(6, 3);
 		capacities.put(7, 2);
 		capacities.put(8, 1);
@@ -66,8 +62,6 @@ public class HydrogenDistributor {
 		capacities.put(1, 0);
 		capacities.put(17, 0);
 		capacities.put(35, 0);
-		capacities.put(53, 0);
-		
 	}
 	
 	/**
@@ -119,8 +113,8 @@ public class HydrogenDistributor {
 	
 	public static int sum(int[] array) {
 		int sum=0;
-		for(int i=0;i<array.length;i++) {
-			sum=sum+array[i];
+		for (int value : array) {
+			sum = sum + value;
 		}
 		return sum;
 	}
@@ -148,10 +142,7 @@ public class HydrogenDistributor {
 	}
 
 	public static List<int[]> combineArrays(LinkedList<List <int[]>> lists) {
-		List<int[]> comb = new ArrayList<int[]>();
-	    for (int[] s: lists.removeFirst()) {
-	    	comb.add(s);
-	    }
+		List<int[]> comb = new ArrayList<int[]>(lists.removeFirst());
 	    while (!lists.isEmpty()) {
 	        List<int[]> list = lists.removeFirst();
 	        List<int[]> newComb =  new ArrayList<int[]>();
@@ -169,13 +160,13 @@ public class HydrogenDistributor {
 	 * To initialise the inputs and run the functions while recording the duration time.
 	 */
 	
-	public static List<int[]> run(ArrayList<Integer> partition, int[] degrees) throws CloneNotSupportedException {
+	public static List<int[]> run(ArrayList<Integer> partition, int[] degrees) {
 		int partitionSize= partition.size();
 		int hydrogen= partition.get(partitionSize-1);
 		HydrogenDistributor.isotopes=partitionSize-1;
 		setValues(partition,degrees);
 		HydrogenDistributor.totalHydrogen=hydrogen;
-		List<int[]> result= new ArrayList<int[]>();
+		List<int[]> result;
 		if(isotopes==1) {
 			List<int[]> iarrays= new ArrayList<int[]>();
 			int[] array = new int[0];
