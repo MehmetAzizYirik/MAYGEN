@@ -2,6 +2,7 @@ package MAYGEN;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -2312,7 +2314,7 @@ public class MAYGEN {
     public static boolean check(
             int index, int y, int total, int[][] A, ArrayList<Integer> newPartition) {
         boolean check = true;
-        ArrayList<Permutation> formerList = new ArrayList<Permutation>();
+        ArrayList<SoftReference<Permutation>> formerList = new ArrayList<>();
         ArrayList<Permutation> form = formerPermutations.get(index);
         for (Permutation permutation : form) {
             setBiggest(index, A, permutation, newPartition);
@@ -2324,11 +2326,11 @@ public class MAYGEN {
                 if (descendingOrderUpperMatrixCheck(index, newPartition, A[index], test)) {
                     if (canonicalPermutation.isIdentity()) {
                         if (equalSetCheck(newPartition, A[index], test)) {
-                            formerList.add(permutation);
+                            formerList.add(new SoftReference<>(permutation));
                         }
                     } else {
                         Permutation newPermutation = canonicalPermutation.multiply(permutation);
-                        formerList.add(newPermutation);
+                        formerList.add(new SoftReference<>(newPermutation));
                     }
                 } else {
                     formerList.clear();
@@ -2343,7 +2345,8 @@ public class MAYGEN {
         }
         if (check) {
             formerPermutations.get(index).clear();
-            formerPermutations.set(index, formerList);
+            formerPermutations.set(index, new ArrayList<>(formerList.stream().map(SoftReference::get)
+                    .collect(Collectors.toList())));
         }
         return check;
     }
