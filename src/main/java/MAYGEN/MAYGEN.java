@@ -3,6 +3,9 @@ package MAYGEN;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +54,8 @@ public class MAYGEN {
     public static SDFWriter outFile;
     public static String formula;
     public static String filedir;
+    public static boolean writeCheckOutput = false;
+    public static String checkOutputFile;
     public static boolean flag = true;
     public static boolean learningFromCanonicalTest = false;
     public static boolean biggest = true;
@@ -2316,6 +2321,17 @@ public class MAYGEN {
         boolean check = true;
         ArrayList<SoftReference<Permutation>> formerList = new ArrayList<>();
         ArrayList<Permutation> form = formerPermutations.get(index);
+        if (writeCheckOutput) {
+            try {
+                Files.write(Paths.get(checkOutputFile),
+                        (index + "|"
+                                + form.size() + "|"
+                                + form.stream().map(item -> item.toCycleString()).collect(Collectors.joining(",")) + "\n")
+                                .getBytes(), StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         for (Permutation permutation : form) {
             setBiggest(index, A, permutation, newPartition);
             if (biggest) {
@@ -2515,6 +2531,11 @@ public class MAYGEN {
                 MAYGEN.writeSDF = true;
                 MAYGEN.filedir = cmd.getOptionValue("filedir");
             }
+            if (cmd.hasOption("check-output")) {
+                MAYGEN.writeCheckOutput = true;
+                MAYGEN.checkOutputFile = cmd.getOptionValue("check-output");
+                Files.write(Paths.get(checkOutputFile), "index|size of form|all permutations\n".getBytes());
+            }
             if (cmd.hasOption("verbose")) MAYGEN.verbose = true;
             if (cmd.hasOption("tsvoutput")) MAYGEN.tsvoutput = true;
         } catch (ParseException e) {
@@ -2530,6 +2551,8 @@ public class MAYGEN {
                     "\nPlease report issues at https://github.com/MehmetAzizYirik/MAYGEN";
             formatter.printHelp("java -jar MAYGEN.jar", header, options, footer, true);
             throw new ParseException("Problem parsing command line");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -2566,6 +2589,14 @@ public class MAYGEN {
                         .desc("Store output in given file")
                         .build();
         options.addOption(filedir);
+        Option checkOutputFile =
+                Option.builder("co")
+                        .required(false)
+                        .hasArg()
+                        .longOpt("check-output")
+                        .desc("Store check output in given file")
+                        .build();
+        options.addOption(checkOutputFile);
         return options;
     }
 
