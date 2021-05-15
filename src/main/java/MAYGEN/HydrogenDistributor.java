@@ -73,15 +73,7 @@ public class HydrogenDistributor {
         a[a.length - 1] = e;
         return a;
     }
-	
-	public static int sum(int[] partition, int index) {
-		int sum=0;
-		for(int i=0;i<=index;i++) {
-			sum=sum+partition[i];
-		}
-	    return sum;
-	}
-	
+
 	public static int sum(ArrayList<Integer> list, int index) {
 		int sum=0;
 		for(int i=0;i<=index;i++) {
