@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -98,7 +98,7 @@ public class MAYGEN {
      * @param j int second index
      * @return Integer[]
      */
-    public static Integer[] permuteArray(Integer[] array, int i, int j) {
+    public static int[] permuteArray(int[] array, int i, int j) {
         int temp;
         temp = array[i];
         array[i] = array[j];
@@ -531,8 +531,8 @@ public class MAYGEN {
      * @param end int ending index
      * @return Integer[]
      */
-    public static Integer[] getBlocks(int[] array, int begin, int end) {
-        return IntStream.range(begin, end).mapToObj(i -> array[i]).toArray(Integer[]::new);
+    public static int[] getBlocks(int[] array, int begin, int end) {
+        return Arrays.stream(array, begin, end).toArray();
     }
 
     /**
@@ -1508,7 +1508,7 @@ public class MAYGEN {
         }
         for (int part = 0; part < length; part++) {
             p = firstOccurrences.get(part);
-            Integer[] subArray = getBlocks(degrees, i, p + i);
+            int[] subArray = getBlocks(degrees, i, p + i);
             newPartition.addAll(getSubPartition(subArray));
             i = i + p;
         }
@@ -1521,7 +1521,7 @@ public class MAYGEN {
      * @param degrees int[] valences
      * @return ArrayList<Integer>
      */
-    public static ArrayList<Integer> getSubPartition(Integer[] degrees) {
+    public static ArrayList<Integer> getSubPartition(int[] degrees) {
         ArrayList<Integer> partition = new ArrayList<Integer>();
         int i = 0;
         int size = degrees.length;
@@ -1548,13 +1548,13 @@ public class MAYGEN {
      * @param partition ArrayList<Integer> partition
      * @return int
      */
-    public static int nextCount(int i, int size, Integer[] degrees, ArrayList<Integer> partition) {
+    public static int nextCount(int i, int size, int[] degrees, ArrayList<Integer> partition) {
         int count = 1;
         if (i == (size - 1)) {
             partition.add(1);
         } else {
             for (int j = i + 1; j < size; j++) {
-                if (degrees[i].equals(degrees[j])) {
+                if (degrees[i] == degrees[j]) {
                     count++;
                     if (j == (size - 1)) {
                         partition.add(count);
@@ -2239,8 +2239,8 @@ public class MAYGEN {
             return values;
         } else {
             for (Integer p : partition) {
-                Integer[] can = getBlocks(max, i, p + i);
-                Integer[] non = getBlocks(check, i, p + i);
+                int[] can = getBlocks(max, i, p + i);
+                int[] non = getBlocks(check, i, p + i);
                 values = getCyclesList(can, non, i, values);
                 i = i + p;
             }
@@ -2248,11 +2248,11 @@ public class MAYGEN {
         }
     }
 
-    public static int[] getCyclesList(Integer[] max, Integer[] non, int index, int[] values) {
+    public static int[] getCyclesList(int[] max, int[] non, int index, int[] values) {
         int i = 0;
         int permutationIndex = 0;
         while (i < max.length && max[i] != 0) {
-            if (!max[i].equals(non[i])) {
+            if (max[i] != non[i]) {
                 permutationIndex = findMatch(max, non, max[i], i);
                 if (i != permutationIndex) {
                     non = permuteArray(non, i, permutationIndex);
@@ -2273,12 +2273,12 @@ public class MAYGEN {
      * @param start
      * @return
      */
-    public static int findMatch(Integer[] max, Integer[] non, int value, int start) {
+    public static int findMatch(int[] max, int[] non, int value, int start) {
         int size = non.length;
         int index = start;
         for (int i = start; i < size; i++) {
             if (non[i] == value) {
-                if (!max[i].equals(non[i])) {
+                if (max[i] != non[i]) {
                     index = i;
                     break;
                 }
