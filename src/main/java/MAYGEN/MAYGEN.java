@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -56,6 +57,7 @@ public class MAYGEN {
     public static ArrayList<ArrayList<Permutation>> formerPermutations =
             new ArrayList<ArrayList<Permutation>>();
     public static int[] degrees;
+    public static int[] initialDegrees;
     public static ArrayList<Integer> initialPartition;
     public static IChemObjectBuilder builder = SilentChemObjectBuilder.getInstance();
     public static IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
@@ -96,7 +98,7 @@ public class MAYGEN {
      * @param j int second index
      * @return Integer[]
      */
-    public static Integer[] permuteArray(Integer[] array, int i, int j) {
+    public static int[] permuteArray(int[] array, int i, int j) {
         int temp;
         temp = array[i];
         array[i] = array[j];
@@ -216,6 +218,53 @@ public class MAYGEN {
     public static ArrayList<Integer> firstOccurrences = new ArrayList<Integer>();
     public static boolean callHydrogenDistributor = false;
     public static boolean justH = false;
+
+    public static void sortAscending(int[] degree, ArrayList<Integer> partition) {
+        HashMap<Integer, Integer> inputs = new HashMap<Integer, Integer>();
+        for (int value : degree) {
+            if (inputs.containsKey(value)) {
+                Integer count = inputs.get(value) + 1;
+                inputs.put(value, count);
+            } else {
+                inputs.put(value, 1);
+            }
+        }
+
+        Set<Entry<Integer, Integer>> set = inputs.entrySet();
+        sort(degree, set);
+    }
+
+    public static void sortAscending(int[] degree) {
+        HashMap<Integer, Integer> inputs = new HashMap<Integer, Integer>();
+        for (int value : degree) {
+            if (inputs.containsKey(value)) {
+                Integer count = inputs.get(value) + 1;
+                inputs.put(value, count);
+            } else {
+                inputs.put(value, 1);
+            }
+        }
+
+        Set<Entry<Integer, Integer>> set = inputs.entrySet();
+        sort(degree, set);
+    }
+
+    public static int[] sort(int[] degree, Set<Entry<Integer, Integer>> set) {
+        int index = 0;
+        int value = 0;
+        ArrayList<Entry<Integer, Integer>> list = new ArrayList<Entry<Integer, Integer>>(set);
+        Collections.sort(
+                list,
+                (value1, value2) -> -(value2.getValue()).compareTo(value1.getValue()));
+        for (Entry<Integer, Integer> entry : list) {
+            value = entry.getValue();
+            for (int i = 0; i < value; i++) {
+                degree[index + i] = entry.getKey();
+            }
+            index += value;
+        }
+        return degree;
+    }
 
     public static void sortAscending(ArrayList<String> symbols) {
         HashMap<String, Integer> inputs = new HashMap<String, Integer>();
@@ -482,13 +531,8 @@ public class MAYGEN {
      * @param end int ending index
      * @return Integer[]
      */
-    public static Integer[] getBlocks(int[] array, int begin, int end) {
-        List<Integer> list = new ArrayList<>(end - begin);
-        for (int index = begin; index < end; index++) {
-            Integer integer = array[index];
-            list.add(integer);
-        }
-        return list.toArray(new Integer[0]);
+    public static int[] getBlocks(int[] array, int begin, int end) {
+        return Arrays.stream(array, begin, end).toArray();
     }
 
     /**
@@ -599,7 +643,7 @@ public class MAYGEN {
     public static int[] descendingSortWithPartition(int[] array, ArrayList<Integer> partition) {
         int i = 0;
         for (Integer p : partition) {
-            descendingSort(array, i, i + p);
+            array = descendingSort(array, i, i + p);
             i = i + p;
         }
         return array;
@@ -969,7 +1013,7 @@ public class MAYGEN {
      * Checks a int array is in descending order or not with respect to a given atom partition.
      *
      * @param partition ArrayList<Integer> atom partition
-     * @param array int[]
+     * @param row int[]
      * @return boolean
      */
     public static boolean descendingOrderCheck(ArrayList<Integer> partition, int[] array) {
@@ -994,6 +1038,7 @@ public class MAYGEN {
      * L; upper triangular matrix like given in 3.2.1. For (i,j), after the index, giving the
      * maximum line capacity.
      *
+     * @param degrees int[] valences
      * @return upper triangular matrix
      */
     public static void upperTriangularL() {
@@ -1017,6 +1062,7 @@ public class MAYGEN {
      * C; upper triangular matrix like given in 3.2.1. For (i,j), after the index, giving the
      * maximum column capacity.
      *
+     * @param degrees int[] valences
      * @return upper triangular matrix
      */
     public static int[][] upperTriangularC() {
@@ -1069,6 +1115,8 @@ public class MAYGEN {
 
     /**
      * Possible maximal edge multiplicity for the atom pair (i,j).
+     *
+     * @param degrees int[] valences
      */
     public static void maximalMatrix() {
         max = new int[hIndex][hIndex];
@@ -1081,7 +1129,7 @@ public class MAYGEN {
                 } else {
                     if (di != dj) {
                         max[i][j] = Math.min(di, dj);
-                    } else {
+                    } else if (di == dj && i != j) {
                         if (justH) {
                             max[i][j] = (di);
                         } else {
@@ -1186,11 +1234,12 @@ public class MAYGEN {
      * @param A
      * @param indices
      * @return
+     * @throws IOException
      * @throws CloneNotSupportedException
      * @throws CDKException
      */
     public static int[][] nextStep(int[][] A, int[] indices)
-            throws CloneNotSupportedException, CDKException {
+            throws IOException, CloneNotSupportedException, CDKException {
         if (callForward) {
             return forward(A, indices);
         } else {
@@ -1229,6 +1278,7 @@ public class MAYGEN {
     /**
      * In backward function, updating the block index.
      *
+     * @param r int block index
      * @param indices ArrayList<Integer> atom valences
      * @return
      */
@@ -1443,6 +1493,7 @@ public class MAYGEN {
      * Based on the new degrees and the former partition, getting the new atom partition.
      *
      * @param degrees int[] new atom valences
+     * @param partition ArrayList<Integer> former atom partition
      * @return ArrayList<Integer>
      */
     public static ArrayList<Integer> getPartition(int[] degrees) {
@@ -1457,7 +1508,7 @@ public class MAYGEN {
         }
         for (int part = 0; part < length; part++) {
             p = firstOccurrences.get(part);
-            Integer[] subArray = getBlocks(degrees, i, p + i);
+            int[] subArray = getBlocks(degrees, i, p + i);
             newPartition.addAll(getSubPartition(subArray));
             i = i + p;
         }
@@ -1470,7 +1521,7 @@ public class MAYGEN {
      * @param degrees int[] valences
      * @return ArrayList<Integer>
      */
-    public static ArrayList<Integer> getSubPartition(Integer[] degrees) {
+    public static ArrayList<Integer> getSubPartition(int[] degrees) {
         ArrayList<Integer> partition = new ArrayList<Integer>();
         int i = 0;
         int size = degrees.length;
@@ -1497,13 +1548,13 @@ public class MAYGEN {
      * @param partition ArrayList<Integer> partition
      * @return int
      */
-    public static int nextCount(int i, int size, Integer[] degrees, ArrayList<Integer> partition) {
+    public static int nextCount(int i, int size, int[] degrees, ArrayList<Integer> partition) {
         int count = 1;
         if (i == (size - 1)) {
             partition.add(1);
         } else {
             for (int j = i + 1; j < size; j++) {
-                if (degrees[i].equals(degrees[j])) {
+                if (degrees[i] == degrees[j]) {
                     count++;
                     if (j == (size - 1)) {
                         partition.add(count);
@@ -1985,7 +2036,7 @@ public class MAYGEN {
                 cycles = cycleTranspositions(index, partition);
             }
             candidatePermutations(index, cycles);
-            check = check(index, size, A, newPartition);
+            check = check(index, y, size, A, newPartition);
             if (!check) {
                 if (cycles.size() != 1) {
                     getLernenIndices(index, A, cycles, newPartition);
@@ -2077,6 +2128,45 @@ public class MAYGEN {
     }
 
     /**
+     * For a row given by index, detecting the other row to compare in the block. For the detection
+     * of the next row index, cycle transposition and former permutation are used.
+     *
+     * @param index int row index
+     * @param A int[][] adjacency matrix
+     * @param cycleTransposition Permutation cycle transposition
+     * @param formerPermutation Permutation former permutation
+     * @return int[]
+     */
+    public static int[] row2compare(
+            int index, int[][] A, Permutation cycleTransposition, Permutation formerPermutation) {
+        int[] array = cloneArray(A[findIndex(index, cycleTransposition, formerPermutation)]);
+        Permutation perm = formerPermutation.multiply(cycleTransposition);
+        array = actArray(array, perm);
+        return array;
+    }
+
+    /**
+     * With the cycle and former permutations, mapping the row index to another row in the block.
+     *
+     * @param index int row index
+     * @param cycle Permutation cycle transposition
+     * @param former Permutation former permutation
+     * @return int
+     */
+    public static int findIndex(int index, Permutation cycle, Permutation former) {
+        int size = cycle.size();
+        int output = 0;
+        Permutation perm = cycle.multiply(former);
+        for (int i = 0; i < size; i++) {
+            if (perm.get(i) == index) {
+                output = i;
+                break;
+            }
+        }
+        return output;
+    }
+
+    /**
      * With the cycle permutation, mapping the row index to another row in the block.
      *
      * @param index int row index
@@ -2136,9 +2226,8 @@ public class MAYGEN {
      * <p>In a block, the original and the other rows are compared; if there is a permutation
      * mapping rows to each other, canonical permutation, else id permutation is returned.
      *
-     * @param partition ArrayList<Integer> partition
-     * @param max the max array
-     * @param max the check array
+     * @param originalRow int[] original row
+     * @param rowToCheck int[] row to compare with
      * @param partition ArrayList<Integer> partition
      * @return int[]
      */
@@ -2150,8 +2239,8 @@ public class MAYGEN {
             return values;
         } else {
             for (Integer p : partition) {
-                Integer[] can = getBlocks(max, i, p + i);
-                Integer[] non = getBlocks(check, i, p + i);
+                int[] can = getBlocks(max, i, p + i);
+                int[] non = getBlocks(check, i, p + i);
                 values = getCyclesList(can, non, i, values);
                 i = i + p;
             }
@@ -2159,11 +2248,11 @@ public class MAYGEN {
         }
     }
 
-    public static int[] getCyclesList(Integer[] max, Integer[] non, int index, int[] values) {
+    public static int[] getCyclesList(int[] max, int[] non, int index, int[] values) {
         int i = 0;
         int permutationIndex = 0;
         while (i < max.length && max[i] != 0) {
-            if (!max[i].equals(non[i])) {
+            if (max[i] != non[i]) {
                 permutationIndex = findMatch(max, non, max[i], i);
                 if (i != permutationIndex) {
                     non = permuteArray(non, i, permutationIndex);
@@ -2184,12 +2273,12 @@ public class MAYGEN {
      * @param start
      * @return
      */
-    public static int findMatch(Integer[] max, Integer[] non, int value, int start) {
+    public static int findMatch(int[] max, int[] non, int value, int start) {
         int size = non.length;
         int index = start;
         for (int i = start; i < size; i++) {
             if (non[i] == value) {
-                if (!max[i].equals(non[i])) {
+                if (max[i] != non[i]) {
                     index = i;
                     break;
                 }
@@ -2201,11 +2290,13 @@ public class MAYGEN {
     public static Permutation getEqualPerm(
             Permutation cycleTransposition, int index, int[][] A, ArrayList<Integer> newPartition) {
         int[] check = row2compare(index, A, cycleTransposition);
-        return getCanonicalPermutation(A[index], check, newPartition);
+        Permutation canonicalPermutation = getCanonicalPermutation(A[index], check, newPartition);
+        return canonicalPermutation;
     }
 
     public static Permutation getCanonicalCycle(
             int index,
+            int y,
             int total,
             int[][] A,
             ArrayList<Integer> newPartition,
@@ -2221,7 +2312,7 @@ public class MAYGEN {
     }
 
     public static boolean check(
-            int index, int total, int[][] A, ArrayList<Integer> newPartition) {
+            int index, int y, int total, int[][] A, ArrayList<Integer> newPartition) {
         boolean check = true;
         ArrayList<SoftReference<Permutation>> formerList = new ArrayList<>();
         ArrayList<Permutation> form = formerPermutations.get(index);
@@ -2229,7 +2320,7 @@ public class MAYGEN {
             setBiggest(index, A, permutation, newPartition);
             if (biggest) {
                 Permutation canonicalPermutation =
-                        getCanonicalCycle(index, total, A, newPartition, permutation);
+                        getCanonicalCycle(index, y, total, A, newPartition, permutation);
                 int[] test = row2compare(index, A, permutation);
                 test = actArray(test, canonicalPermutation);
                 if (descendingOrderUpperMatrixCheck(index, newPartition, A[index], test)) {
