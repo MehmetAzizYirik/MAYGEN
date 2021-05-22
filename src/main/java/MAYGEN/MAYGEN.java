@@ -15,9 +15,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.IntStream;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -101,7 +100,7 @@ public class MAYGEN {
      * @param j int second index
      * @return Integer[]
      */
-    public static Integer[] permuteArray(Integer[] array, int i, int j) {
+    public static int[] permuteArray(int[] array, int i, int j) {
         int temp = 0;
         temp = array[i];
         array[i] = array[j];
@@ -543,8 +542,8 @@ public class MAYGEN {
      * @param end int ending index
      * @return Integer[]
      */
-    public static Integer[] getBlocks(int[] array, int begin, int end) {
-        return IntStream.range(begin, end).mapToObj(i -> array[i]).toArray(Integer[]::new);
+    public static int[] getBlocks(int[] array, int begin, int end) {
+        return Arrays.copyOfRange(array, begin, end);
     }
 
     /**
@@ -1506,11 +1505,10 @@ public class MAYGEN {
      * Based on the new degrees and the former partition, getting the new atom partition.
      *
      * @param degrees int[] new atom valences
-     * @param partition ArrayList<Integer> former atom partition
-     * @return ArrayList<Integer>
+     * @return int[]
      */
-    public static ArrayList<Integer> getPartition(int[] degrees) {
-        ArrayList<Integer> newPartition = new ArrayList<Integer>();
+    public static int[] getPartition(int[] degrees) {
+        int[] newPartition = new int[degrees.length];
         int i = 0;
         int p = 0;
         int length = 0;
@@ -1519,10 +1517,13 @@ public class MAYGEN {
         } else {
             length = firstOccurrences.size() - 1;
         }
+        int index = 0;
         for (int part = 0; part < length; part++) {
             p = firstOccurrences.get(part);
-            Integer[] subArray = getBlocks(degrees, i, p + i);
-            newPartition.addAll(getSubPartition(subArray));
+            int[] subArray = getBlocks(degrees, i, p + i);
+            for (Integer item : getSubPartition(subArray)) {
+                newPartition[index++] = item;
+            }
             i = i + p;
         }
         return newPartition;
@@ -1534,7 +1535,7 @@ public class MAYGEN {
      * @param degrees int[] valences
      * @return ArrayList<Integer>
      */
-    public static ArrayList<Integer> getSubPartition(Integer[] degrees) {
+    public static ArrayList<Integer> getSubPartition(int[] degrees) {
         ArrayList<Integer> partition = new ArrayList<Integer>();
         int i = 0;
         int size = degrees.length;
@@ -1561,7 +1562,7 @@ public class MAYGEN {
      * @param partition ArrayList<Integer> partition
      * @return int
      */
-    public static int nextCount(int i, int size, Integer[] degrees, ArrayList<Integer> partition) {
+    public static int nextCount(int i, int size, int[] degrees, ArrayList<Integer> partition) {
         int count = 1;
         if (i == (size - 1)) {
             partition.add(1);
@@ -1741,7 +1742,7 @@ public class MAYGEN {
         for (int[] degree : newDegrees) {
             //System.gc();
             //System.runFinalization();
-            ArrayList<Integer> po = getPartition(degree);
+            int[] po = getPartition(degree);
             if(writeSDF) symbolArrayCopy = Arrays.copyOf(symbolArray, symbolArray.length);
             sortWithPartition(po, degree, symbolArrayCopy);
             newDegreeList = degree;
@@ -2264,8 +2265,8 @@ public class MAYGEN {
             return values;
         } else {
             for (Integer p : partition) {
-                Integer[] can = getBlocks(max, i, p + i);
-                Integer[] non = getBlocks(check, i, p + i);
+                int[] can = getBlocks(max, i, p + i);
+                int[] non = getBlocks(check, i, p + i);
                 values = getCyclesList(can, non, i, values);
                 i = i + p;
             }
@@ -2273,7 +2274,7 @@ public class MAYGEN {
         }
     }
 
-    public static int[] getCyclesList(Integer[] max, Integer[] non, int index, int[] values) {
+    public static int[] getCyclesList(int[] max, int[] non, int index, int[] values) {
         int i = 0;
         int permutationIndex = 0;
         while (i < max.length && max[i] != 0) {
@@ -2298,7 +2299,7 @@ public class MAYGEN {
      * @param start
      * @return
      */
-    public static int findMatch(Integer[] max, Integer[] non, int value, int start) {
+    public static int findMatch(int[] max, int[] non, int value, int start) {
         int size = non.length;
         int index = start;
         for (int i = start; i < size; i++) {
@@ -2479,7 +2480,7 @@ public class MAYGEN {
     }
 
     public static void sortWithPartition(
-            ArrayList<Integer> partitionList, int[] degrees, String[] symbols) {
+            int[] partitionList, int[] degrees, String[] symbols) {
         int[] partition = buildArray(partitionList);
         int size = partition.length;
         for (int n = 0; n < size; n++) {
@@ -2507,7 +2508,7 @@ public class MAYGEN {
         initialPartition = init;
     }
 
-    public static int[] buildArray(ArrayList<Integer> partition) {
+    public static int[] buildArray(int[] partition) {
         int[] partitionArray = new int[sum(partition)];
         int index = 0;
         for (Integer p : partition) {
