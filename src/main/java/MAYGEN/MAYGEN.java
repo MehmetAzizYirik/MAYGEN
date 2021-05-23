@@ -1951,13 +1951,17 @@ public class MAYGEN {
             for(int intValue : partitionList.get(i)) {
                 intList.add(intValue);
             }
+            ArrayList<Integer> intList2 = new ArrayList<Integer>();
+            for(int intValue : canonicalPartition(i, partitionList.get(i))) {
+                intList2.add(intValue);
+            }
             test =
                     rowCanonicalTest(
                             i,
                             r,
                             A,
                             intList,
-                            canonicalPartition(i, intList));
+                            intList2);
             if (!test) {
                 check = false;
                 break;
@@ -2074,7 +2078,9 @@ public class MAYGEN {
                     getLernenIndices(index, A, cycles, newPartition);
                 }
             } else {
-                addPartition(index, newPartition, A);
+                addPartition(index, newPartition.stream()
+                        .mapToInt(Integer::intValue)
+                        .toArray(), A);
             }
         }
         return check;
@@ -2087,21 +2093,17 @@ public class MAYGEN {
      * @param newPartition atom partition
      * @param A int[][] adjacency matrix
      */
-    public static void addPartition(int index, ArrayList<Integer> newPartition, int[][] A) {
-        ArrayList<Integer> refinedPartition = new ArrayList<Integer>();
-        if (newPartition.size() == size) {
+    public static void addPartition(int index, int[] newPartition, int[][] A) {
+        int[] refinedPartition;
+        if (newPartition.length == size) {
             refinedPartition = newPartition;
         } else {
             refinedPartition = refinedPartitioning(newPartition, A[index]);
         }
         if (partitionList.size() == (index + 1)) {
-            partitionList.add(refinedPartition.stream()
-                    .mapToInt(Integer::intValue)
-                    .toArray());
+            partitionList.add(refinedPartition);
         } else {
-            partitionList.set(index + 1, refinedPartition.stream()
-                    .mapToInt(Integer::intValue)
-                    .toArray());
+            partitionList.set(index + 1, refinedPartition);
         }
     }
 
@@ -2112,7 +2114,7 @@ public class MAYGEN {
      * @param row int[] row
      * @return ArrayList<Integer>
      */
-    public static ArrayList<Integer> refinedPartitioning(ArrayList<Integer> partition, int[] row) {
+    public static int[] refinedPartitioning(int[] partition, int[] row) {
         ArrayList<Integer> refined = new ArrayList<Integer>();
         int index = 0;
         int count = 1;
@@ -2145,7 +2147,9 @@ public class MAYGEN {
                 count = 1;
             }
         }
-        return refined;
+        return refined.stream()
+                .mapToInt(Integer::intValue)
+                .toArray();
     }
 
     /**
@@ -2422,7 +2426,7 @@ public class MAYGEN {
      * @param partition ArrayList<Integer> partition
      * @return
      */
-    public static ArrayList<Integer> canonicalPartition(int i, ArrayList<Integer> partition) {
+    public static int[] canonicalPartition(int i, int[] partition) {
         return partitionCriteria(partition, i + 1);
     }
 
@@ -2440,22 +2444,24 @@ public class MAYGEN {
      * @param degree degree of the partitioning.
      * @return
      */
-    public static ArrayList<Integer> partitionCriteria(ArrayList<Integer> partEx, int degree) {
+    public static int[] partitionCriteria(int[] partEx, int degree) {
         ArrayList<Integer> partNew = new ArrayList<Integer>();
-        if (partEx.size() != size) {
+        if (partEx.length != size) {
             addOnes(partNew, degree);
-            int oldValue = partEx.get(degree - 1);
+            int oldValue = partEx[degree - 1];
             if (oldValue > 1) {
                 partNew.add(oldValue - 1);
-                for (int k = degree; k < partEx.size(); k++) {
-                    partNew.add(partEx.get(k));
+                for (int k = degree; k < partEx.length; k++) {
+                    partNew.add(partEx[k]);
                 }
             } else if (oldValue == 1) {
-                for (int k = degree; k < partEx.size(); k++) {
-                    partNew.add(partEx.get(k));
+                for (int k = degree; k < partEx.length; k++) {
+                    partNew.add(partEx[k]);
                 }
             }
-            return partNew;
+            return partNew.stream()
+                    .mapToInt(Integer::intValue)
+                    .toArray();
         } else {
             return partEx;
         }
