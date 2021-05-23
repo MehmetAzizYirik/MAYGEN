@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.SoftReference;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -142,6 +144,7 @@ public class MAYGEN {
      * @param list List<Integer>
      * @return int sum
      */
+    // change ArrayList<Integer> list with int[]
     public static int sum(ArrayList<Integer> list, int index) {
         int sum = 0;
         for (int i = 0; i <= index; i++) {
@@ -651,6 +654,7 @@ public class MAYGEN {
      * @param partition ArrayList<Integer> atom partition
      * @return int[]
      */
+    // change ArrayList<Integer> partition with int[]
     public static int[] descendingSortWithPartition(int[] array, ArrayList<Integer> partition) {
         int i = 0;
         for (Integer p : partition) {
@@ -703,6 +707,7 @@ public class MAYGEN {
      * @param cycles List<Permutation> list of cycle transpositions
      * @param partition ArrayList<Integer> atom partition
      */
+    // change ArrayList<Integer> partition with int[]
     public static void getLernenIndices(
             int index, int[][] A, ArrayList<Permutation> cycles, ArrayList<Integer> partition) {
         for (Permutation cycle : cycles) {
@@ -762,6 +767,7 @@ public class MAYGEN {
      * @param partition ArrayList<Integer> partition
      * @return boolean
      */
+    // change ArrayList<Integer> partition with int[]
     public static boolean rowDescendingTest(int index, int[][] A, ArrayList<Integer> partition) {
         boolean check = true;
         if (partition.size() != size) {
@@ -1027,6 +1033,7 @@ public class MAYGEN {
      * @param row int[]
      * @return boolean
      */
+    // change ArrayList<Integer> partition with int[]
     public static boolean descendingOrderCheck(ArrayList<Integer> partition, int[] array) {
         boolean check = true;
         int i = 0;
@@ -2053,6 +2060,7 @@ public class MAYGEN {
      * @param newPartition ArrayList<Integer> canonical partition
      * @return boolean
      */
+    // change ArrayList<Integer> partition and ArrayList<Integer> newPartition with int[]
     public static boolean rowCanonicalTest(
             int index,
             int r,
@@ -2114,10 +2122,12 @@ public class MAYGEN {
      * @param row int[] row
      * @return ArrayList<Integer>
      */
+    // change new ArrayList<Integer> with int[]
     public static int[] refinedPartitioning(int[] partition, int[] row) {
-        ArrayList<Integer> refined = new ArrayList<Integer>();
+        int[] refined = new int[partition.length + row.length];
         int index = 0;
         int count = 1;
+        int refinedIndex = 0;
         for (Integer p : partition) {
             if (p != 1) {
                 for (int i = index; i < p + index - 1; i++) {
@@ -2125,17 +2135,17 @@ public class MAYGEN {
                         if (row[i] == row[i + 1]) {
                             count++;
                         } else {
-                            refined.add(count);
+                            refined[refinedIndex++] = count;
                             count = 1;
                         }
                     } else {
                         if (row[i] == row[i + 1]) {
                             count++;
-                            refined.add(count);
+                            refined[refinedIndex++] = count;
                             count = 1;
                         } else {
-                            refined.add(count);
-                            refined.add(1);
+                            refined[refinedIndex++] = count;
+                            refined[refinedIndex++] = 1;
                             count = 1;
                         }
                     }
@@ -2143,13 +2153,11 @@ public class MAYGEN {
                 index = index + p;
             } else {
                 index++;
-                refined.add(1);
+                refined[refinedIndex++] = 1;
                 count = 1;
             }
         }
-        return refined.stream()
-                .mapToInt(Integer::intValue)
-                .toArray();
+        return refined;
     }
 
     /**
@@ -2246,6 +2254,7 @@ public class MAYGEN {
      * @param partition ArrayList<Integer> partition
      * @return Permutation
      */
+    // change ArrayList<Integer> partition with int[]
     public static Permutation getCanonicalPermutation(
             int[] originalRow, int[] rowToCheck, ArrayList<Integer> partition) {
         int[] cycles = getCanonicalPermutation(partition, originalRow, rowToCheck);
@@ -2354,7 +2363,7 @@ public class MAYGEN {
     public static boolean check(
             int index, int y, int total, int[][] A, ArrayList<Integer> newPartition) {
         boolean check = true;
-        ArrayList<Permutation> formerList = new ArrayList<Permutation>();
+        ArrayList<SoftReference<Permutation>> formerList = new ArrayList<>();
         ArrayList<Permutation> form = formerPermutations.get(index);
         for (Permutation permutation : form) {
             setBiggest(index, A, permutation, newPartition);
@@ -2366,11 +2375,11 @@ public class MAYGEN {
                 if (descendingOrderUpperMatrixCheck(index, newPartition, A[index], test)) {
                     if (canonicalPermutation.isIdentity()) {
                         if (equalSetCheck(newPartition, A[index], test)) {
-                            formerList.add(permutation);
+                            formerList.add(new SoftReference<>(permutation));
                         }
                     } else {
                         Permutation newPermutation = canonicalPermutation.multiply(permutation);
-                        formerList.add(newPermutation);
+                        formerList.add(new SoftReference<>(newPermutation));
                     }
                 } else {
                     formerList.clear();
@@ -2385,11 +2394,13 @@ public class MAYGEN {
         }
         if (check) {
             formerPermutations.get(index).clear();
-            formerPermutations.set(index, formerList);
+            formerPermutations.set(index, new ArrayList<>(formerList.stream().map(SoftReference::get)
+                    .collect(Collectors.toList())));
         }
         return check;
     }
 
+    // change ArrayList<Integer> partition with int[]
     public static ArrayList<Permutation> cycleTranspositions(
             int index, ArrayList<Integer> partition) {
         ArrayList<Permutation> perms = new ArrayList<Permutation>();
@@ -2415,6 +2426,7 @@ public class MAYGEN {
      * @param degree ArrayList<Integer> atom valences
      * @return
      */
+    // change ArrayList<Integer> partEx with int[]
     public static int LValue(ArrayList<Integer> partEx, int degree) {
         return (sum(partEx, (degree)) - (degree));
     }
@@ -2444,6 +2456,7 @@ public class MAYGEN {
      * @param degree degree of the partitioning.
      * @return
      */
+    // change ArrayList with int[]
     public static int[] partitionCriteria(int[] partEx, int degree) {
         ArrayList<Integer> partNew = new ArrayList<Integer>();
         if (partEx.length != size) {
