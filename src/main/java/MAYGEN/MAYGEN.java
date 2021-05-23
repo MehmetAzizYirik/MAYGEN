@@ -63,7 +63,7 @@ public class MAYGEN {
     public static ArrayList<Integer> initialPartition;
     public static IChemObjectBuilder builder = SilentChemObjectBuilder.getInstance();
     public static IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
-    public static ArrayList<ArrayList<Integer>> partitionList = new ArrayList<ArrayList<Integer>>();
+    public static ArrayList<int[]> partitionList = new ArrayList<int[]>();
     public static ArrayList<String> symbols = new ArrayList<String>();
     public static ArrayList<Integer> occurrences = new ArrayList<Integer>();
     public static Map<String, Integer> valences;
@@ -98,7 +98,7 @@ public class MAYGEN {
      * @param array Integer[] array
      * @param i int first index
      * @param j int second index
-     * @return Integer[]
+     * @return int[]
      */
     public static int[] permuteArray(int[] array, int i, int j) {
         int temp = 0;
@@ -1639,7 +1639,7 @@ public class MAYGEN {
         // verbose = false;
         // tsvoutput=false;
         formerPermutations = new ArrayList<ArrayList<Permutation>>();
-        partitionList = new ArrayList<ArrayList<Integer>>();
+        partitionList = new ArrayList<int[]>();
         symbols = new ArrayList<String>();
         occurrences = new ArrayList<Integer>();
         r = 0;
@@ -1756,7 +1756,9 @@ public class MAYGEN {
             formerPermutations.clear();
             partSize += (initialPartition.size() - 1);
             setYZValues();
-            partitionList.add(0, initialPartition);
+            partitionList.add(0, initialPartition.stream()
+                    .mapToInt(Integer::intValue)
+                    .toArray());
             generate(degree);
         }
     }
@@ -1945,13 +1947,17 @@ public class MAYGEN {
 
         boolean test = true;
         for (int i = y; i <= z; i++) {
+            ArrayList<Integer> intList = new ArrayList<Integer>();
+            for(int intValue : partitionList.get(i)) {
+                intList.add(intValue);
+            }
             test =
                     rowCanonicalTest(
                             i,
                             r,
                             A,
-                            partitionList.get(i),
-                            canonicalPartition(i, partitionList.get(i)));
+                            intList,
+                            canonicalPartition(i, intList));
             if (!test) {
                 check = false;
                 break;
@@ -1971,7 +1977,7 @@ public class MAYGEN {
     public static void clearFormers(boolean check, int y) {
         if (check == false) {
             ArrayList<ArrayList<Permutation>> newPerms = new ArrayList<ArrayList<Permutation>>();
-            ArrayList<ArrayList<Integer>> newPart = new ArrayList<ArrayList<Integer>>();
+            ArrayList<int[]> newPart = new ArrayList<int[]>();
             for (int i = 0; i < y; i++) {
                 newPerms.add(formerPermutations.get(i));
             }
@@ -2089,9 +2095,13 @@ public class MAYGEN {
             refinedPartition = refinedPartitioning(newPartition, A[index]);
         }
         if (partitionList.size() == (index + 1)) {
-            partitionList.add(refinedPartition);
+            partitionList.add(refinedPartition.stream()
+                    .mapToInt(Integer::intValue)
+                    .toArray());
         } else {
-            partitionList.set(index + 1, refinedPartition);
+            partitionList.set(index + 1, refinedPartition.stream()
+                    .mapToInt(Integer::intValue)
+                    .toArray());
         }
     }
 
