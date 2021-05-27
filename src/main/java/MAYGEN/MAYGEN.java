@@ -59,7 +59,7 @@ public class MAYGEN {
     public static ArrayList<ArrayList<Permutation>> formerPermutations =
             new ArrayList<ArrayList<Permutation>>();
     public static int[] degrees;
-    public static ArrayList<Integer> initialPartition;
+    public static int[] initialPartition;
     public static IChemObjectBuilder builder = SilentChemObjectBuilder.getInstance();
     public static IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
     public static ArrayList<int[]> partitionList = new ArrayList<int[]>();
@@ -1760,11 +1760,9 @@ public class MAYGEN {
             learningFromCanonicalTest = false;
             partitionList.clear();
             formerPermutations.clear();
-            partSize += (initialPartition.size() - 1);
+            partSize += (initialPartition.length - 1);
             setYZValues();
-            partitionList.add(0, initialPartition.stream()
-                    .mapToInt(Integer::intValue)
-                    .toArray());
+            partitionList.add(0, initialPartition);
             generate(degree);
         }
     }
@@ -2469,12 +2467,20 @@ public class MAYGEN {
     }
 
     public static void initialPartition(int[] partition) {
-        ArrayList<Integer> init = new ArrayList<Integer>();
         int index = 0;
+        int index2 = 0;
         int part;
         while (index != hIndex) {
             part = partition[index];
-            init.add(part);
+            index2++;
+            index += part;
+        }
+        int[] init = new int[index2];
+        index = 0;
+        index2 = 0;
+        while (index != hIndex) {
+            part = partition[index];
+            init[index2++] = part;
             index += part;
         }
         initialPartition = init;
