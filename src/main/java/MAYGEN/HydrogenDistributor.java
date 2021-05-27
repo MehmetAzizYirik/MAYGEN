@@ -32,8 +32,6 @@ package MAYGEN;
  * @author Mehmet Aziz Yirik
  */
 
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,8 +39,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
-
-import org.openscience.cdk.exception.CDKException;
 
 public class HydrogenDistributor {
 	public static Map<Integer, Integer> capacities;
@@ -79,35 +75,27 @@ public class HydrogenDistributor {
         a[a.length - 1] = e;
         return a;
     }
-	
-	public static int sum(int[] partition, int index) {
+
+	public static int sum(int[] list, int index) {
 		int sum=0;
 		for(int i=0;i<=index;i++) {
-			sum=sum+partition[i];
-		}
-	    return sum;
-	}
-	
-	public static int sum(ArrayList<Integer> list, int index) {
-		int sum=0;
-		for(int i=0;i<=index;i++) {
-			sum=sum+list.get(i);
+			sum=sum+ list[i];
 		}
 		return sum;
 	}
 	
-	public static int[] setValues(ArrayList<Integer> partition, int[] degrees) {
-		int partitionSize= partition.size();
+	public static int[] setValues(int[] partition, int[] degrees) {
+		int partitionSize= partition.length;
 		int[] capacity = new int[partitionSize];
 		int[] valences = new int[partitionSize];
 		int[] totalAtom = new int[partitionSize];
 		int i=0;
 		int sum=0;
 		for(int j=0;j<partitionSize;j++) {
-			totalAtom[i]=partition.get(i);
+			totalAtom[i]= partition[i];
 			sum=sum(partition,i);
 			valences[i]=degrees[sum-1]-1;
-			capacity[i]=(degrees[sum-1]-1)*partition.get(i);
+			capacity[i]=(degrees[sum-1]-1)* partition[i];
 			i++;
 		}
 
@@ -169,9 +157,9 @@ public class HydrogenDistributor {
 	 * To initialise the inputs and run the functions while recording the duration time.
 	 */
 	
-	public static List<int[]> run(ArrayList<Integer> partition, int[] degrees) throws CloneNotSupportedException {
-		int partitionSize= partition.size();
-		int hydrogen= partition.get(partitionSize-1);
+	public static List<int[]> run(int[] partition, int[] degrees) throws CloneNotSupportedException {
+		int partitionSize= partition.length;
+		int hydrogen= partition[partitionSize - 1];
 		HydrogenDistributor.isotopes=partitionSize-1;
 		setValues(partition,degrees);
 		HydrogenDistributor.totalHydrogen=hydrogen;

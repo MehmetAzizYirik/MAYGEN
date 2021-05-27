@@ -64,7 +64,7 @@ public class MAYGEN {
     public static IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
     public static ArrayList<int[]> partitionList = new ArrayList<int[]>();
     public static ArrayList<String> symbols = new ArrayList<String>();
-    public static ArrayList<Integer> occurrences = new ArrayList<Integer>();
+    public static int[] occurrences;
     public static Map<String, Integer> valences;
     public static int[][] max;
     public static int[][] L;
@@ -108,20 +108,6 @@ public class MAYGEN {
     }
 
     /**
-     * Summing entries of a list.
-     *
-     * @param list List<Integer>
-     * @return int
-     */
-    public static int sum(ArrayList<Integer> list) {
-        int sum = 0;
-        for (Integer integer : list) {
-            sum = sum + integer;
-        }
-        return sum;
-    }
-
-    /**
      * Summing entries of an array.
      *
      * @param array int[]
@@ -139,20 +125,6 @@ public class MAYGEN {
      * Summing entries of a list until a given index.
      *
      * @param list List<Integer>
-     * @return int sum
-     */
-    public static int sum(ArrayList<Integer> list, int index) {
-        int sum = 0;
-        for (int i = 0; i <= index; i++) {
-            sum += list.get(i);
-        }
-        return sum;
-    }
-
-    /**
-     * Summing entries of a list until a given index.
-     *
-     * @param list int[]
      * @return int sum
      */
     public static int sum(int[] list, int index) {
@@ -230,7 +202,7 @@ public class MAYGEN {
 
     public static int totalHydrogen = 0;
     public static ArrayList<String> firstSymbols = new ArrayList<String>();
-    public static ArrayList<Integer> firstOccurrences = new ArrayList<Integer>();
+    public static int[] firstOccurrences;
     public static boolean callHydrogenDistributor = false;
     public static boolean justH = false;
 
@@ -366,14 +338,14 @@ public class MAYGEN {
                 callHydrogenDistributor = true;
                 matrixSize = matrixSize + hydrogens;
                 firstSymbols.add("H");
-                firstOccurrences.add(hydrogens);
+                firstOccurrences[symbolList.size() - 1] = hydrogens;
             } else {
                 justH = true;
                 callHydrogenDistributor = false;
                 matrixSize = matrixSize + hydrogens;
                 hIndex = hydrogens;
                 firstSymbols.add("H");
-                firstOccurrences.add(hydrogens);
+                firstOccurrences[symbolList.size() - 1] = hydrogens;
             }
         } else {
             callHydrogenDistributor = false;
@@ -381,37 +353,38 @@ public class MAYGEN {
         }
     }
 
-    public static int nextCount(
-            int i, int size, ArrayList<String> symbols, ArrayList<Integer> partition) {
+    public static int[] nextCount(
+            int index, int i, int size, ArrayList<String> symbols, int[] partition) {
         int count = 1;
         if (i == (size - 1)) {
-            partition.add(1);
+            partition[index++] = 1;
         } else {
             for (int j = i + 1; j < size; j++) {
                 if (symbols.get(i).equals(symbols.get(j))) {
                     count++;
                     if (j == (size - 1)) {
-                        partition.add(count);
+                        partition[index++] = count;
                         break;
                     }
                 } else {
-                    partition.add(count);
+                    partition[index++] = count;
                     break;
                 }
             }
         }
-        return count;
+        return new int[] {count, index};
     }
 
-    public static ArrayList<Integer> getPartition(ArrayList<String> symbols) {
-        ArrayList<Integer> partition = new ArrayList<Integer>();
+    public static int[] getPartition(ArrayList<String> symbols) {
         int i = 0;
         int size = symbols.size();
-        int count = 0;
+        int[] partition = new int[size];
         int next = 0;
+        int index = 0;
         while (i < size) {
-            count = nextCount(i, size, symbols, partition);
-            next = (i + count);
+            int[] result = nextCount(index, i, size, symbols, partition);
+            next = (i + result[0]);
+            index = result[1];
             if (next == size) {
                 break;
             } else {
@@ -483,7 +456,7 @@ public class MAYGEN {
         int length = firstSymbols.size();
         for (int i = 0; i < length; i++) {
             symbol = firstSymbols.get(i);
-            for (int j = 0; j < firstOccurrences.get(i); j++) {
+            for (int j = 0; j < firstOccurrences[i]; j++) {
                 firstDegrees[index] = valences.get(symbol);
                 index++;
             }
@@ -1523,13 +1496,13 @@ public class MAYGEN {
         int p = 0;
         int length = 0;
         if (justH || noHydrogen) {
-            length = firstOccurrences.size();
+            length = firstOccurrences.length;
         } else {
-            length = firstOccurrences.size() - 1;
+            length = firstOccurrences.length - 1;
         }
         int index = 0;
         for (int part = 0; part < length; part++) {
-            p = firstOccurrences.get(part);
+            p = firstOccurrences[part];
             int[] subArray = getBlocks(degrees, i, p + i);
             for (Integer item : getSubPartition(subArray)) {
                 newPartition[index++] = item;
@@ -1651,13 +1624,13 @@ public class MAYGEN {
         formerPermutations = new ArrayList<ArrayList<Permutation>>();
         partitionList = new ArrayList<int[]>();
         symbols = new ArrayList<String>();
-        occurrences = new ArrayList<Integer>();
+        occurrences = null;
         r = 0;
         y = 0;
         z = 0;
         partSize = 0;
         firstSymbols = new ArrayList<String>();
-        firstOccurrences = new ArrayList<Integer>();
+        firstOccurrences = null;
     }
 
     /**
@@ -1735,9 +1708,9 @@ public class MAYGEN {
             throws IOException, CloneNotSupportedException, CDKException {
         symbolArrayCopy = new String[symbolArray.length];
         if (noHydrogen) {
-            size = sum(firstOccurrences, firstOccurrences.size() - 1);
+            size = sum(firstOccurrences, firstOccurrences.length - 1);
         } else {
-            size = sum(firstOccurrences, firstOccurrences.size() - 2);
+            size = sum(firstOccurrences, firstOccurrences.length - 2);
         }
 
         ArrayList<int[]> newDegrees = distributeHydrogens();
