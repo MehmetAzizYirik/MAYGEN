@@ -206,59 +206,6 @@ public class MAYGEN {
     public static boolean callHydrogenDistributor = false;
     public static boolean justH = false;
 
-    public static void sortAscending(int[] degree, ArrayList<Integer> partition) {
-        HashMap<Integer, Integer> inputs = new HashMap<Integer, Integer>();
-        for (int i = 0; i < degree.length; i++) {
-            if (inputs.containsKey(degree[i])) {
-                Integer count = inputs.get(degree[i]) + 1;
-                inputs.put(degree[i], count);
-            } else {
-                inputs.put(degree[i], 1);
-            }
-        }
-
-        Set<Entry<Integer, Integer>> set = inputs.entrySet();
-        sort(degree, set);
-    }
-
-    public static void sortAscending(int[] degree) {
-        HashMap<Integer, Integer> inputs = new HashMap<Integer, Integer>();
-        for (int i = 0; i < degree.length; i++) {
-            if (inputs.containsKey(degree[i])) {
-                Integer count = inputs.get(degree[i]) + 1;
-                inputs.put(degree[i], count);
-            } else {
-                inputs.put(degree[i], 1);
-            }
-        }
-
-        Set<Entry<Integer, Integer>> set = inputs.entrySet();
-        sort(degree, set);
-    }
-
-    public static int[] sort(int[] degree, Set<Entry<Integer, Integer>> set) {
-        int index = 0;
-        int value = 0;
-        ArrayList<Entry<Integer, Integer>> list = new ArrayList<Entry<Integer, Integer>>(set);
-        Collections.sort(
-                list,
-                new Comparator<Map.Entry<Integer, Integer>>() {
-                    public int compare(
-                            Map.Entry<Integer, Integer> value1,
-                            Map.Entry<Integer, Integer> value2) {
-                        return -(value2.getValue()).compareTo(value1.getValue());
-                    }
-                });
-        for (Entry<Integer, Integer> entry : list) {
-            value = entry.getValue();
-            for (int i = 0; i < value; i++) {
-                degree[index + i] = entry.getKey();
-            }
-            index += value;
-        }
-        return degree;
-    }
-
     public static void sortAscending(ArrayList<String> symbols) {
         HashMap<String, Integer> inputs = new HashMap<String, Integer>();
         for (int i = 0; i < symbols.size(); i++) {
@@ -1516,17 +1463,18 @@ public class MAYGEN {
      * Calculating the sub partitions for a given group of degrees.
      *
      * @param degrees int[] valences
-     * @return ArrayList<Integer>
+     * @return int[]
      */
-    public static ArrayList<Integer> getSubPartition(int[] degrees) {
-        ArrayList<Integer> partition = new ArrayList<Integer>();
+    public static int[] getSubPartition(int[] degrees) {
         int i = 0;
         int size = degrees.length;
-        int count = 0;
+        int[] partition = new int[size];
         int next = 0;
+        int index = 0;
         while (i < size) {
-            count = nextCount(i, size, degrees, partition);
-            next = (i + count);
+            int[] result = nextCount(index, i, size, degrees, partition);
+            index = result[1];
+            next = (i + result[0]);
             if (next == size) {
                 break;
             } else {
@@ -1542,28 +1490,28 @@ public class MAYGEN {
      * @param i int index
      * @param size int number
      * @param degrees int[] valences
-     * @param partition ArrayList<Integer> partition
+     * @param partition int[] partition
      * @return int
      */
-    public static int nextCount(int i, int size, int[] degrees, ArrayList<Integer> partition) {
+    public static int[] nextCount(int index, int i, int size, int[] degrees, int[] partition) {
         int count = 1;
         if (i == (size - 1)) {
-            partition.add(1);
+            partition[index++] = 1;
         } else {
             for (int j = i + 1; j < size; j++) {
                 if (degrees[i] == degrees[j]) {
                     count++;
                     if (j == (size - 1)) {
-                        partition.add(count);
+                        partition[index++] = count;
                         break;
                     }
                 } else {
-                    partition.add(count);
+                    partition[index++] = count;
                     break;
                 }
             }
         }
-        return count;
+        return new int[] {count, index};
     }
 
     /**
