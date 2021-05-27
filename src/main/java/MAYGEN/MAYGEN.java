@@ -2388,9 +2388,9 @@ public class MAYGEN {
     }
 
     /** Add number of 1s into an ArrayList */
-    public static void addOnes(ArrayList<Integer> list, int number) {
+    public static void addOnes(int[] list, int number) {
         for (int i = 0; i < number; i++) {
-            list.add(1);
+            list[i] = 1;
         }
     }
 
@@ -2402,23 +2402,22 @@ public class MAYGEN {
      * @return
      */
     public static int[] partitionCriteria(int[] partEx, int degree) {
-        ArrayList<Integer> partNew = new ArrayList<Integer>();
+        int[] partNew = new int[size + partEx.length];
         if (partEx.length != size) {
             addOnes(partNew, degree);
+            int index = degree;
             int oldValue = partEx[degree - 1];
             if (oldValue > 1) {
-                partNew.add(oldValue - 1);
+                partNew[index++] = oldValue - 1;
                 for (int k = degree; k < partEx.length; k++) {
-                    partNew.add(partEx[k]);
+                    partNew[index++] = partEx[k];
                 }
             } else if (oldValue == 1) {
                 for (int k = degree; k < partEx.length; k++) {
-                    partNew.add(partEx[k]);
+                    partNew[index++] = partEx[k];
                 }
             }
-            return partNew.stream()
-                    .mapToInt(Integer::intValue)
-                    .toArray();
+            return partNew;
         } else {
             return partEx;
         }
