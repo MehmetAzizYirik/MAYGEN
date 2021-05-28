@@ -544,10 +544,9 @@ public class MAYGEN {
             int index, int[][] A, Permutation cycleTransposition, Permutation permutation) {
         boolean check = true;
         int[] canonical = A[index];
-        int[] original = A[index];
         int newIndex = findIndex(index, cycleTransposition);
         Permutation pm = permutation.multiply(cycleTransposition);
-        original = cloneArray(A[newIndex]);
+        int[] original = cloneArray(A[newIndex]);
         original = actArray(original, pm);
         if (!Arrays.equals(canonical, original)) {
             check = false;
@@ -619,10 +618,9 @@ public class MAYGEN {
      * @param A int[][] adjacency matrix
      * @param permutation Permutation permutation
      * @param partition int[] atom partition
-     * @throws IOException 
      */
     public static void setBiggest(
-            int index, int[][] A, Permutation permutation, int[] partition) throws IOException {
+            int index, int[][] A, Permutation permutation, int[] partition) {
         biggest = true;
         int[] check = row2compare(index, A, permutation);
         if (!biggerCheck(index, A[index], check, partition)) {
@@ -637,13 +635,11 @@ public class MAYGEN {
      * @param A int[][] adjacency matrix
      * @param cycles List<Permutation> list of cycle transpositions
      * @param partition int[] atom partition
-     * @throws IOException 
      */
     public static void getLernenIndices(
-            int index, int[][] A, ArrayList<Permutation> cycles, int[] partition) throws IOException {
-    	int[] check= new int[size];
+            int index, int[][] A, ArrayList<Permutation> cycles, int[] partition) {
         for (Permutation cycle : cycles) {
-            check = row2compare(index, A, cycle);
+            int[] check = row2compare(index, A, cycle);
             if (!biggerCheck(index, A[index], check, partition)) {
                 setLernenIndices(index, cycle, A, check, partition);
                 break;
@@ -658,14 +654,13 @@ public class MAYGEN {
      * @param A int[][] adjacency matrix
      * @param secondRow int[] second row
      * @param partition int[] atom partition
-     * @throws IOException 
      */
     public static void setLernenIndices(
             int rowIndex1,
             Permutation cycle,
             int[][] A,
             int[] secondRow,
-            int[] partition) throws IOException {
+            int[] partition) {
         nonCanonicalIndices = new int[2];
         learningFromCanonicalTest = false;
         int rowIndex2 = cycle.get(rowIndex1);
@@ -696,7 +691,6 @@ public class MAYGEN {
      *
      * @param array int[]
      * @return boolean
-     * @throws IOException 
      */
     
     public static boolean zero(int[] array) {
@@ -709,7 +703,7 @@ public class MAYGEN {
     	}
     	return check;
     }
-    public static boolean rowDescendingTest(int index, int[][] A, int[] partition) throws IOException {
+    public static boolean rowDescendingTest(int index, int[][] A, int[] partition) {
         boolean check = true;
         if (zero(partition)) {
             if (!descendingOrderCheck(partition, A[index])) {
@@ -814,10 +808,9 @@ public class MAYGEN {
      * @param A int[][] adjacency matrix
      * @param permutation Permutation permutation from canonical test
      * @return int[]
-     * @throws IOException 
      */
     public static int[] upperIndex(
-            int index, int nextRowIndex, int[][] A, Permutation permutation) throws IOException {
+            int index, int nextRowIndex, int[][] A, Permutation permutation) {
         int[] limit = limit(index, nextRowIndex, A, permutation);
         int[] lowerLimit = lowerIndex(index, nextRowIndex, A, permutation);
         int[] upperLimit = new int[2];
@@ -1208,7 +1201,7 @@ public class MAYGEN {
      *
      * @param A int[][] adjacency matrix
      * @param index int beginning index for the hydrogen setting
-     * @return
+     * @return int[][]
      */
     public static int[][] addHydrogens(int[][] A, int index) {
         if (callHydrogenDistributor) {
@@ -1216,7 +1209,6 @@ public class MAYGEN {
             int limit = 0;
             int hydrogen = 0;
             for (int i = 0; i < index; i++) {
-                // hydrogen=initialDegrees[i]-sum(A[i]);
                 hydrogen = newDegreeList[i] - sum(A[i]);
                 limit = hIndex + hydrogen;
                 for (int j = hIndex; j < limit; j++) {
@@ -1234,7 +1226,6 @@ public class MAYGEN {
     /**
      * In backward function, updating the block index.
      *
-     * @param r int block index
      * @param indices int[] atom valences
      * @return
      */
@@ -1880,9 +1871,8 @@ public class MAYGEN {
      *
      * @param A int[][] adjacency matrix
      * @return boolean
-     * @throws IOException 
      */
-    public static boolean canonicalTest(int[][] A) throws IOException {
+    public static boolean canonicalTest(int[][] A) {
         boolean check = true;
         learningFromCanonicalTest = false;
         y = ys[r];
@@ -1991,9 +1981,8 @@ public class MAYGEN {
      * @param partition int[] former partition
      * @param newPartition int[] canonical partition
      * @return boolean
-     * @throws IOException 
      */
-    public static boolean rowCanonicalTest(int index, int r, int[][] A, int[] partition, int[] newPartition) throws IOException {
+    public static boolean rowCanonicalTest(int index, int r, int[][] A, int[] partition, int[] newPartition) {
     	boolean check = true;
         if (!rowDescendingTest(index, A, newPartition)) {
             check = false;
@@ -2007,7 +1996,7 @@ public class MAYGEN {
                 cycles = cycleTranspositions(index, partition);
             }
             candidatePermutations(index, cycles);
-            check = check(index, y, size, A, newPartition);
+            check = check(index, size, A, newPartition);
             if (!check) {
                 if (cycles.size() != 1) {
                     getLernenIndices(index, A, cycles, newPartition);
@@ -2025,10 +2014,9 @@ public class MAYGEN {
      * @param index row index
      * @param newPartition atom partition
      * @param A int[][] adjacency matrix
-     * @throws IOException 
      */
     
-    public static void addPartition(int index, int[] newPartition, int[][] A) throws IOException {
+    public static void addPartition(int index, int[] newPartition, int[][] A) {
         int[] refinedPartition;
         if (newPartition[size-1]!=0) {
             refinedPartition = newPartition;
@@ -2238,11 +2226,10 @@ public class MAYGEN {
 
     public static Permutation getCanonicalCycle(
             int index,
-            int y,
             int total,
             int[][] A,
             int[] newPartition,
-            Permutation cycleTransposition) throws IOException {
+            Permutation cycleTransposition) {
         biggest = true;
         Permutation canonicalPermutation = idPermutation(total);
         if (!equalRowsCheck(index, A, cycleTransposition, canonicalPermutation)) {
@@ -2254,7 +2241,7 @@ public class MAYGEN {
     }
 
     public static boolean check(
-            int index, int y, int total, int[][] A, int[] newPartition) throws IOException {
+            int index, int total, int[][] A, int[] newPartition) {
         boolean check = true;
         ArrayList<Permutation> formerList = new ArrayList<>();
         ArrayList<Permutation> form = formerPermutations.get(index);
@@ -2262,7 +2249,7 @@ public class MAYGEN {
             setBiggest(index, A, permutation, newPartition);
             if (biggest) {
                 Permutation canonicalPermutation =
-                        getCanonicalCycle(index, y, total, A, newPartition, permutation);
+                        getCanonicalCycle(index, total, A, newPartition, permutation);
                 int[] test = row2compare(index, A, permutation);
                 test = actArray(test, canonicalPermutation);
                 if (descendingOrderUpperMatrixCheck(index, newPartition, A[index], test)) {
@@ -2327,9 +2314,8 @@ public class MAYGEN {
      * @param i int row index
      * @param partition int[] partition
      * @return int[]
-     * @throws IOException 
      */
-    public static int[] canonicalPartition(int i, int[] partition) throws IOException {
+    public static int[] canonicalPartition(int i, int[] partition) {
         return partitionCriteria(partition, i + 1);
     }
 

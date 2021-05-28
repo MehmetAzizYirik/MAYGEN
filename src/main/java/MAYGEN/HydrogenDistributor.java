@@ -157,7 +157,7 @@ public class HydrogenDistributor {
 	 * To initialise the inputs and run the functions while recording the duration time.
 	 */
 	
-	public static List<int[]> run(int[] partition, int[] degrees) throws CloneNotSupportedException {
+	public static List<int[]> run(int[] partition, int[] degrees) {
 		int partitionSize= partition.length;
 		int hydrogen= partition[partitionSize - 1];
 		HydrogenDistributor.isotopes=partitionSize-1;
