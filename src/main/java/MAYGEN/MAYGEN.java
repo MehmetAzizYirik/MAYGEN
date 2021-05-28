@@ -2,8 +2,6 @@ package MAYGEN;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.ref.SoftReference;
-import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -304,17 +301,20 @@ public class MAYGEN {
             int index, int i, int size, ArrayList<String> symbols, int[] partition) {
         int count = 1;
         if (i == (size - 1)) {
-            partition[index++] = 1;
+            partition[index] = 1;
+            index++;
         } else {
             for (int j = i + 1; j < size; j++) {
                 if (symbols.get(i).equals(symbols.get(j))) {
                     count++;
                     if (j == (size - 1)) {
-                        partition[index++] = count;
+                        partition[index] = count;
+                        index++;
                         break;
                     }
                 } else {
-                    partition[index++] = count;
+                    partition[index] = count;
+                    index++;
                     break;
                 }
             }
@@ -328,8 +328,9 @@ public class MAYGEN {
         int[] partition = new int[size];
         int next = 0;
         int index = 0;
+        int[] result = new int[2];
         while (i < size) {
-            int[] result = nextCount(index, i, size, symbols, partition);
+            result = nextCount(index, i, size, symbols, partition);
             next = (i + result[0]);
             index = result[1];
             if (next == size) {
@@ -412,10 +413,6 @@ public class MAYGEN {
 
     /**
      * Building an atom container from a string of atom-implicit hydrogen information.
-     *
-     * @throws IOException
-     * @throws CloneNotSupportedException
-     * @throws CDKException
      */
     public static void build() {
         atomContainer = builder.newInstance(IAtomContainer.class);
@@ -462,7 +459,7 @@ public class MAYGEN {
      * @return boolean
      */
     public static boolean equalSetCheck(int[] array1, int[] array2, int[] partition) {
-        int[] temp = cloneArray(array2);
+    	int[] temp = cloneArray(array2);
         temp = descendingSortWithPartition(temp, partition);
         return equalSetCheck2(partition, array1, temp);
     }
@@ -490,7 +487,8 @@ public class MAYGEN {
     public static boolean equalSetCheck2(int[] partition, int[] array1, int[] array2) {
         boolean check = true;
         int i = 0;
-        if (partition.length == size) {
+        int limit=findZeros(partition);
+        if (partition[size-1]!=0) {
             for (int d = 0; d < size; d++) {
                 if (array1[d] != array2[d]) {
                     check = false;
@@ -498,9 +496,11 @@ public class MAYGEN {
                 }
             }
         } else {
-            for (int p : partition) {
-                if (compareIndexwise(array1, array2, i, (p + i))) {
-                    i = i + p;
+        	int value=0;
+            for (int s=0;s<limit;s++) {
+            	value=partition[s];
+                if (compareIndexwise(array1, array2, i, (value + i))) {
+                    i = i + value;
                 } else {
                     check = false;
                     break;
@@ -585,9 +585,11 @@ public class MAYGEN {
      * @return int[]
      */
     public static int[] descendingSortWithPartition(int[] array, int[] partition) {
-        int i = 0;
-        for (int i1 = 0; i1 < partition.length && partition[i1] != 0; i1++) {
-            int p = partition[i1];
+    	int i = 0;
+    	int p=0;
+        int limit=findZeros(partition);
+        for (int i1 = 0; i1 < limit; i1++) {
+            p = partition[i1];
             array = descendingSort(array, i, i + p);
             i = i + p;
         }
@@ -617,9 +619,10 @@ public class MAYGEN {
      * @param A int[][] adjacency matrix
      * @param permutation Permutation permutation
      * @param partition int[] atom partition
+     * @throws IOException 
      */
     public static void setBiggest(
-            int index, int[][] A, Permutation permutation, int[] partition) {
+            int index, int[][] A, Permutation permutation, int[] partition) throws IOException {
         biggest = true;
         int[] check = row2compare(index, A, permutation);
         if (!biggerCheck(index, A[index], check, partition)) {
@@ -634,11 +637,13 @@ public class MAYGEN {
      * @param A int[][] adjacency matrix
      * @param cycles List<Permutation> list of cycle transpositions
      * @param partition int[] atom partition
+     * @throws IOException 
      */
     public static void getLernenIndices(
-            int index, int[][] A, ArrayList<Permutation> cycles, int[] partition) {
+            int index, int[][] A, ArrayList<Permutation> cycles, int[] partition) throws IOException {
+    	int[] check= new int[size];
         for (Permutation cycle : cycles) {
-            int[] check = row2compare(index, A, cycle);
+            check = row2compare(index, A, cycle);
             if (!biggerCheck(index, A[index], check, partition)) {
                 setLernenIndices(index, cycle, A, check, partition);
                 break;
@@ -653,13 +658,14 @@ public class MAYGEN {
      * @param A int[][] adjacency matrix
      * @param secondRow int[] second row
      * @param partition int[] atom partition
+     * @throws IOException 
      */
     public static void setLernenIndices(
             int rowIndex1,
             Permutation cycle,
             int[][] A,
             int[] secondRow,
-            int[] partition) {
+            int[] partition) throws IOException {
         nonCanonicalIndices = new int[2];
         learningFromCanonicalTest = false;
         int rowIndex2 = cycle.get(rowIndex1);
@@ -688,14 +694,24 @@ public class MAYGEN {
      * For a row given by index, checking whether it is in maximal form or not. If not, the
      * nonCanonicalIndices is set.
      *
-     * @param index int row index
-     * @param A int[][] adjacency matrix
-     * @param partition int[] partition
+     * @param array int[]
      * @return boolean
+     * @throws IOException 
      */
-    public static boolean rowDescendingTest(int index, int[][] A, int[] partition) {
+    
+    public static boolean zero(int[] array) {
+    	boolean check=false;
+    	for(int i=0;i<size;i++) {
+    		if(array[i]==0) {
+    			check=true;
+        		break;
+    		}
+    	}
+    	return check;
+    }
+    public static boolean rowDescendingTest(int index, int[][] A, int[] partition) throws IOException {
         boolean check = true;
-        if (partition.length != size) {
+        if (zero(partition)) {
             if (!descendingOrderCheck(partition, A[index])) {
                 check = false;
                 int[] array = cloneArray(A[index]);
@@ -737,7 +753,7 @@ public class MAYGEN {
      * @return int[]
      */
     public static int[] limit(int index, int nextRowIndex, int[][] A, Permutation permutation) {
-        int[] original = A[index];
+    	int[] original = A[index];
         int[] permuted = A[nextRowIndex];
         int[] limit = new int[2];
         limit[0] = index;
@@ -798,9 +814,10 @@ public class MAYGEN {
      * @param A int[][] adjacency matrix
      * @param permutation Permutation permutation from canonical test
      * @return int[]
+     * @throws IOException 
      */
     public static int[] upperIndex(
-            int index, int nextRowIndex, int[][] A, Permutation permutation) {
+            int index, int nextRowIndex, int[][] A, Permutation permutation) throws IOException {
         int[] limit = limit(index, nextRowIndex, A, permutation);
         int[] lowerLimit = lowerIndex(index, nextRowIndex, A, permutation);
         int[] upperLimit = new int[2];
@@ -916,7 +933,8 @@ public class MAYGEN {
         boolean check = true;
         int i = index + 1;
         int p = 0;
-        for (int k = index + 1; k < partition.length; k++) {
+        int limit=findZeros(partition);
+        for (int k = index + 1; k < limit; k++) {
             p = partition[k];
             if (descendingOrderCheck(firstRow, i, (i + p))) {
                 if (!compareIndexwise(firstRow, secondRow, i, (i + p))) {
@@ -960,12 +978,15 @@ public class MAYGEN {
     public static boolean descendingOrderCheck(int[] partition, int[] array) {
         boolean check = true;
         int i = 0;
-        for (int part : partition) {
-            if (!descendingOrderCheck(array, i, (part + i))) {
+        int value=0;
+        int limit = findZeros(partition);
+        for (int s=0;s<limit;s++) {
+        	value=partition[s];
+            if (!descendingOrderCheck(array, i, (value + i))) {
                 check = false;
                 break;
             } else {
-                i = i + part;
+                i = i + value;
             }
         }
         return check;
@@ -979,8 +1000,6 @@ public class MAYGEN {
      * L; upper triangular matrix like given in 3.2.1. For (i,j), after the index, giving the
      * maximum line capacity.
      *
-     * @param degrees int[] valences
-     * @return upper triangular matrix
      */
     public static void upperTriangularL() {
         L = new int[hIndex][hIndex];
@@ -1003,8 +1022,6 @@ public class MAYGEN {
      * C; upper triangular matrix like given in 3.2.1. For (i,j), after the index, giving the
      * maximum column capacity.
      *
-     * @param degrees int[] valences
-     * @return upper triangular matrix
      */
     public static int[][] upperTriangularC() {
         C = new int[hIndex][hIndex];
@@ -1056,8 +1073,6 @@ public class MAYGEN {
 
     /**
      * Possible maximal edge multiplicity for the atom pair (i,j).
-     *
-     * @param degrees int[] valences
      */
     public static void maximalMatrix() {
         max = new int[hIndex][hIndex];
@@ -1285,6 +1300,7 @@ public class MAYGEN {
             int x = A[i][j];
             int l2 = LInverse(i, j, A);
             int c2 = CInverse(i, j, A);
+            
             if (x > 0
                     && (backwardCriteria((x), l2, L[i][j]) && backwardCriteria((x), c2, C[i][j]))) {
                 A[i][j] = (x - 1);
@@ -1323,7 +1339,7 @@ public class MAYGEN {
 
     public static int[][] forward(
             int lInverse, int cInverse, int maximalX, int i, int j, int[][] A, int[] indices)
-            throws CloneNotSupportedException, CDKException {
+            throws CloneNotSupportedException, CDKException, IOException {
         if (((lInverse - maximalX) <= L[i][j]) && ((cInverse - maximalX) <= C[i][j])) {
             A[i][j] = maximalX;
             A[j][i] = maximalX;
@@ -1452,7 +1468,8 @@ public class MAYGEN {
             p = firstOccurrences[part];
             int[] subArray = getBlocks(degrees, i, p + i);
             for (Integer item : getSubPartition(subArray)) {
-                newPartition[index++] = item;
+                newPartition[index] = item;
+                index++;
             }
             i = i + p;
         }
@@ -1471,8 +1488,9 @@ public class MAYGEN {
         int[] partition = new int[size];
         int next = 0;
         int index = 0;
+        int[] result = new int[2];
         while (i < size) {
-            int[] result = nextCount(index, i, size, degrees, partition);
+            result = nextCount(index, i, size, degrees, partition);
             index = result[1];
             next = (i + result[0]);
             if (next == size) {
@@ -1496,17 +1514,20 @@ public class MAYGEN {
     public static int[] nextCount(int index, int i, int size, int[] degrees, int[] partition) {
         int count = 1;
         if (i == (size - 1)) {
-            partition[index++] = 1;
+            partition[index] = 1;
+            index++;
         } else {
             for (int j = i + 1; j < size; j++) {
                 if (degrees[i] == degrees[j]) {
                     count++;
                     if (j == (size - 1)) {
-                        partition[index++] = count;
+                        partition[index] = count;
+                        index++;
                         break;
                     }
                 } else {
-                    partition[index++] = count;
+                    partition[index] = count;
+                    index++;
                     break;
                 }
             }
@@ -1520,10 +1541,10 @@ public class MAYGEN {
      * @throws IOException
      * @throws CDKException
      * @throws CloneNotSupportedException
-     * @throws URISyntaxException
      */
+    
     public static void run()
-            throws IOException, CDKException, CloneNotSupportedException, URISyntaxException {
+            throws IOException, CDKException, CloneNotSupportedException {
         if (canBuildGraph(formula)) {
             clearGlobals();
             long startTime = System.nanoTime();
@@ -1666,9 +1687,8 @@ public class MAYGEN {
         newDegreeList = new int[size];
         learningFromCanonicalTest = false;
         learningFromConnectivity = false;
+        
         for (int[] degree : newDegrees) {
-            //System.gc();
-            //System.runFinalization();
             int[] po = getPartition(degree);
             if(writeSDF) symbolArrayCopy = Arrays.copyOf(symbolArray, symbolArray.length);
             sortWithPartition(po, degree, symbolArrayCopy);
@@ -1860,8 +1880,9 @@ public class MAYGEN {
      *
      * @param A int[][] adjacency matrix
      * @return boolean
+     * @throws IOException 
      */
-    public static boolean canonicalTest(int[][] A) {
+    public static boolean canonicalTest(int[][] A) throws IOException {
         boolean check = true;
         learningFromCanonicalTest = false;
         y = ys[r];
@@ -1884,6 +1905,7 @@ public class MAYGEN {
                 break;
             }
         }
+       
         clearFormers(check, y);
         return check;
     }
@@ -1969,20 +1991,16 @@ public class MAYGEN {
      * @param partition int[] former partition
      * @param newPartition int[] canonical partition
      * @return boolean
+     * @throws IOException 
      */
-    public static boolean rowCanonicalTest(
-            int index,
-            int r,
-            int[][] A,
-            int[] partition,
-            int[] newPartition) {
-        boolean check = true;
+    public static boolean rowCanonicalTest(int index, int r, int[][] A, int[] partition, int[] newPartition) throws IOException {
+    	boolean check = true;
         if (!rowDescendingTest(index, A, newPartition)) {
             check = false;
         } else {
             y = ys[r];
             ArrayList<Permutation> cycles = new ArrayList<Permutation>();
-            if (partition.length == size) {
+            if (partition[size-1]!=0) {
                 Permutation id = new Permutation(size);
                 cycles.add(id);
             } else {
@@ -2007,10 +2025,12 @@ public class MAYGEN {
      * @param index row index
      * @param newPartition atom partition
      * @param A int[][] adjacency matrix
+     * @throws IOException 
      */
-    public static void addPartition(int index, int[] newPartition, int[][] A) {
+    
+    public static void addPartition(int index, int[] newPartition, int[][] A) throws IOException {
         int[] refinedPartition;
-        if (newPartition.length == size) {
+        if (newPartition[size-1]!=0) {
             refinedPartition = newPartition;
         } else {
             refinedPartition = refinedPartitioning(newPartition, A[index]);
@@ -2030,36 +2050,42 @@ public class MAYGEN {
      * @return int[]
      */
     public static int[] refinedPartitioning(int[] partition, int[] row) {
-        int[] refined = new int[partition.length + row.length];
+        int[] refined = new int[size];
         int index = 0;
         int count = 1;
         int refinedIndex = 0;
-        for (int p : partition) {
-            if (p != 1) {
-                for (int i = index; i < p + index - 1; i++) {
-                    if (i + 1 < p + index - 1) {
+        int limit= findZeros(partition);
+        for (int s=0;s<limit;s++) {
+            if (partition[s] != 1) {
+                for (int i = index; i < partition[s] + index - 1; i++) {
+                    if (i + 1 < partition[s] + index - 1) {
                         if (row[i] == row[i + 1]) {
                             count++;
                         } else {
-                            refined[refinedIndex++] = count;
+                            refined[refinedIndex] = count;
+                            refinedIndex++;
                             count = 1;
                         }
                     } else {
                         if (row[i] == row[i + 1]) {
                             count++;
-                            refined[refinedIndex++] = count;
+                            refined[refinedIndex] = count;
+                            refinedIndex++;
                             count = 1;
                         } else {
-                            refined[refinedIndex++] = count;
-                            refined[refinedIndex++] = 1;
+                            refined[refinedIndex] = count;
+                            refinedIndex++;
+                            refined[refinedIndex] = 1;
+                            refinedIndex++;
                             count = 1;
                         }
                     }
                 }
-                index = index + p;
+                index = index + partition[s];
             } else {
                 index++;
-                refined[refinedIndex++] = 1;
+                refined[refinedIndex] = 1;
+                refinedIndex++;
                 count = 1;
             }
         }
@@ -2153,11 +2179,12 @@ public class MAYGEN {
         if (!equalSetCheck(max, check, partition)) {
             return values;
         } else {
-            for (int p : partition) {
-                int[] can = getBlocks(max, i, p + i);
-                int[] non = getBlocks(check, i, p + i);
+        	int limit=findZeros(partition);
+            for (int s=0;s<limit;s++) {
+                int[] can = getBlocks(max, i, partition[s] + i);
+                int[] non = getBlocks(check, i, partition[s] + i);
                 values = getCyclesList(can, non, i, values);
-                i = i + p;
+                i = i + partition[s];
             }
             return values;
         }
@@ -2215,7 +2242,7 @@ public class MAYGEN {
             int total,
             int[][] A,
             int[] newPartition,
-            Permutation cycleTransposition) {
+            Permutation cycleTransposition) throws IOException {
         biggest = true;
         Permutation canonicalPermutation = idPermutation(total);
         if (!equalRowsCheck(index, A, cycleTransposition, canonicalPermutation)) {
@@ -2227,9 +2254,9 @@ public class MAYGEN {
     }
 
     public static boolean check(
-            int index, int y, int total, int[][] A, int[] newPartition) {
+            int index, int y, int total, int[][] A, int[] newPartition) throws IOException {
         boolean check = true;
-        ArrayList<SoftReference<Permutation>> formerList = new ArrayList<>();
+        ArrayList<Permutation> formerList = new ArrayList<>();
         ArrayList<Permutation> form = formerPermutations.get(index);
         for (Permutation permutation : form) {
             setBiggest(index, A, permutation, newPartition);
@@ -2241,11 +2268,11 @@ public class MAYGEN {
                 if (descendingOrderUpperMatrixCheck(index, newPartition, A[index], test)) {
                     if (canonicalPermutation.isIdentity()) {
                         if (equalSetCheck2(newPartition, A[index], test)) {
-                            formerList.add(new SoftReference<>(permutation));
+                            formerList.add(permutation);
                         }
                     } else {
                         Permutation newPermutation = canonicalPermutation.multiply(permutation);
-                        formerList.add(new SoftReference<>(newPermutation));
+                        formerList.add(newPermutation);
                     }
                 } else {
                     formerList.clear();
@@ -2260,8 +2287,7 @@ public class MAYGEN {
         }
         if (check) {
             formerPermutations.get(index).clear();
-            formerPermutations.set(index, new ArrayList<>(formerList.stream().map(SoftReference::get)
-                    .collect(Collectors.toList())));
+            formerPermutations.set(index, formerList);
         }
         return check;
     }
@@ -2301,8 +2327,9 @@ public class MAYGEN {
      * @param i int row index
      * @param partition int[] partition
      * @return int[]
+     * @throws IOException 
      */
-    public static int[] canonicalPartition(int i, int[] partition) {
+    public static int[] canonicalPartition(int i, int[] partition) throws IOException {
         return partitionCriteria(partition, i + 1);
     }
 
@@ -2311,6 +2338,18 @@ public class MAYGEN {
         for (int i = 0; i < number; i++) {
             list[i] = 1;
         }
+    }
+    
+    
+    public static int findZeros(int[] array) {
+    	int index=size;
+    	for(int i=0;i<size;i++) {
+    		if(array[i]==0) {
+    			index=i;
+    			break;
+    		}
+    	}
+    	return index;
     }
 
     /**
@@ -2321,19 +2360,23 @@ public class MAYGEN {
      * @return
      */
     public static int[] partitionCriteria(int[] partEx, int degree) {
-        int[] partNew = new int[size + partEx.length];
-        if (partEx.length != size) {
+        int[] partNew = new int[size];
+        int limit = findZeros(partEx);
+        if (zero(partEx)) {
             addOnes(partNew, degree);
             int index = degree;
             int oldValue = partEx[degree - 1];
             if (oldValue > 1) {
-                partNew[index++] = oldValue - 1;
-                for (int k = degree; k < partEx.length; k++) {
-                    partNew[index++] = partEx[k];
+                partNew[index] = oldValue - 1;
+                index++;
+                for (int k = degree; k < limit; k++) {
+                    partNew[index] = partEx[k];
+                    index++;
                 }
             } else if (oldValue == 1) {
-                for (int k = degree; k < partEx.length; k++) {
-                    partNew[index++] = partEx[k];
+                for (int k = degree; k < limit; k++) {
+                    partNew[index] = partEx[k];
+                    index++;
                 }
             }
             return partNew;
@@ -2391,14 +2434,7 @@ public class MAYGEN {
         int index = 0;
         int index2 = 0;
         int part;
-        while (index != hIndex) {
-            part = partition[index];
-            index2++;
-            index += part;
-        }
-        int[] init = new int[index2];
-        index = 0;
-        index2 = 0;
+        int[] init = new int[size];
         while (index != hIndex) {
             part = partition[index];
             init[index2++] = part;
@@ -2493,8 +2529,7 @@ public class MAYGEN {
         return options;
     }
 
-    public static void main(String[] args)
-            throws CloneNotSupportedException, CDKException, IOException {
+    public static void main(String[] args) {
         MAYGEN gen = new MAYGEN();
         try {
             gen.parseArgs(args);
