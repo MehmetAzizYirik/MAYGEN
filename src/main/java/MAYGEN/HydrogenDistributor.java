@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 public class HydrogenDistributor {
-	public static Map<Integer, Integer> capacities;
+	public static final Map<Integer, Integer> capacities;
 	public static int isotopes;
 	public static int[] capacity;
 	public static int[] valences;
@@ -62,8 +62,7 @@ public class HydrogenDistributor {
 		capacities.put(1, 0);
 		capacities.put(17, 0);
 		capacities.put(35, 0);
-		capacities.put(53, 0);
-		
+
 	}
 	
 	/**
@@ -136,10 +135,7 @@ public class HydrogenDistributor {
 	}
 
 	public static List<int[]> combineArrays(LinkedList<List <int[]>> lists) {
-		List<int[]> comb = new ArrayList<int[]>();
-	    for (int[] s: lists.removeFirst()) {
-	    	comb.add(s);
-	    }
+		List<int[]> comb = new ArrayList<int[]>(lists.removeFirst());
 	    while (!lists.isEmpty()) {
 	        List<int[]> list = lists.removeFirst();
 	        List<int[]> newComb =  new ArrayList<int[]>();
@@ -163,7 +159,7 @@ public class HydrogenDistributor {
 		HydrogenDistributor.isotopes=partitionSize-1;
 		setValues(partition,degrees);
 		HydrogenDistributor.totalHydrogen=hydrogen;
-		List<int[]> result= new ArrayList<int[]>();
+		List<int[]> result;
 		if(isotopes==1) {
 			List<int[]> iarrays= new ArrayList<int[]>();
 			int[] array = new int[0];
