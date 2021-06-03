@@ -32,8 +32,6 @@ package MAYGEN;
  * @author Mehmet Aziz Yirik
  */
 
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,10 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import org.openscience.cdk.exception.CDKException;
-
 public class HydrogenDistributor {
-	public static Map<Integer, Integer> capacities;
+	public static final Map<Integer, Integer> capacities;
 	public static int isotopes;
 	public static int[] capacity;
 	public static int[] valences;
@@ -66,8 +62,7 @@ public class HydrogenDistributor {
 		capacities.put(1, 0);
 		capacities.put(17, 0);
 		capacities.put(35, 0);
-		capacities.put(53, 0);
-		
+
 	}
 	
 	/**
@@ -79,35 +74,27 @@ public class HydrogenDistributor {
         a[a.length - 1] = e;
         return a;
     }
-	
-	public static int sum(int[] partition, int index) {
+
+	public static int sum(int[] list, int index) {
 		int sum=0;
 		for(int i=0;i<=index;i++) {
-			sum=sum+partition[i];
-		}
-	    return sum;
-	}
-	
-	public static int sum(ArrayList<Integer> list, int index) {
-		int sum=0;
-		for(int i=0;i<=index;i++) {
-			sum=sum+list.get(i);
+			sum=sum+ list[i];
 		}
 		return sum;
 	}
 	
-	public static int[] setValues(ArrayList<Integer> partition, int[] degrees) {
-		int partitionSize= partition.size();
+	public static int[] setValues(int[] partition, int[] degrees) {
+		int partitionSize= partition.length;
 		int[] capacity = new int[partitionSize];
 		int[] valences = new int[partitionSize];
 		int[] totalAtom = new int[partitionSize];
 		int i=0;
 		int sum=0;
 		for(int j=0;j<partitionSize;j++) {
-			totalAtom[i]=partition.get(i);
+			totalAtom[i]= partition[i];
 			sum=sum(partition,i);
 			valences[i]=degrees[sum-1]-1;
-			capacity[i]=(degrees[sum-1]-1)*partition.get(i);
+			capacity[i]=(degrees[sum-1]-1)* partition[i];
 			i++;
 		}
 
@@ -148,10 +135,7 @@ public class HydrogenDistributor {
 	}
 
 	public static List<int[]> combineArrays(LinkedList<List <int[]>> lists) {
-		List<int[]> comb = new ArrayList<int[]>();
-	    for (int[] s: lists.removeFirst()) {
-	    	comb.add(s);
-	    }
+		List<int[]> comb = new ArrayList<int[]>(lists.removeFirst());
 	    while (!lists.isEmpty()) {
 	        List<int[]> list = lists.removeFirst();
 	        List<int[]> newComb =  new ArrayList<int[]>();
@@ -169,13 +153,13 @@ public class HydrogenDistributor {
 	 * To initialise the inputs and run the functions while recording the duration time.
 	 */
 	
-	public static List<int[]> run(ArrayList<Integer> partition, int[] degrees) throws CloneNotSupportedException {
-		int partitionSize= partition.size();
-		int hydrogen= partition.get(partitionSize-1);
+	public static List<int[]> run(int[] partition, int[] degrees) {
+		int partitionSize= partition.length;
+		int hydrogen= partition[partitionSize - 1];
 		HydrogenDistributor.isotopes=partitionSize-1;
 		setValues(partition,degrees);
 		HydrogenDistributor.totalHydrogen=hydrogen;
-		List<int[]> result= new ArrayList<int[]>();
+		List<int[]> result;
 		if(isotopes==1) {
 			List<int[]> iarrays= new ArrayList<int[]>();
 			int[] array = new int[0];

@@ -3,7 +3,6 @@ package MAYGEN;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import org.junit.Test;
 import org.openscience.cdk.exception.CDKException;
@@ -15,13 +14,12 @@ public class MaygenTest {
 	 * formulas are used. The number of generated structures are checked. The
 	 * number of isomers are also tested with MOLGEN algorithm. MAYGEN generates 
 	 * same number of isomers like MOLGEN.
-	 * @throws URISyntaxException 
 	 */
 	
        
 	@Test
 
-	public void test_C3Cl2H4() throws IOException, CDKException, CloneNotSupportedException, URISyntaxException {
+	public void test_C3Cl2H4() throws IOException, CDKException, CloneNotSupportedException {
 		MAYGEN.formula="C3Cl2H4";
 		MAYGEN.run();
 		assertEquals(7,MAYGEN.count);
@@ -29,7 +27,7 @@ public class MaygenTest {
 
 	@Test
 
-	public void test_C2NO2H5() throws IOException, CDKException, CloneNotSupportedException, URISyntaxException {
+	public void test_C2NO2H5() throws IOException, CDKException, CloneNotSupportedException {
 		MAYGEN.formula="C2NO2H5";
 		MAYGEN.run();
 		assertEquals(84,MAYGEN.count);
@@ -37,13 +35,13 @@ public class MaygenTest {
 
 	@Test
 
-	public void test_C6H6() throws IOException, CDKException, CloneNotSupportedException, URISyntaxException {
+	public void test_C6H6() throws IOException, CDKException, CloneNotSupportedException {
 		MAYGEN.formula="C6H6";
 		MAYGEN.run();
 		assertEquals(217,MAYGEN.count);
 	}
 
-	/**@Test
+	@Test
 
 	public void test_C3O3H4() throws IOException, CDKException, CloneNotSupportedException {
 		MAYGEN.formula="C3O3H4";
@@ -337,6 +335,6 @@ public class MaygenTest {
 		MAYGEN.formula="C5H5POBr2";
 		MAYGEN.run();
 		assertEquals(62886, MAYGEN.count);
-	}**/
+	}
 }
 
