@@ -22,109 +22,17 @@
     	<artifactId>junit</artifactId>
     	<version>4.12</version>
 	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-data -->
-
-	<dependency>
-    	<groupId>org.openscience.cdk</groupId>
-    	<artifactId>cdk-data</artifactId>
-    	<version>[2.3,)</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-pdb -->
-	<dependency>
-	    <groupId>org.openscience.cdk</groupId>
-	    <artifactId>cdk-pdb</artifactId>
-	    <version>[2.3,)</version>
-	    <scope>test</scope>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-qsarmolecular -->
-	<dependency>
-    	<groupId>org.openscience.cdk</groupId>
-    	<artifactId>cdk-qsarmolecular</artifactId>
-   		<version>[2.3,)</version>
-	</dependency>
 	<!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
 	<dependency>
     	<groupId>commons-cli</groupId>
     	<artifactId>commons-cli</artifactId>
     	<version>1.4</version>
 	</dependency>
-	<dependency>
-    	<groupId>org.openscience.cdk</groupId>
-    	<artifactId>cdk-interfaces</artifactId>
-    	<version>[2.3,)</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-standard -->
-	<dependency>
-    	<groupId>org.openscience.cdk</groupId>
-    	<artifactId>cdk-standard</artifactId>
-    	<version>[2.3,)</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-inchi -->
-	<dependency>
-    	<groupId>org.openscience.cdk</groupId>
-    	<artifactId>cdk-inchi</artifactId>
-    	<version>[2.3,)</version>
-	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-group -->
 	<dependency>
     	<groupId>org.openscience.cdk</groupId>
     	<artifactId>cdk-group</artifactId>
-    	<version>[2.3,)</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-silent -->
-	<dependency>
-    	<groupId>org.openscience.cdk</groupId>
-    	<artifactId>cdk-silent</artifactId>
-    	<version>[2.3,)</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-io -->
-	<dependency>
-    	<groupId>org.openscience.cdk</groupId>
-    	<artifactId>cdk-io</artifactId>
-    	<version>[2.3,)</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-depict -->
-	<dependency>
-    	<groupId>org.openscience.cdk</groupId>
-    	<artifactId>cdk-depict</artifactId>
-    	<version>[2.3,)</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-ctab -->
-	<dependency>
-    	<groupId>org.openscience.cdk</groupId>
-    	<artifactId>cdk-ctab</artifactId>
-    	<version>[2.3,)</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-tool -->
-	<dependency>
-    	<groupId>org.openscience.cdk</groupId>
-    	<artifactId>cdk-tool</artifactId>
-    	<version>[2.3,)</version>
-    	<type>pom</type>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-formula -->
-	<dependency>
-    	<groupId>org.openscience.cdk</groupId>
-    	<artifactId>cdk-formula</artifactId>
-    	<version>[2.3,)</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-core -->
-	<dependency>
-	    <groupId>org.openscience.cdk</groupId>
-	    <artifactId>cdk-core</artifactId>
-	    <version>[2.3,)</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-structgen -->
-	<dependency>
-    	<groupId>org.openscience.cdk</groupId>
-    	<artifactId>cdk-structgen</artifactId>
-    	<version>[2.3,)</version>
-	</dependency>
-
-	<dependency>
-   		<groupId>org.openscience.cdk</groupId>
-   		<artifactId>cdk-valencycheck</artifactId>
-   		<version>[2.3,)</version>
+    	<version>[2.5,)</version>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
 	<dependency>
@@ -142,7 +50,7 @@
 	<plugins>
 		<plugin>
 			<artifactId>maven-compiler-plugin</artifactId>
-			<version>3.3</version>
+			<version>3.8.1</version>
 			<configuration>
 				<source>1.8</source>
 				<target>1.8</target>

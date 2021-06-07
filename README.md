@@ -61,7 +61,7 @@ directory is needed to be specified.
  -t,--tsvoutput                Output formula, number of structures and execution time in CSV format
  
  -o,--filedir <arg>            Store output in given file 
- 
+
 Please report issues at https://github.com/MehmetAzizYirik/MAYGEN
 ```
 
