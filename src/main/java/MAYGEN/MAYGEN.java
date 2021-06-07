@@ -20,6 +20,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
@@ -252,7 +253,7 @@ public class MAYGEN {
 
     public static void getSymbolOccurrences() {
         ArrayList<String> symbolList = new ArrayList<String>();
-        String[] atoms = formula.split("(?=[A-Z])");
+        String[] atoms = normalizeFormula(formula).split("(?=[A-Z])");
         String[] info;
         int occur = 0;
         int hydrogens = 0;
@@ -360,6 +361,12 @@ public class MAYGEN {
         }
     }
 
+    private static String normalizeFormula(String formula) {
+        String[] from = {"c", "n", "o", "s", "p", "f", "i", "cl", "CL", "br", "BR", "h"};
+        String[] to = {"C", "N", "O", "S", "P", "F", "I", "Cl", "Cl", "Br", "Br", "H"};
+        return StringUtils.replaceEach(formula, from, to);
+    }
+
     /**
      * Checking whether a molecular formula can represent a graph or not.
      *
@@ -371,7 +378,7 @@ public class MAYGEN {
      */
     public static boolean canBuildGraph(String formula) {
         boolean check = true;
-        String[] atoms = formula.split("(?=[A-Z])");
+        String[] atoms = normalizeFormula(formula).split("(?=[A-Z])");
         String[] info;
         String symbol;
         int occur, valence;
@@ -1589,10 +1596,10 @@ public class MAYGEN {
         if (canBuildGraph(formula)) {
             clearGlobals();
             long startTime = System.nanoTime();
-            if (verbose) System.out.println("MAYGEN is generating isomers of " + formula + "...");
+            if (verbose) System.out.println("MAYGEN is generating isomers of " + normalizeFormula(formula) + "...");
             getSymbolOccurrences();
             initialDegrees();
-            if (writeSDF) outFile = new SDFWriter(new FileWriter(filedir + formula + ".sdf"));
+            if (writeSDF) outFile = new SDFWriter(new FileWriter(filedir + normalizeFormula(formula) + ".sdf"));
             // File jarFile = new
             // File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
             // String outputFilePath = jarFile.getParent() + File.separator + formula+".sdf";
