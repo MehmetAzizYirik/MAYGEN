@@ -2613,9 +2613,8 @@ public class MAYGEN {
     }
     public static void main(String[] args) throws CloneNotSupportedException, CDKException, IOException {
     	MAYGEN gen = new MAYGEN();
-    	String[] ar= {"-f","Cl3Br4F4I4H3N3O3","-v"};
     	try {
-            gen.parseArgs(ar);
+            gen.parseArgs(args);
             MAYGEN.run();
         } catch (Exception e) {
             if (MAYGEN.verbose) e.getCause();
