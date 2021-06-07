@@ -13,7 +13,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -356,9 +359,16 @@ public class MAYGEN {
     }
 
     private static String normalizeFormula(String formula) {
-        String[] from = {"c", "n", "o", "s", "p", "f", "i", "cl", "CL", "br", "BR", "h"};
-        String[] to = {"C", "N", "O", "S", "P", "F", "I", "Cl", "Cl", "Br", "Br", "H"};
+        String[] from = {"cl", "CL", "c", "n", "o", "s", "p", "f", "i", "br", "BR", "h"};
+        String[] to = {"Cl", "Cl", "C", "N", "O", "S", "P", "F", "I", "Br", "Br", "H"};
         return StringUtils.replaceEach(formula, from, to);
+    }
+
+    private static String[] validateFormula(String formula) {
+        String[] from = {"Cl", "C", "N", "O", "S", "P", "F", "I", "Br", "H"};
+        String[] to = {"", "", "", "", "", "", "", "", "", ""};
+        return StringUtils.split(StringUtils.replaceEach(formula.replaceAll("[0-9]",""), from, to),
+                "");
     }
 
     /**
@@ -1559,12 +1569,19 @@ public class MAYGEN {
     
     //TODO: path belirle, update readme.
     public static void run() throws IOException, CDKException, CloneNotSupportedException {
-        if (canBuildGraph(formula)) {
+        String[] unsupportedSymbols = validateFormula(normalizeFormula(formula));
+        if (unsupportedSymbols.length > 0) {
+            if (verbose) System.out.println("The input formula consists user defined element types: "
+                    + Arrays.stream(unsupportedSymbols).collect(Collectors.joining(",")));
+        } else if (canBuildGraph(formula)) {
             long startTime = System.nanoTime();
-            if (verbose) System.out.println("MAYGEN is generating isomers of " + formula + "...");
+            if (verbose) System.out.println("MAYGEN is generating isomers of " + normalizeFormula(formula) + "...");
             getSymbolOccurrences();
             initialDegrees();
-            if (writeSDF) outFile = new FileWriter(new File(filedir + formula + ".sdf"));
+            if (writeSDF) {
+                new File(filedir).mkdirs();
+                outFile = new FileWriter(new File(filedir + "/" + normalizeFormula(formula) + ".sdf"));
+            }
             structureGenerator();
             if (writeSDF) outFile.close();
             long endTime = System.nanoTime() - startTime;
@@ -2532,7 +2549,8 @@ public class MAYGEN {
             MAYGEN.formula = cmd.getOptionValue("formula");
             if (cmd.hasOption("filedir")) {
                 MAYGEN.writeSDF = true;
-                MAYGEN.filedir = cmd.getOptionValue("filedir");
+                String filedir = cmd.getOptionValue("filedir");
+                MAYGEN.filedir = Objects.isNull(filedir) ? "." : filedir;
             }
             if (cmd.hasOption("verbose")) MAYGEN.verbose = true;
             if (cmd.hasOption("tsvoutput")) MAYGEN.tsvoutput = true;
@@ -2580,6 +2598,7 @@ public class MAYGEN {
                 Option.builder("d")
                         .required(false)
                         .hasArg()
+                        .optionalArg(true)
                         .longOpt("filedir")
                         .desc("Store output in given file")
                         .build();
