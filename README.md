@@ -48,7 +48,7 @@ MAYGEN.jar can be run from command line with the specified arguments. An example
 The definitions of the arguments are given below:
 
 ```
-usage: java -jar MAYGEN.jar -f <arg> [-v] -t -o <arg> 
+usage: java -jar MAYGEN.jar -f <arg> [-v] -t -d <arg> 
 
 Generates molecular structures for a given molecular formula. The input is 
 a molecular formula string. For example 'C2OH4'. If user wants output file, the
@@ -60,13 +60,13 @@ directory is needed to be specified.
  
  -t,--tsvoutput                Output formula, number of structures and execution time in CSV format
  
- -o,--filedir <arg>            Store output in given file 
+ -d,--filedir <arg>            Store output in given file 
 
 Please report issues at https://github.com/MehmetAzizYirik/MAYGEN
 ```
 
 ```
-java -jar MAYGEN.jar -f C2OH4 -v -t -o C:\Users\UserName\Desktop\
+java -jar MAYGEN.jar -f C2OH4 -v -t -d C:\Users\UserName\Desktop\
 ```
 
 ## License
