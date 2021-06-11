@@ -27,6 +27,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
+import org.openscience.cdk.group.PermutationGroup;
 
 
 public class MAYGEN {
@@ -245,14 +246,20 @@ public class MAYGEN {
     public static boolean noHydrogen = false;
     public static int sizePart = 0;
     public static boolean singleAtom=false;
+    public static boolean onlyDegree2=false;
     public static void getSymbolOccurrences() {
         ArrayList<String> symbolList = new ArrayList<String>();
         String[] atoms = normalizeFormula(formula).split("(?=[A-Z])");
         String[] info;
         int occur = 0;
         int hydrogens = 0;
+        String first = atoms[0].split("(?=[0-9])", 2)[0];
+        onlyDegree2=true;
         for (String atom : atoms) {
             info = atom.split("(?=[0-9])", 2);
+            if(!first.equals(info[0]) || valences.get(info[0])!=2) {
+            	onlyDegree2=false;
+            }
             if (!info[0].equals("H")) {
                 occur = atomOccurrunce(info);
                 sizePart++;
@@ -1756,6 +1763,8 @@ public class MAYGEN {
         }
         if(singleAtom) {
 			singleAtom();
+		}else if(onlyDegree2){
+			degree2graph();
 		}else {
 			ArrayList<int[]> newDegrees = distributeHydrogens();
 			nonCanonicalIndices = new int[2];
@@ -2618,25 +2627,40 @@ public class MAYGEN {
     	}
     	return count;
     }
+ 	
     public static void write2SDF(int[][] mat) throws IOException {
-    	int numberOfBonds= numberOfBonds(mat);
-    	outFile.write("\nMolecule "+String.valueOf(count)+"\n\n");
-    	outFile.write(" "+String.valueOf(matrixSize)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
-    	for (int i = 0; i < matrixSize; i++) {
-    		outFile.write("    0.0000    0.0000    0.0000  "+symbolArray[i]+" 0  0  0  0  0  0  0  0  0  0  0  0\n");
+    	   int numberOfBonds= numberOfBonds(mat);
+    	   outFile.write("Molecule "+String.valueOf(count)+"\n\n");
+    	   outFile.write("  "+String.valueOf(matrixSize)+"  "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
+    	   for (int i = 0; i < matrixSize; i++) {
+    	      outFile.write("    0.0000    0.0000    0.0000 "+symbolArray[i]+"   0  0  0  0  0  0  0  0  0  0  0  0\n");
+    	   }
+
+    	   for (int i = 0; i < matrixSize; i++) {
+    	      for (int j = i + 1; j < matrixSize; j++) {
+    	         if (mat[i][j]!=0) {
+    	            outFile.write("  "+String.valueOf(i + 1)+"  "+String.valueOf(j + 1)+"  "+String.valueOf(mat[i][j])+"  0  0  0  0\n");
+    	         }
+    	      }
+    	   }
+
+    	   outFile.write("M  END\n\n$$$$\n");
+
     	}
 
-    	for (int i = 0; i < matrixSize; i++) {
-    		for (int j = i + 1; j < matrixSize; j++) {
-    			if (mat[i][j]!=0) {
-    				outFile.write("  "+String.valueOf(i + 1)+"\t"+String.valueOf(j + 1)+"\t"+String.valueOf(mat[i][j])+"   0  0  0  0\n");
-    			}
-    		}
+    public static void degree2graph() throws IOException{
+    	int[][] mat = new int[matrixSize][matrixSize];
+    	mat[0][1]=1;
+    	mat[0][2]=1;
+    	for(int i=1;i<matrixSize-2;i++) {
+    		mat[i][i+2]=1;
     	}
-    
-    	outFile.write("M  END\n$$$$\n");
-
+    	mat[matrixSize-2][matrixSize-1]=1;
+    	count++;
+    	if(writeSDF) write2SDF(mat);
     }
+    
+
     public static void main(String[] args) throws CloneNotSupportedException, CDKException, IOException {
     	MAYGEN gen = new MAYGEN();
     	try {
