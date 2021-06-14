@@ -1763,7 +1763,14 @@ public class MAYGEN {
 
     /** For several calls of the run function, setting the global variables. */
     public static void clearGlobals() {
-        callForward = true;
+    	singleAtom = true;
+     	onlyDegree2 = true;
+     	OnSm = true;
+    	oxygen = 0;
+    	sulfur = 0;
+    	graphSize=0;
+    	notRepresentingIsomer = false;
+    	callForward = true;
         connectivityIndices = new int[2];
         learningFromCanonicalTest = false;
         learningFromConnectivity = false;
@@ -1781,6 +1788,7 @@ public class MAYGEN {
         justH = false;
         noHydrogen = false;
         singleAtom = false;
+        oxygenSulfur = new ArrayList<String[]>();
         formerPermutations = new ArrayList<ArrayList<Permutation>>();
         partitionList = new int[size + 1][1];
         symbols = new ArrayList<String>();
