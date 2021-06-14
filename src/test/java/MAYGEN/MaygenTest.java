@@ -22,6 +22,30 @@ public class MaygenTest {
     }
 
     @Test
+    public void test_O13S7() throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN.clearGlobals();
+        MAYGEN.formula = "O13S7";
+        MAYGEN.run();
+        assertEquals(1980, MAYGEN.count);
+    }
+
+    @Test
+    public void test_O10S10() throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN.clearGlobals();
+        MAYGEN.formula = "O10S10";
+        MAYGEN.run();
+        assertEquals(4752, MAYGEN.count);
+    }
+
+    @Test
+    public void test_S27() throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN.clearGlobals();
+        MAYGEN.formula = "S27";
+        MAYGEN.run();
+        assertEquals(1, MAYGEN.count);
+    }
+
+    @Test
     public void test_C2NO2H5() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN.clearGlobals();
         MAYGEN.formula = "C2NO2H5";
