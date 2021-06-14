@@ -374,8 +374,7 @@ public class MAYGEN {
     private static String[] validateFormula(String formula) {
         String[] from = {"Cl", "C", "N", "O", "S", "P", "F", "I", "Br", "H"};
         String[] to = {"", "", "", "", "", "", "", "", "", ""};
-        return StringUtils.split(StringUtils.replaceEach(formula.replaceAll("[0-9]",""), from, to),
-                "");
+        return StringUtils.replaceEach(formula.replaceAll("[0-9]",""), from, to).split("");
     }
 
     /**
