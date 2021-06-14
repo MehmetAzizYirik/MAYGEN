@@ -46,6 +46,14 @@ public class MaygenTest {
     }
 
     @Test
+    public void test_O18() throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN.clearGlobals();
+        MAYGEN.formula = "O18";
+        MAYGEN.run();
+        assertEquals(1, MAYGEN.count);
+    }
+
+    @Test
     public void test_C2NO2H5() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN.clearGlobals();
         MAYGEN.formula = "C2NO2H5";
