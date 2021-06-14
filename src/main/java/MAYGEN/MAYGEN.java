@@ -464,7 +464,8 @@ public class MAYGEN {
     private static String[] validateFormula(String formula) {
         String[] from = {"Cl", "C", "N", "O", "S", "P", "F", "I", "Br", "H"};
         String[] to = {"", "", "", "", "", "", "", "", "", ""};
-        return StringUtils.replaceEach(formula.replaceAll("[0-9]",""), from, to).split("");
+        return StringUtils.split(StringUtils.replaceEach(formula.replaceAll("[0-9]",""), from, to),
+                "");
     }
 
     /**
@@ -1231,8 +1232,6 @@ public class MAYGEN {
         if(!notRepresentingIsomer) {
         	upperTriangularL();
         	upperTriangularC();
-        	System.out.println(Arrays.deepToString(max));
-        
         	int[] indices = new int[2];
         	indices[0] = 0;
         	indices[1] = 1;
