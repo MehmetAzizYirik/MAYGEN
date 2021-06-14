@@ -1,37 +1,30 @@
 /**
  * MIT License
  *
- * Copyright (c) 2021 Mehmet Aziz Yirik
+ * <p>Copyright (c) 2021 Mehmet Aziz Yirik
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
+ * <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * <p>The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 
 /**
- * This is the main cass of MAYGEN project for molecular structure generation for a given 
- * input molecular formula.
- * 
+ * This is the main cass of MAYGEN project for molecular structure generation for a given input
+ * molecular formula.
+ *
  * @author Mehmet Aziz Yirik
  */
-
-
-
 package MAYGEN;
 
 import java.io.File;
@@ -50,7 +43,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -61,7 +53,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
-
 
 public class MAYGEN {
     public static int size = 0;
@@ -84,7 +75,8 @@ public class MAYGEN {
     public static boolean flag = true;
     public static boolean learningFromCanonicalTest = false;
     public static boolean biggest = true;
-    public static ArrayList<ArrayList<Permutation>> formerPermutations = new ArrayList<ArrayList<Permutation>>();
+    public static ArrayList<ArrayList<Permutation>> formerPermutations =
+            new ArrayList<ArrayList<Permutation>>();
     public static int[] degrees;
     public static int[] initialPartition;
     public static int[][] partitionList;
@@ -97,6 +89,26 @@ public class MAYGEN {
     public static int r = 0;
     public static int y = 0;
     public static int z = 0;
+    public static String[] symbolArrayCopy;
+    public static int[] hydrogens;
+    public static boolean notRepresentingIsomer = false;
+    public static int[] nodeLabels;
+    public static int graphSize;
+    public static List<String[]> oxygenSulfur = new ArrayList<String[]>();
+    public static int[] firstDegrees;
+    public static int partSize = 0;
+    public static int totalHydrogen = 0;
+    public static ArrayList<String> firstSymbols = new ArrayList<String>();
+    public static int[] firstOccurrences;
+    public static boolean callHydrogenDistributor = false;
+    public static boolean justH = false;
+    public static boolean noHydrogen = false;
+    public static int sizePart = 0;
+    public static boolean singleAtom = true;
+    public static boolean onlyDegree2 = true;
+    public static boolean OnSm = true;
+    public static int oxygen = 0;
+    public static int sulfur = 0;
 
     static {
         // The atom valences from CDK.
@@ -223,14 +235,6 @@ public class MAYGEN {
      *
      * @param formula String molecular formula
      */
-    public static int partSize = 0;
-
-    public static int totalHydrogen = 0;
-    public static ArrayList<String> firstSymbols = new ArrayList<String>();
-    public static int[] firstOccurrences;
-    public static boolean callHydrogenDistributor = false;
-    public static boolean justH = false;
-
     public static void sortAscending(ArrayList<String> symbols) {
         HashMap<String, Integer> inputs = new HashMap<String, Integer>();
         for (int i = 0; i < symbols.size(); i++) {
@@ -276,73 +280,67 @@ public class MAYGEN {
         return symbols;
     }
 
-    public static boolean noHydrogen = false;
-    public static int sizePart = 0;
-    public static boolean singleAtom=true;
-    public static boolean onlyDegree2=true;
-    public static boolean OnSm=true;
-    public static int oxygen=0;
-    public static int sulfur=0;
-   
     public static void singleAtomCheck(String[] atoms) {
-    	String[] info;
+        String[] info;
         String symbol;
-    	for (String atom : atoms) {
+        for (String atom : atoms) {
             info = atom.split("(?=[0-9])", 2);
-            symbol=info[0];
-            if(!symbol.equals("H")) {
-            	if(atomOccurrence(info)>1) {
-            		singleAtom=false;
-            		break;
-            	}
+            symbol = info[0];
+            if (!symbol.equals("H")) {
+                if (atomOccurrence(info) > 1) {
+                    singleAtom = false;
+                    break;
+                }
             }
         }
     }
+
     public static void checkOxygenSulfur(String[] atoms) {
-    	String[] info;
+        String[] info;
         String symbol;
-    	for (String atom : atoms) {
+        for (String atom : atoms) {
             info = atom.split("(?=[0-9])", 2);
-            symbol=info[0];
-            if(valences.get(symbol)!=2) {
-            	onlyDegree2=false;
-            	OnSm=false;
-            	break;
-            }else {
-            	if(symbol.equals("S")) {
-            		sulfur= atomOccurrence(info);
-            	}else if(symbol.equals("O")){
-            		oxygen= atomOccurrence(info);
-            	}
+            symbol = info[0];
+            if (valences.get(symbol) != 2) {
+                onlyDegree2 = false;
+                OnSm = false;
+                break;
+            } else {
+                if (symbol.equals("S")) {
+                    sulfur = atomOccurrence(info);
+                } else if (symbol.equals("O")) {
+                    oxygen = atomOccurrence(info);
+                }
             }
         }
-    	if(onlyDegree2) {
-    		matrixSize=sulfur+oxygen;
-    	}
+        if (onlyDegree2) {
+            matrixSize = sulfur + oxygen;
+        }
     }
-    
+
     public static void getSingleAtomVariables() {
         String[] atoms = formula.split("(?=[A-Z])");
         ArrayList<String> symbolList = new ArrayList<String>();
         String[] info;
         int hydrogens = 0;
         String symbol;
-        hIndex=1;
+        hIndex = 1;
         for (String atom : atoms) {
-        	info = atom.split("(?=[0-9])", 2);
-            symbol=info[0];
+            info = atom.split("(?=[0-9])", 2);
+            symbol = info[0];
             if (!symbol.equals("H")) {
-            	symbolList.add(symbol);
+                symbolList.add(symbol);
             } else {
-            	hydrogens = atomOccurrence(info);
+                hydrogens = atomOccurrence(info);
             }
         }
-        matrixSize=hydrogens+1;
-        for(int i=0;i<hydrogens;i++) {
-        	symbolList.add("H");
+        matrixSize = hydrogens + 1;
+        for (int i = 0; i < hydrogens; i++) {
+            symbolList.add("H");
         }
         setSymbols(symbolList);
     }
+
     public static void getSymbolOccurrences() {
         String[] atoms = formula.split("(?=[A-Z])");
         ArrayList<String> symbolList = new ArrayList<String>();
@@ -351,47 +349,46 @@ public class MAYGEN {
         int hydrogens = 0;
         String symbol;
         for (String atom : atoms) {
-        	info = atom.split("(?=[0-9])", 2);
-            symbol=info[0];
+            info = atom.split("(?=[0-9])", 2);
+            symbol = info[0];
             if (!symbol.equals("H")) {
-            	occur = atomOccurrence(info);
+                occur = atomOccurrence(info);
                 sizePart++;
                 for (int i = 0; i < occur; i++) {
-                	if (occur != 0) {
-                		symbolList.add(symbol);
-                         hIndex++;
+                    if (occur != 0) {
+                        symbolList.add(symbol);
+                        hIndex++;
                     }
                 }
             } else {
-            	hydrogens = atomOccurrence(info);
+                hydrogens = atomOccurrence(info);
             }
         }
         sortAscending(symbolList);
-        for(int i=0;i<hydrogens;i++) {
-        	symbolList.add("H");
+        for (int i = 0; i < hydrogens; i++) {
+            symbolList.add("H");
         }
         firstOccurrences = getPartition(symbolList);
-        matrixSize=sum(firstOccurrences);   
+        matrixSize = sum(firstOccurrences);
         setSymbols(symbolList);
         occurrences = getPartition(symbolList);
         if (hydrogens != 0) {
-        	totalHydrogen += hydrogens;
-            if(hIndex==1) {
-            	callHydrogenDistributor=false;
-            }else if(hIndex==0){
-            	justH=true;
-            	callHydrogenDistributor=false;
-        		hIndex=hydrogens;
-            }else {
-        	    callHydrogenDistributor = true;
+            totalHydrogen += hydrogens;
+            if (hIndex == 1) {
+                callHydrogenDistributor = false;
+            } else if (hIndex == 0) {
+                justH = true;
+                callHydrogenDistributor = false;
+                hIndex = hydrogens;
+            } else {
+                callHydrogenDistributor = true;
             }
         } else {
-        	callHydrogenDistributor = false;
+            callHydrogenDistributor = false;
             noHydrogen = true;
         }
     }
 
-    
     public static int[] nextCount(
             int index, int i, int size, ArrayList<String> symbols, int[] partition) {
         int count = 1;
@@ -464,7 +461,7 @@ public class MAYGEN {
     private static String[] validateFormula(String formula) {
         String[] from = {"Cl", "C", "N", "O", "S", "P", "F", "I", "Br", "H"};
         String[] to = {"", "", "", "", "", "", "", "", "", ""};
-        String result = StringUtils.replaceEach(formula.replaceAll("[0-9]",""), from, to);
+        String result = StringUtils.replaceEach(formula.replaceAll("[0-9]", ""), from, to);
         return result.isEmpty() ? new String[0] : result.split("");
     }
 
@@ -478,7 +475,7 @@ public class MAYGEN {
      * @return boolean
      */
     public static boolean canBuildIsomer(String formula) {
-    	boolean canBuildIsomer = true;
+        boolean canBuildIsomer = true;
         String[] atoms = normalizeFormula(formula).split("(?=[A-Z])");
         String[] info;
         String symbol;
@@ -495,16 +492,14 @@ public class MAYGEN {
         }
         total = size;
         if (sum % 2 != 0) {
-        	canBuildIsomer = false;
+            canBuildIsomer = false;
         } else if (sum < 2 * (size - 1)) {
-        	canBuildIsomer = false;
+            canBuildIsomer = false;
         }
         return canBuildIsomer;
     }
 
     /** Initial degree arrays are set based on the molecular formula. */
-    public static int[] firstDegrees;
-
     public static void initialDegrees() {
         firstDegrees = new int[matrixSize];
         int index = 0;
@@ -518,8 +513,6 @@ public class MAYGEN {
             }
         }
     }
-    
-    
 
     /**
      * Checks two int[] arrays are equal with respect to an atom partition.
@@ -1165,16 +1158,11 @@ public class MAYGEN {
         return sum;
     }
 
-    /**
-     * Possible maximal edge multiplicity for the atom pair (i,j).
-     *
-     * @param degrees int[] valences
-     */
-    
-    public static boolean notRepresentingIsomer=false;
+    /** Possible maximal edge multiplicity for the atom pair (i,j). */
     public static void maximalMatrix() {
         max = new int[hIndex][hIndex];
-        outer: for (int i = 0; i < hIndex; i++) {
+        outer:
+        for (int i = 0; i < hIndex; i++) {
             for (int j = 0; j < hIndex; j++) {
                 int di = degrees[i];
                 int dj = degrees[j];
@@ -1187,27 +1175,27 @@ public class MAYGEN {
                         if (justH) {
                             max[i][j] = (di);
                         } else {
-                        	if(hIndex==2) {
-								 if(di>3) {
-									 notRepresentingIsomer=true;
-									 break outer;
-								 }
-								 max[i][j]=(di);
-							 }else {
-								 if(di!=1) {
-									 if((di-1)>3) {
-										 notRepresentingIsomer=true;
-										 break outer;
-									 }
-									 max[i][j]=(di-1); 
-								 }else {
-									 if(di>3) {
-										 notRepresentingIsomer=true;
-										 break outer;
-									 }
-									 max[i][j]=(di);
-								 }  
-							 }
+                            if (hIndex == 2) {
+                                if (di > 3) {
+                                    notRepresentingIsomer = true;
+                                    break outer;
+                                }
+                                max[i][j] = (di);
+                            } else {
+                                if (di != 1) {
+                                    if ((di - 1) > 3) {
+                                        notRepresentingIsomer = true;
+                                        break outer;
+                                    }
+                                    max[i][j] = (di - 1);
+                                } else {
+                                    if (di > 3) {
+                                        notRepresentingIsomer = true;
+                                        break outer;
+                                    }
+                                    max[i][j] = (di);
+                                }
+                            }
                         }
                     }
                 }
@@ -1229,41 +1217,42 @@ public class MAYGEN {
         degrees = degreeList;
         flag = true;
         maximalMatrix();
-        if(!notRepresentingIsomer) {
-        	upperTriangularL();
-        	upperTriangularC();
-        	int[] indices = new int[2];
-        	indices[0] = 0;
-        	indices[1] = 1;
-        	callForward = true;
-        	r = 0;
-        	y = ys[r];
-        	z = zs[r];
-        	while (flag) {
-        		nextStep(A, indices);
-        		if (!flag) {
-        			break;
-        		}
-        		if (learningFromConnectivity) {
-        			indices = connectivityIndices;
-        			findR(indices);
-        			int value = indexYZ();
-        			y = ys[value];
-        			clearFormers(false, y);
-        			learningFromConnectivity = false;
-        			callForward = false;
-        		} else {
-        			if (learningFromCanonicalTest) {
-        				indices = successor(nonCanonicalIndices, max.length);
-        				findR(indices);
-        				learningFromCanonicalTest = false;
-        				callForward = false;
-        			}
-        		}
-        	}
-        }else {
-        	if(verbose) System.out.println(
-                    "The input formula, " + formula + ", does not represent any molecule.");
+        if (!notRepresentingIsomer) {
+            upperTriangularL();
+            upperTriangularC();
+            int[] indices = new int[2];
+            indices[0] = 0;
+            indices[1] = 1;
+            callForward = true;
+            r = 0;
+            y = ys[r];
+            z = zs[r];
+            while (flag) {
+                nextStep(A, indices);
+                if (!flag) {
+                    break;
+                }
+                if (learningFromConnectivity) {
+                    indices = connectivityIndices;
+                    findR(indices);
+                    int value = indexYZ();
+                    y = ys[value];
+                    clearFormers(false, y);
+                    learningFromConnectivity = false;
+                    callForward = false;
+                } else {
+                    if (learningFromCanonicalTest) {
+                        indices = successor(nonCanonicalIndices, max.length);
+                        findR(indices);
+                        learningFromCanonicalTest = false;
+                        callForward = false;
+                    }
+                }
+            }
+        } else {
+            if (verbose)
+                System.out.println(
+                        "The input formula, " + formula + ", does not represent any molecule.");
         }
     }
 
@@ -1332,22 +1321,22 @@ public class MAYGEN {
      * @param A int[][] adjacency matrix
      * @param index int beginning index for the hydrogen setting
      * @return
-     * @throws CloneNotSupportedException 
+     * @throws CloneNotSupportedException
      */
     public static int[][] addHydrogens(int[][] A, int index) throws CloneNotSupportedException {
-    	if(singleAtom) {
-			int hIndex=index;
-			int hydrogen=valences.get(symbolArrayCopy[0]);
-			for(int j=hIndex;j<hydrogen+hIndex;j++) {
-				A[0][j]=1;
-				A[j][0]=1;
-			}
-    	}else if(callHydrogenDistributor) {
+        if (singleAtom) {
+            int hIndex = index;
+            int hydrogen = valences.get(symbolArrayCopy[0]);
+            for (int j = hIndex; j < hydrogen + hIndex; j++) {
+                A[0][j] = 1;
+                A[j][0] = 1;
+            }
+        } else if (callHydrogenDistributor) {
             int hIndex = index;
             int limit = 0;
-            int hydrogen=0;
+            int hydrogen = 0;
             for (int i = 0; i < index; i++) {
-            	hydrogen=hydrogens[i];
+                hydrogen = hydrogens[i];
                 limit = hIndex + hydrogen;
                 for (int j = hIndex; j < limit; j++) {
                     A[i][j] = 1;
@@ -1476,7 +1465,7 @@ public class MAYGEN {
         callForward = true;
         return forward(lInverse, cInverse, maximumValue, i, j, A, indices);
     }
-    
+
     public static int[][] forward(
             int lInverse, int cInverse, int maximalX, int i, int j, int[][] A, int[] indices)
             throws CloneNotSupportedException, CDKException, IOException {
@@ -1682,117 +1671,121 @@ public class MAYGEN {
      * @throws CDKException
      * @throws CloneNotSupportedException
      */
-    
     public static void run() throws IOException, CDKException, CloneNotSupportedException {
-        formula= normalizeFormula(formula);
-    	String[] unsupportedSymbols = validateFormula(formula);
+        formula = normalizeFormula(formula);
+        String[] unsupportedSymbols = validateFormula(formula);
         if (unsupportedSymbols.length > 0) {
-            if (verbose) System.out.println("The input formula consists user defined element types: "
-                    + Arrays.stream(unsupportedSymbols).collect(Collectors.joining(", ")));
-        }else {
-        	long startTime = System.nanoTime();
+            if (verbose)
+                System.out.println(
+                        "The input formula consists user defined element types: "
+                                + Arrays.stream(unsupportedSymbols)
+                                        .collect(Collectors.joining(", ")));
+        } else {
+            long startTime = System.nanoTime();
             if (verbose) System.out.println("MAYGEN is generating isomers of " + formula + "...");
             if (writeSDF) {
                 new File(filedir).mkdirs();
-                outFile = new FileWriter(new File(filedir + "/" + normalizeFormula(formula) + ".sdf"));
+                outFile =
+                        new FileWriter(
+                                new File(filedir + "/" + normalizeFormula(formula) + ".sdf"));
             }
             String[] atoms = formula.split("(?=[A-Z])");
             checkOxygenSulfur(atoms);
             singleAtomCheck(atoms);
-            if(singleAtom) {
-            	getSingleAtomVariables();
-    			singleAtom();
-    			if (writeSDF) outFile.close();
-		        long endTime = System.nanoTime() - startTime;
-		        double seconds = (double) endTime / 1000000000.0;
-		        DecimalFormat d = new DecimalFormat(".###");
-		        if (verbose) {
-		        	System.out.println("The number of structures is: " + count);
-		            System.out.println("Time: " + d.format(seconds) + " seconds");
-		        }
-		        if (tsvoutput) {
-		        	System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
-		        }
-    		}else if(onlyDegree2){
-    			if(oxygen==0 || sulfur==0) {
-    				degree2graph();
-    				if (writeSDF) outFile.close();
-    		        long endTime = System.nanoTime() - startTime;
-    		        double seconds = (double) endTime / 1000000000.0;
-    		        DecimalFormat d = new DecimalFormat(".###");
-    		        if (verbose) {
-    		        	System.out.println("The number of structures is: " + count);
-    		            System.out.println("Time: " + d.format(seconds) + " seconds");
-    		        }
-    		        if (tsvoutput) {
-    		        	System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
-    		        }
-    			}else {
-    				generateOnSm();
-    				if (writeSDF) outFile.close();
-    		        long endTime = System.nanoTime() - startTime;
-    		        double seconds = (double) endTime / 1000000000.0;
-    		        DecimalFormat d = new DecimalFormat(".###");
-    		        if (verbose) {
-    		        	System.out.println("The number of structures is: " + count);
-    		            System.out.println("Time: " + d.format(seconds) + " seconds");
-    		        }
-    		        if (tsvoutput) {
-    		        	System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
-    		        }
-    			}
-    		}else {
-    			if (canBuildIsomer(formula)) {
-    				getSymbolOccurrences();
-    				initialDegrees();
-    				structureGenerator();
-    				if (writeSDF) outFile.close();
-    		        long endTime = System.nanoTime() - startTime;
-    		        double seconds = (double) endTime / 1000000000.0;
-    		        DecimalFormat d = new DecimalFormat(".###");
-    		        if (!notRepresentingIsomer && verbose) {
-    		        	System.out.println("The number of structures is: " + count);
-    		            System.out.println("Time: " + d.format(seconds) + " seconds");
-    		        }
-    		        if (!notRepresentingIsomer && tsvoutput) {
-    		        	System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
-    		        }
-    			}else {
-    				if (verbose)
+            if (singleAtom) {
+                getSingleAtomVariables();
+                singleAtom();
+                if (writeSDF) outFile.close();
+                long endTime = System.nanoTime() - startTime;
+                double seconds = (double) endTime / 1000000000.0;
+                DecimalFormat d = new DecimalFormat(".###");
+                if (verbose) {
+                    System.out.println("The number of structures is: " + count);
+                    System.out.println("Time: " + d.format(seconds) + " seconds");
+                }
+                if (tsvoutput) {
+                    System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
+                }
+            } else if (onlyDegree2) {
+                if (oxygen == 0 || sulfur == 0) {
+                    degree2graph();
+                    if (writeSDF) outFile.close();
+                    long endTime = System.nanoTime() - startTime;
+                    double seconds = (double) endTime / 1000000000.0;
+                    DecimalFormat d = new DecimalFormat(".###");
+                    if (verbose) {
+                        System.out.println("The number of structures is: " + count);
+                        System.out.println("Time: " + d.format(seconds) + " seconds");
+                    }
+                    if (tsvoutput) {
+                        System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
+                    }
+                } else {
+                    generateOnSm();
+                    if (writeSDF) outFile.close();
+                    long endTime = System.nanoTime() - startTime;
+                    double seconds = (double) endTime / 1000000000.0;
+                    DecimalFormat d = new DecimalFormat(".###");
+                    if (verbose) {
+                        System.out.println("The number of structures is: " + count);
+                        System.out.println("Time: " + d.format(seconds) + " seconds");
+                    }
+                    if (tsvoutput) {
+                        System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
+                    }
+                }
+            } else {
+                if (canBuildIsomer(formula)) {
+                    getSymbolOccurrences();
+                    initialDegrees();
+                    structureGenerator();
+                    if (writeSDF) outFile.close();
+                    long endTime = System.nanoTime() - startTime;
+                    double seconds = (double) endTime / 1000000000.0;
+                    DecimalFormat d = new DecimalFormat(".###");
+                    if (!notRepresentingIsomer && verbose) {
+                        System.out.println("The number of structures is: " + count);
+                        System.out.println("Time: " + d.format(seconds) + " seconds");
+                    }
+                    if (!notRepresentingIsomer && tsvoutput) {
+                        System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
+                    }
+                } else {
+                    if (verbose)
                         System.out.println(
-                                "The input formula, " + formula + ", does not represent any molecule.");
-    			}
-    		}
+                                "The input formula, "
+                                        + formula
+                                        + ", does not represent any molecule.");
+                }
+            }
         }
-        
-        
     }
 
     /** For several calls of the run function, setting the global variables. */
     public static void clearGlobals() {
         callForward = true;
         connectivityIndices = new int[2];
-        learningFromCanonicalTest=false;
+        learningFromCanonicalTest = false;
         learningFromConnectivity = false;
         callHydrogenDistributor = false;
-        total=0;
-        totalHydrogen=0;
-        writeSDF=false;
+        total = 0;
+        totalHydrogen = 0;
+        writeSDF = false;
         size = 0;
-        sizePart=0;
+        sizePart = 0;
         nonCanonicalIndices = new int[2];
         hIndex = 0;
         count = 0;
         matrixSize = 0;
         noHydrogen = false;
-        justH=false;
-        noHydrogen=false;
-        singleAtom=false;
+        justH = false;
+        noHydrogen = false;
+        singleAtom = false;
         formerPermutations = new ArrayList<ArrayList<Permutation>>();
-        partitionList= new int[size+1][1];
+        partitionList = new int[size + 1][1];
         symbols = new ArrayList<String>();
         occurrences = null;
-        symbolArray=null;
+        symbolArray = null;
         r = 0;
         y = 0;
         z = 0;
@@ -1801,6 +1794,7 @@ public class MAYGEN {
         symbols = new ArrayList<String>();
         firstOccurrences = null;
     }
+
     /**
      * If there are hydrogens in the formula, calling the hydrogenDistributor. This is the
      * pre-hydrogen distribution. Then, the new list of degrees is defined for each hydrogen
@@ -1815,16 +1809,16 @@ public class MAYGEN {
             degreeList.add(firstDegrees);
         } else {
             List<int[]> distributions = HydrogenDistributor.run(firstOccurrences, firstDegrees);
-            if(hIndex==2) {
-            	for (int[] dist : distributions) {
+            if (hIndex == 2) {
+                for (int[] dist : distributions) {
                     int[] newDegree = new int[size];
                     for (int i = 0; i < size; i++) {
                         newDegree[i] = (firstDegrees[i] - dist[i]);
                     }
-                    if(newDegree[0]==newDegree[1]) degreeList.add(newDegree);
+                    if (newDegree[0] == newDegree[1]) degreeList.add(newDegree);
                 }
-            }else {
-            	for (int[] dist : distributions) {
+            } else {
+                for (int[] dist : distributions) {
                     int[] newDegree = new int[size];
                     for (int i = 0; i < size; i++) {
                         newDegree[i] = (firstDegrees[i] - dist[i]);
@@ -1883,11 +1877,11 @@ public class MAYGEN {
     }
 
     public static void singleAtom() throws CloneNotSupportedException, CDKException, IOException {
-		 int[][] A   = new int[matrixSize][matrixSize];
-		 count++;
-	     if(writeSDF) write2SDF(addHydrogens(A, hIndex));
-	 }
-    
+        int[][] A = new int[matrixSize][matrixSize];
+        count++;
+        if (writeSDF) write2SDF(addHydrogens(A, hIndex));
+    }
+
     /**
      * Calling the generate function for each degree values after the hydrogen distribution.
      *
@@ -1895,21 +1889,19 @@ public class MAYGEN {
      * @throws CloneNotSupportedException
      * @throws CDKException
      */
-    public static String[] symbolArrayCopy;
-    public static int[] hydrogens;
-    
     public static void setHydrogens(int[] degree) {
-    	hydrogens= new int[size];
-    	for(int i=0;i<size;i++) {
-    		hydrogens[i]=firstDegrees[i] - degree[i];
-    	}
+        hydrogens = new int[size];
+        for (int i = 0; i < size; i++) {
+            hydrogens[i] = firstDegrees[i] - degree[i];
+        }
     }
-    
-    public static void structureGenerator() throws IOException, CloneNotSupportedException, CDKException {
+
+    public static void structureGenerator()
+            throws IOException, CloneNotSupportedException, CDKException {
         if (noHydrogen) {
             size = sum(firstOccurrences, firstOccurrences.length - 1);
-        }else if(justH){
-			size=hIndex;
+        } else if (justH) {
+            size = hIndex;
         } else {
             size = sum(firstOccurrences, firstOccurrences.length - 2);
         }
@@ -1919,26 +1911,26 @@ public class MAYGEN {
         learningFromConnectivity = false;
         int[] newPartition;
         for (int[] degree : newDegrees) {
-        	setHydrogens(degree);
-			newPartition = getPartition(degree);
-			if (writeSDF) symbolArrayCopy = Arrays.copyOf(symbolArray, symbolArray.length);
-			if(writeSDF) {
-				sortWithPartition(newPartition, degree, symbolArrayCopy);
-			}else {
-				sortWithPartition(newPartition, degree, symbolArray);
-			}
-			partSize = 0;
-			nonCanonicalIndices = new int[2];
-			connectivityIndices = new int[2];
-			learningFromConnectivity = false;
-			learningFromCanonicalTest = false;
-			partitionList=new int[size+1][1];
-			formerPermutations.clear();
-			partSize += (findZeros(initialPartition) - 1);
-			setYZValues();
-			partitionList[0]=initialPartition;
-			generate(degree);
-		}
+            setHydrogens(degree);
+            newPartition = getPartition(degree);
+            if (writeSDF) symbolArrayCopy = Arrays.copyOf(symbolArray, symbolArray.length);
+            if (writeSDF) {
+                sortWithPartition(newPartition, degree, symbolArrayCopy);
+            } else {
+                sortWithPartition(newPartition, degree, symbolArray);
+            }
+            partSize = 0;
+            nonCanonicalIndices = new int[2];
+            connectivityIndices = new int[2];
+            learningFromConnectivity = false;
+            learningFromCanonicalTest = false;
+            partitionList = new int[size + 1][1];
+            formerPermutations.clear();
+            partSize += (findZeros(initialPartition) - 1);
+            setYZValues();
+            partitionList[0] = initialPartition;
+            generate(degree);
+        }
     }
 
     /** 3.6.2. Connectivity Test */
@@ -2136,7 +2128,9 @@ public class MAYGEN {
         clearFormers(false, y);
         boolean test = true;
         for (int i = y; i <= z; i++) {
-            test = rowCanonicalTest(i, r, A, partitionList[i], canonicalPartition(i, partitionList[i]));
+            test =
+                    rowCanonicalTest(
+                            i, r, A, partitionList[i], canonicalPartition(i, partitionList[i]));
             if (!test) {
                 check = false;
                 break;
@@ -2160,10 +2154,10 @@ public class MAYGEN {
                 formerPermutations.remove(i);
             }
 
-            int partitionSize= partitionList.length-1;
-        	for(int i=partitionSize;i>y;i--) {
-        		partitionList[i]=null;
-        	} 
+            int partitionSize = partitionList.length - 1;
+            for (int i = partitionSize; i > y; i--) {
+                partitionList[i] = null;
+            }
         }
     }
 
@@ -2263,9 +2257,9 @@ public class MAYGEN {
      */
     public static void addPartition(int index, int[] newPartition, int[][] A) throws IOException {
         if (newPartition[size - 1] != 0) {
-        	partitionList[index+1] = newPartition;
+            partitionList[index + 1] = newPartition;
         } else {
-        	partitionList[index+1] = refinedPartitioning(newPartition, A[index]);
+            partitionList[index + 1] = refinedPartitioning(newPartition, A[index]);
         }
     }
 
@@ -2645,7 +2639,7 @@ public class MAYGEN {
     }
 
     public static void sortWithPartition(int[] partitionList, int[] degrees, String[] symbols) {
-    	int[] partition = buildArray(partitionList);
+        int[] partition = buildArray(partitionList);
         int size = partition.length;
         for (int n = 0; n < size; n++) {
             for (int m = 0; m < (size - 1) - n; m++) {
@@ -2658,7 +2652,6 @@ public class MAYGEN {
         }
         reOrder(partition, degrees, symbols);
         initialPartition(partition);
-
     }
 
     public static void initialPartition(int[] partition) {
@@ -2760,237 +2753,310 @@ public class MAYGEN {
         options.addOption(filedir);
         return options;
     }
-    
+
     public static int numberOfBonds(int[][] mat) {
-    	int length= mat.length;
-    	int count = 0;
-    	for(int i=0;i<length;i++) {
-    		for(int j=i+1;j<length;j++) {
-    			if(mat[i][j]!=0) {
-    				count++;
-    			}
-    		}
-    	}
-    	return count;
+        int length = mat.length;
+        int count = 0;
+        for (int i = 0; i < length; i++) {
+            for (int j = i + 1; j < length; j++) {
+                if (mat[i][j] != 0) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
- 	
+
     public static void write2SDF(int[][] mat) throws IOException {
-    	int numberOfBonds= numberOfBonds(mat);
-    	outFile.write("\nMolecule "+String.valueOf(count)+"\n\n");
-    	outFile.write(" "+String.valueOf(matrixSize)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
-    	for (int i = 0; i < matrixSize; i++) {
-    		outFile.write("    0.0000    0.0000    0.0000 "+symbolArray[i]+"   0  0  0  0  0  0  0  0  0  0  0  0\n");
-    	}
+        int numberOfBonds = numberOfBonds(mat);
+        outFile.write("\nMolecule " + String.valueOf(count) + "\n\n");
+        outFile.write(
+                " "
+                        + String.valueOf(matrixSize)
+                        + " "
+                        + String.valueOf(numberOfBonds)
+                        + "  0     0  0  0  0  0  0999 V2000\n");
+        for (int i = 0; i < matrixSize; i++) {
+            outFile.write(
+                    "    0.0000    0.0000    0.0000 "
+                            + symbolArray[i]
+                            + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
+        }
 
-    	for (int i = 0; i < matrixSize; i++) {
-    		for (int j = i + 1; j < matrixSize; j++) {
-    			if (mat[i][j]!=0) {
-    				outFile.write("  "+String.valueOf(i + 1)+"   "+String.valueOf(j + 1)+"   "+String.valueOf(mat[i][j])+"  0  0  0  0\n");
-    			}
-    		}
-    	}
+        for (int i = 0; i < matrixSize; i++) {
+            for (int j = i + 1; j < matrixSize; j++) {
+                if (mat[i][j] != 0) {
+                    outFile.write(
+                            "  "
+                                    + String.valueOf(i + 1)
+                                    + "   "
+                                    + String.valueOf(j + 1)
+                                    + "   "
+                                    + String.valueOf(mat[i][j])
+                                    + "  0  0  0  0\n");
+                }
+            }
+        }
 
-    	outFile.write("M  END\n$$$$\n");
+        outFile.write("M  END\n$$$$\n");
     }
-    
-    public static void write2SDF(int[][] mat,String symbol) throws IOException {
-    	int numberOfBonds= numberOfBonds(mat);
-    	outFile.write("\nMolecule "+String.valueOf(count)+"\n\n");
-    	outFile.write(" "+String.valueOf(matrixSize)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
-    	for (int i = 0; i < matrixSize; i++) {
-    		outFile.write("    0.0000    0.0000    0.0000 "+symbol+"   0  0  0  0  0  0  0  0  0  0  0  0\n");
-    	}
 
-    	for (int i = 0; i < matrixSize; i++) {
-    		for (int j = i + 1; j < matrixSize; j++) {
-    			if (mat[i][j]!=0) {
-    				outFile.write("  "+String.valueOf(i + 1)+"   "+String.valueOf(j + 1)+"   "+String.valueOf(mat[i][j])+"  0  0  0  0\n");
-    			}
-    		}
-    	}
+    public static void write2SDF(int[][] mat, String symbol) throws IOException {
+        int numberOfBonds = numberOfBonds(mat);
+        outFile.write("\nMolecule " + String.valueOf(count) + "\n\n");
+        outFile.write(
+                " "
+                        + String.valueOf(matrixSize)
+                        + " "
+                        + String.valueOf(numberOfBonds)
+                        + "  0     0  0  0  0  0  0999 V2000\n");
+        for (int i = 0; i < matrixSize; i++) {
+            outFile.write(
+                    "    0.0000    0.0000    0.0000 "
+                            + symbol
+                            + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
+        }
 
-    	outFile.write("M  END\n$$$$\n");
+        for (int i = 0; i < matrixSize; i++) {
+            for (int j = i + 1; j < matrixSize; j++) {
+                if (mat[i][j] != 0) {
+                    outFile.write(
+                            "  "
+                                    + String.valueOf(i + 1)
+                                    + "   "
+                                    + String.valueOf(j + 1)
+                                    + "   "
+                                    + String.valueOf(mat[i][j])
+                                    + "  0  0  0  0\n");
+                }
+            }
+        }
+
+        outFile.write("M  END\n$$$$\n");
     }
-    
-    public static void degree2graph() throws IOException{
-    	int[][] mat = new int[matrixSize][matrixSize];
-    	mat[0][1]=1;
-    	mat[0][2]=1;
-    	for(int i=1;i<matrixSize-2;i++) {
-    		mat[i][i+2]=1;
-    	}
-    	mat[matrixSize-2][matrixSize-1]=1;
-    	count++;
-    	String symbol="";
-    	if(oxygen==0) {
-    		symbol.equals("S");
-    	}else {
-    		symbol.equals("O");
-    	}
-    	if(writeSDF) write2SDF(mat, symbol);
+
+    public static void degree2graph() throws IOException {
+        int[][] mat = new int[matrixSize][matrixSize];
+        mat[0][1] = 1;
+        mat[0][2] = 1;
+        for (int i = 1; i < matrixSize - 2; i++) {
+            mat[i][i + 2] = 1;
+        }
+        mat[matrixSize - 2][matrixSize - 1] = 1;
+        count++;
+        String symbol = "";
+        if (oxygen == 0) {
+            symbol.equals("S");
+        } else {
+            symbol.equals("O");
+        }
+        if (writeSDF) write2SDF(mat, symbol);
     }
-    
+
     public static void generateOnSm() throws IOException {
-    	distributeSulfurOxygen();
-    	if(writeSDF) {
-    		count=0;
-    		int[][] mat = new int[matrixSize][matrixSize];
-        	mat[0][1]=1;
-        	mat[0][2]=1;
-        	for(int i=1;i<matrixSize-2;i++) {
-        		mat[i][i+2]=1;
-        	}
-        	mat[matrixSize-2][matrixSize-1]=1;
-    		for(String[] arr: oxygenSulfur) {
-    			count++;
-    			symbolArray=arr;
-    			write2SDF(mat);
-    		}
-    	}
+        distributeSulfurOxygen();
+        if (writeSDF) {
+            count = 0;
+            int[][] mat = new int[matrixSize][matrixSize];
+            mat[0][1] = 1;
+            mat[0][2] = 1;
+            for (int i = 1; i < matrixSize - 2; i++) {
+                mat[i][i + 2] = 1;
+            }
+            mat[matrixSize - 2][matrixSize - 1] = 1;
+            for (String[] arr : oxygenSulfur) {
+                count++;
+                symbolArray = arr;
+                write2SDF(mat);
+            }
+        }
     }
 
     /**
-     * The following functions are for the distribution of given number of sulfurs and
-     * oxygens in regular graphs as node labelling. These functions are the Java 
-     * implementation of Sawada's method[1][2] in mathematical chemistry. 
-     * 
-     * 
-     * References: 
-     * 
-     * [1] Sawada J. Generating bracelets in constant amortized time. SIAM Journal on Computing. 2001;31(1):259-68.
-     * [2] http://www.cis.uoguelph.ca/~sawada/prog/necklaces.c
-     * 
+     * The following functions are for the distribution of given number of sulfurs and oxygens in
+     * regular graphs as node labelling. These functions are the Java implementation of Sawada's
+     * method[1][2] in mathematical chemistry.
+     *
+     * <p>References:
+     *
+     * <p>[1] Sawada J. Generating bracelets in constant amortized time. SIAM Journal on Computing.
+     * 2001;31(1):259-68. [2] http://www.cis.uoguelph.ca/~sawada/prog/necklaces.c
      */
-    
-    public static int[] nodeLabels;
-	public static int graphSize;
-	public static List<String[]> oxygenSulfur= new ArrayList<String[]>();
-	
-	/**
-	 * The function to compare a node labelling array when the number of left consecutive 
-	 * entries is equal to the right consecutive entries.
-	 * 
-	 * From this comparison, function returns :
-	 * 
-	 * 1: if node labelling is same as its reversal.
-	 * 
-	 * 0: if node labelling is smaller than its reversal.
-	 * 
-	 * -1: if node labelling is bigger than its reversal.
-	 * 
-	 * 
-	 * Reversal check helps to avoid duplicates, easy way of rotational symmetry check.
-	 * 
-	 * @param length		int node labelling length
-	 * @param index		int starting index in the array
-	 * @return
-	 */
-	
-	public static int reverseComparison(int length, int index){
-	    for (int i = index+1; i <= (length + 1)/2; i++){
-	        if (nodeLabels[i] < nodeLabels[length-i+1]) {
-	            return 0;
-	        }else if(nodeLabels[i] > nodeLabels[length-i+1]) {
-	        	return -1;
-	        }
-	    }
-	    return 1;
-	}
-	
-    public static String[] build() {
-    	String[] arr= new String[graphSize];
-    	for(int i=0;i<graphSize;i++) {
-    		if(nodeLabels[i]==0) {
-    			arr[i]="O";
-    		}else {
-    			arr[i]="S";
-    		}
-    	}
-    	return arr;
+    /**
+     * The function to compare a node labelling array when the number of left consecutive entries is
+     * equal to the right consecutive entries.
+     *
+     * <p>From this comparison, function returns :
+     *
+     * <p>1: if node labelling is same as its reversal.
+     *
+     * <p>0: if node labelling is smaller than its reversal.
+     *
+     * <p>-1: if node labelling is bigger than its reversal.
+     *
+     * <p>Reversal check helps to avoid duplicates, easy way of rotational symmetry check.
+     *
+     * @param length int node labelling length
+     * @param index int starting index in the array
+     * @return
+     */
+    public static int reverseComparison(int length, int index) {
+        for (int i = index + 1; i <= (length + 1) / 2; i++) {
+            if (nodeLabels[i] < nodeLabels[length - i + 1]) {
+                return 0;
+            } else if (nodeLabels[i] > nodeLabels[length - i + 1]) {
+                return -1;
+            }
+        }
+        return 1;
     }
-    
+
+    public static String[] build() {
+        String[] arr = new String[graphSize];
+        for (int i = 0; i < graphSize; i++) {
+            if (nodeLabels[i] == 0) {
+                arr[i] = "O";
+            } else {
+                arr[i] = "S";
+            }
+        }
+        return arr;
+    }
+
     /**
      * Main function for the distribution of atom symbols: O and S for OnSm form formulae.
-     * 
-     * @param oxy				int number of oxygens to distribute
-     * @param sul				int number of sulfur to distribute
-     * @param nextSize			int length of the next labelling
-     * @param currentSize		int length of the current labelling	
-     * @param reversedLength	int longest node labelling, equal to its reversal
-     * @param leftEquivalents 	int the number of consequtively equivalent values at the left side of the array
-     * @param rightEquivalents 	int the number of consequtively equivalent values at the left side of the array 
-     * @param reversalIsSmaller boolean from the reversal comparison, using the boolean variable to know reveral is smaller than the bode labelling or not.
+     *
+     * @param oxy int number of oxygens to distribute
+     * @param sul int number of sulfur to distribute
+     * @param nextSize int length of the next labelling
+     * @param currentSize int length of the current labelling
+     * @param reversedLength int longest node labelling, equal to its reversal
+     * @param leftEquivalents int the number of consequtively equivalent values at the left side of
+     *     the array
+     * @param rightEquivalents int the number of consequtively equivalent values at the left side of
+     *     the array
+     * @param reversalIsSmaller boolean from the reversal comparison, using the boolean variable to
+     *     know reveral is smaller than the bode labelling or not.
      */
-    
-	public static void distributeSymbols(int oxy, int sul, int nextSize, int currentSize, int reversedLength, int leftEquivalents, int rightEquivalents, boolean reversalIsSmaller){
-	    		
-		if (2 * (nextSize - 1) > (graphSize + reversedLength)){
-	        if (nodeLabels[nextSize-1] > nodeLabels[graphSize-nextSize+2+reversedLength]) reversalIsSmaller = false;
-	        else if (nodeLabels[nextSize-1] < nodeLabels[graphSize-nextSize+2+reversedLength]) reversalIsSmaller = true;
-	    }
-	    if (nextSize > graphSize){
-	        if (!reversalIsSmaller && (graphSize % currentSize) == 0) {
-	            count++;
-	            if(writeSDF) oxygenSulfur.add(build());
-	        }
-	    }else{
-	        int oxy2 = oxy;
-	        int sul2 = sul;
+    public static void distributeSymbols(
+            int oxy,
+            int sul,
+            int nextSize,
+            int currentSize,
+            int reversedLength,
+            int leftEquivalents,
+            int rightEquivalents,
+            boolean reversalIsSmaller) {
 
-	        nodeLabels[nextSize] = nodeLabels[nextSize-currentSize];
+        if (2 * (nextSize - 1) > (graphSize + reversedLength)) {
+            if (nodeLabels[nextSize - 1] > nodeLabels[graphSize - nextSize + 2 + reversedLength])
+                reversalIsSmaller = false;
+            else if (nodeLabels[nextSize - 1]
+                    < nodeLabels[graphSize - nextSize + 2 + reversedLength])
+                reversalIsSmaller = true;
+        }
+        if (nextSize > graphSize) {
+            if (!reversalIsSmaller && (graphSize % currentSize) == 0) {
+                count++;
+                if (writeSDF) oxygenSulfur.add(build());
+            }
+        } else {
+            int oxy2 = oxy;
+            int sul2 = sul;
 
-	        if (nodeLabels[nextSize] == 0) {
-	            oxy2--;
-	        }else {
-	            sul2--;
-	        }
-	        if (nodeLabels[nextSize] == nodeLabels[1]) {
-	        	rightEquivalents++;
-	        }else {
-	        	rightEquivalents = 0;
-	        }
-	        if ((leftEquivalents == (nextSize - 1)) && (nodeLabels[nextSize-1] == nodeLabels[1])) leftEquivalents++; // left consecutive element number incremention.
+            nodeLabels[nextSize] = nodeLabels[nextSize - currentSize];
 
-	        if ((oxy2 >= 0) && (sul2 >= 0) && !((nextSize == graphSize) && (leftEquivalents != graphSize) && (nodeLabels[graphSize] == nodeLabels[1]))){
-	            if (leftEquivalents == rightEquivalents) {
-	                int reverse = reverseComparison(nextSize, leftEquivalents);
-	                if (reverse == 0) {
-	                	distributeSymbols(oxy2, sul2, nextSize + 1, currentSize, reversedLength, leftEquivalents, rightEquivalents, reversalIsSmaller);
+            if (nodeLabels[nextSize] == 0) {
+                oxy2--;
+            } else {
+                sul2--;
+            }
+            if (nodeLabels[nextSize] == nodeLabels[1]) {
+                rightEquivalents++;
+            } else {
+                rightEquivalents = 0;
+            }
+            if ((leftEquivalents == (nextSize - 1)) && (nodeLabels[nextSize - 1] == nodeLabels[1]))
+                leftEquivalents++; // left consecutive element number incremention.
 
-	                }else if (reverse == 1) {
-	                	distributeSymbols(oxy2, sul2, nextSize + 1, currentSize, nextSize, leftEquivalents, rightEquivalents, false);
-	                }
-	            }else {
-	            	distributeSymbols(oxy2, sul2, nextSize + 1, currentSize, reversedLength, leftEquivalents, rightEquivalents, reversalIsSmaller);
-	            }
-	        }
+            if ((oxy2 >= 0)
+                    && (sul2 >= 0)
+                    && !((nextSize == graphSize)
+                            && (leftEquivalents != graphSize)
+                            && (nodeLabels[graphSize] == nodeLabels[1]))) {
+                if (leftEquivalents == rightEquivalents) {
+                    int reverse = reverseComparison(nextSize, leftEquivalents);
+                    if (reverse == 0) {
+                        distributeSymbols(
+                                oxy2,
+                                sul2,
+                                nextSize + 1,
+                                currentSize,
+                                reversedLength,
+                                leftEquivalents,
+                                rightEquivalents,
+                                reversalIsSmaller);
 
-	        if (leftEquivalents == nextSize) {
-	        	leftEquivalents--;
-	        }
+                    } else if (reverse == 1) {
+                        distributeSymbols(
+                                oxy2,
+                                sul2,
+                                nextSize + 1,
+                                currentSize,
+                                nextSize,
+                                leftEquivalents,
+                                rightEquivalents,
+                                false);
+                    }
+                } else {
+                    distributeSymbols(
+                            oxy2,
+                            sul2,
+                            nextSize + 1,
+                            currentSize,
+                            reversedLength,
+                            leftEquivalents,
+                            rightEquivalents,
+                            reversalIsSmaller);
+                }
+            }
 
-	        if (nodeLabels[nextSize-currentSize] == 0 && sul > 0){
-	        	nodeLabels[nextSize] = 1;
+            if (leftEquivalents == nextSize) {
+                leftEquivalents--;
+            }
 
-	            if (nextSize == 1) {
-	            	distributeSymbols(oxy, sul-1, nextSize + 1, nextSize, 1, 1, 1, reversalIsSmaller);
-	            }else {
-	            	distributeSymbols(oxy, sul-1, nextSize + 1, nextSize, reversedLength, leftEquivalents, 0, reversalIsSmaller);
-	            }
-	        }
-	    }
-	}
-	
-	public static void distributeSulfurOxygen() {
-		graphSize=oxygen+sulfur;
-		nodeLabels = new int[graphSize+1];
-		nodeLabels[0] = 0;
-	    distributeSymbols(oxygen, sulfur, 1, 1, 0, 0, 0, false);
-	}
-	
-    public static void main(String[] args) throws CloneNotSupportedException, CDKException, IOException {
-    	MAYGEN gen = new MAYGEN();
-    	try {
+            if (nodeLabels[nextSize - currentSize] == 0 && sul > 0) {
+                nodeLabels[nextSize] = 1;
+
+                if (nextSize == 1) {
+                    distributeSymbols(
+                            oxy, sul - 1, nextSize + 1, nextSize, 1, 1, 1, reversalIsSmaller);
+                } else {
+                    distributeSymbols(
+                            oxy,
+                            sul - 1,
+                            nextSize + 1,
+                            nextSize,
+                            reversedLength,
+                            leftEquivalents,
+                            0,
+                            reversalIsSmaller);
+                }
+            }
+        }
+    }
+
+    public static void distributeSulfurOxygen() {
+        graphSize = oxygen + sulfur;
+        nodeLabels = new int[graphSize + 1];
+        nodeLabels[0] = 0;
+        distributeSymbols(oxygen, sulfur, 1, 1, 0, 0, 0, false);
+    }
+
+    public static void main(String[] args)
+            throws CloneNotSupportedException, CDKException, IOException {
+        MAYGEN gen = new MAYGEN();
+        try {
             gen.parseArgs(args);
             MAYGEN.run();
         } catch (Exception e) {
