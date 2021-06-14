@@ -16,31 +16,31 @@ public class MaygenTest {
     @Test
     public void test_C3Cl2H4() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN.clearGlobals();
-    	MAYGEN.formula = "C3Cl2H4";
+        MAYGEN.formula = "C3Cl2H4";
         MAYGEN.run();
         assertEquals(7, MAYGEN.count);
     }
 
     @Test
     public void test_C2NO2H5() throws IOException, CDKException, CloneNotSupportedException {
-    	MAYGEN.clearGlobals();
-    	MAYGEN.formula = "C2NO2H5";
+        MAYGEN.clearGlobals();
+        MAYGEN.formula = "C2NO2H5";
         MAYGEN.run();
         assertEquals(84, MAYGEN.count);
     }
 
     @Test
     public void test_C6H6() throws IOException, CDKException, CloneNotSupportedException {
-    	MAYGEN.clearGlobals();
-    	MAYGEN.formula = "C6H6";
+        MAYGEN.clearGlobals();
+        MAYGEN.formula = "C6H6";
         MAYGEN.run();
         assertEquals(217, MAYGEN.count);
     }
 
     @Test
     public void test_C3O3H4() throws IOException, CDKException, CloneNotSupportedException {
-    	MAYGEN.clearGlobals();
-    	MAYGEN.formula = "C3O3H4";
+        MAYGEN.clearGlobals();
+        MAYGEN.formula = "C3O3H4";
         MAYGEN.run();
         assertEquals(152, MAYGEN.count);
     }
