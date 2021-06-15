@@ -2778,72 +2778,93 @@ public class MAYGEN {
     }
 
     public static void write2SDF(int[][] mat) throws IOException {
-        int numberOfBonds = numberOfBonds(mat);
-        outFile.write("\nMolecule " + String.valueOf(count) + "\n\n");
-        outFile.write(
-                " "
-                        + String.valueOf(matrixSize)
-                        + " "
-                        + String.valueOf(numberOfBonds)
-                        + "  0     0  0  0  0  0  0999 V2000\n");
-        for (int i = 0; i < matrixSize; i++) {
-            outFile.write(
-                    "    0.0000    0.0000    0.0000 "
-                            + symbolArray[i]
-                            + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
-        }
+    	   int numberOfBonds= numberOfBonds(mat);
+    	   outFile.write("\nMolecule "+String.valueOf(count)+"\n    \n");
 
-        for (int i = 0; i < matrixSize; i++) {
-            for (int j = i + 1; j < matrixSize; j++) {
-                if (mat[i][j] != 0) {
-                    outFile.write(
-                            "  "
-                                    + String.valueOf(i + 1)
-                                    + "   "
-                                    + String.valueOf(j + 1)
-                                    + "   "
-                                    + String.valueOf(mat[i][j])
-                                    + "  0  0  0  0\n");
-                }
-            }
-        }
 
-        outFile.write("M  END\n$$$$\n");
-    }
+    	   outFile.write(" "+String.valueOf(matrixSize)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
+    	   for (int i = 0; i < matrixSize; i++) {
+    	      outFile.write("    0.0000    0.0000    0.0000  "+symbolArray[i]+" 0  0  0  0  0  0  0  0  0  0  0  0\n");
+    	   }
+
+    	   for (int i = 0; i < matrixSize; i++) {
+    	      for (int j = i + 1; j < matrixSize; j++) {
+    	         if (mat[i][j]!=0) {
+    	             String sourceDepiction = "";
+    	             String targetDepiction = "";
+    	             if(String.valueOf(i + 1).length()==1){
+    	                    sourceDepiction = "  "+String.valueOf(i + 1);
+    	                }else if(String.valueOf(i + 1).length()==2){
+    	                    sourceDepiction = " "+String.valueOf(i + 1);
+    	                }else{
+    	                    sourceDepiction = String.valueOf(i + 1);
+    	                }
+
+    	                if(String.valueOf(j + 1).length()==1){
+    	                    targetDepiction = "  "+String.valueOf(j + 1);
+    	                }else if(String.valueOf(j + 1).length()==2){
+    	                    targetDepiction = " "+String.valueOf(j + 1);
+    	                }else{
+    	                    targetDepiction = String.valueOf(j + 1);
+    	                }
+
+    	            outFile.write(sourceDepiction+targetDepiction+"  "+String.valueOf(mat[i][j])+"   0  0  0  0\n");
+    	         }
+    	      }
+    	   }
+
+
+    	    outFile.write("M  END\n");
+
+    	    outFile.write("\n$$$$\n");
+
+    	}
+
+
 
     public static void write2SDF(int[][] mat, String symbol) throws IOException {
-        int numberOfBonds = numberOfBonds(mat);
-        outFile.write("\nMolecule " + String.valueOf(count) + "\n\n");
-        outFile.write(
-                " "
-                        + String.valueOf(matrixSize)
-                        + " "
-                        + String.valueOf(numberOfBonds)
-                        + "  0     0  0  0  0  0  0999 V2000\n");
-        for (int i = 0; i < matrixSize; i++) {
-            outFile.write(
-                    "    0.0000    0.0000    0.0000 "
-                            + symbol
-                            + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
-        }
+    	   int numberOfBonds= numberOfBonds(mat);
+    	   outFile.write("\nMolecule "+String.valueOf(count)+"\n    \n");
 
-        for (int i = 0; i < matrixSize; i++) {
-            for (int j = i + 1; j < matrixSize; j++) {
-                if (mat[i][j] != 0) {
-                    outFile.write(
-                            "  "
-                                    + String.valueOf(i + 1)
-                                    + "   "
-                                    + String.valueOf(j + 1)
-                                    + "   "
-                                    + String.valueOf(mat[i][j])
-                                    + "  0  0  0  0\n");
-                }
-            }
-        }
 
-        outFile.write("M  END\n$$$$\n");
-    }
+    	   outFile.write(" "+String.valueOf(matrixSize)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
+    	   for (int i = 0; i < matrixSize; i++) {
+    	      outFile.write("    0.0000    0.0000    0.0000  "+symbol+" 0  0  0  0  0  0  0  0  0  0  0  0\n");
+    	   }
+
+    	   for (int i = 0; i < matrixSize; i++) {
+    	      for (int j = i + 1; j < matrixSize; j++) {
+    	         if (mat[i][j]!=0) {
+    	             String sourceDepiction = "";
+    	             String targetDepiction = "";
+    	             if(String.valueOf(i + 1).length()==1){
+    	                    sourceDepiction = "  "+String.valueOf(i + 1);
+    	                }else if(String.valueOf(i + 1).length()==2){
+    	                    sourceDepiction = " "+String.valueOf(i + 1);
+    	                }else{
+    	                    sourceDepiction = String.valueOf(i + 1);
+    	                }
+
+    	                if(String.valueOf(j + 1).length()==1){
+    	                    targetDepiction = "  "+String.valueOf(j + 1);
+    	                }else if(String.valueOf(j + 1).length()==2){
+    	                    targetDepiction = " "+String.valueOf(j + 1);
+    	                }else{
+    	                    targetDepiction = String.valueOf(j + 1);
+    	                }
+
+    	            outFile.write(sourceDepiction+targetDepiction+"  "+String.valueOf(mat[i][j])+"   0  0  0  0\n");
+    	         }
+    	      }
+    	   }
+
+
+    	    outFile.write("M  END\n");
+
+    	    outFile.write("\n$$$$\n");
+
+    	}
+
 
     public static void degree2graph() throws IOException {
         int[][] mat = new int[matrixSize][matrixSize];
