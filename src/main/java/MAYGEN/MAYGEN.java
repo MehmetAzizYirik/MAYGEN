@@ -91,7 +91,6 @@ public class MAYGEN {
     public static int z = 0;
     public static String[] symbolArrayCopy;
     public static int[] hydrogens;
-    public static boolean notRepresentingIsomer = false;
     public static int[] nodeLabels;
     public static int graphSize;
     public static List<String[]> oxygenSulfur = new ArrayList<String[]>();
@@ -1161,7 +1160,6 @@ public class MAYGEN {
     /** Possible maximal edge multiplicity for the atom pair (i,j). */
     public static void maximalMatrix() {
         max = new int[hIndex][hIndex];
-        outer:
         for (int i = 0; i < hIndex; i++) {
             for (int j = 0; j < hIndex; j++) {
                 int di = degrees[i];
@@ -1176,23 +1174,13 @@ public class MAYGEN {
                             max[i][j] = (di);
                         } else {
                             if (hIndex == 2) {
-                                if (di > 3) {
-                                    notRepresentingIsomer = true;
-                                    break outer;
-                                }
                                 max[i][j] = (di);
                             } else {
                                 if (di != 1) {
-                                    if ((di - 1) > 3) {
-                                        notRepresentingIsomer = true;
-                                        break outer;
-                                    }
+                                    
                                     max[i][j] = (di - 1);
                                 } else {
-                                    if (di > 3) {
-                                        notRepresentingIsomer = true;
-                                        break outer;
-                                    }
+                                    
                                     max[i][j] = (di);
                                 }
                             }
@@ -1217,42 +1205,36 @@ public class MAYGEN {
         degrees = degreeList;
         flag = true;
         maximalMatrix();
-        if (!notRepresentingIsomer) {
-            upperTriangularL();
-            upperTriangularC();
-            int[] indices = new int[2];
-            indices[0] = 0;
-            indices[1] = 1;
-            callForward = true;
-            r = 0;
-            y = ys[r];
-            z = zs[r];
-            while (flag) {
-                nextStep(A, indices);
-                if (!flag) {
-                    break;
-                }
-                if (learningFromConnectivity) {
-                    indices = connectivityIndices;
-                    findR(indices);
-                    int value = indexYZ();
-                    y = ys[value];
-                    clearFormers(false, y);
-                    learningFromConnectivity = false;
-                    callForward = false;
-                } else {
-                    if (learningFromCanonicalTest) {
-                        indices = successor(nonCanonicalIndices, max.length);
-                        findR(indices);
-                        learningFromCanonicalTest = false;
-                        callForward = false;
-                    }
-                }
+        upperTriangularL();
+        upperTriangularC();
+        int[] indices = new int[2];
+        indices[0] = 0;
+        indices[1] = 1;
+        callForward = true;
+        r = 0;
+        y = ys[r];
+        z = zs[r];
+        while (flag) {
+        	nextStep(A, indices);
+            if (!flag) {
+            	break;
             }
-        } else {
-            if (verbose)
-                System.out.println(
-                        "The input formula, " + formula + ", does not represent any molecule.");
+            if (learningFromConnectivity) {
+            	indices = connectivityIndices;
+                findR(indices);
+                int value = indexYZ();
+                y = ys[value];
+                clearFormers(false, y);
+                learningFromConnectivity = false;
+                callForward = false;
+            } else {
+            	if (learningFromCanonicalTest) {
+            		indices = successor(nonCanonicalIndices, max.length);
+                    findR(indices);
+                    learningFromCanonicalTest = false;
+                    callForward = false;
+            	}
+            }
         }
     }
 
@@ -1664,6 +1646,18 @@ public class MAYGEN {
         return new int[] {count, index};
     }
 
+    public static boolean checkLengthTwoFormula(String[] atoms) {
+    	boolean check=true;
+    	if(atoms.length==1) {
+    		String[] info = atoms[0].split("(?=[0-9])", 2);
+    		if(info[1]=="2") {
+    			if(valences.get(info[0])>3){
+    				check=false;
+        		}
+    		}
+    	}
+    	return check;
+    }
     /**
      * Main function to initialize the global variables and calling the generate function.
      *
@@ -1690,25 +1684,11 @@ public class MAYGEN {
                                 new File(filedir + "/" + normalizeFormula(formula) + ".sdf"));
             }
             String[] atoms = formula.split("(?=[A-Z])");
-            checkOxygenSulfur(atoms);
-            singleAtomCheck(atoms);
-            if (singleAtom) {
-                getSingleAtomVariables();
-                singleAtom();
-                if (writeSDF) outFile.close();
-                long endTime = System.nanoTime() - startTime;
-                double seconds = (double) endTime / 1000000000.0;
-                DecimalFormat d = new DecimalFormat(".###");
-                if (verbose) {
-                    System.out.println("The number of structures is: " + count);
-                    System.out.println("Time: " + d.format(seconds) + " seconds");
-                }
-                if (tsvoutput) {
-                    System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
-                }
-            } else if (onlyDegree2) {
-                if (oxygen == 0 || sulfur == 0) {
-                    degree2graph();
+            if(checkLengthTwoFormula(atoms)) {
+                singleAtomCheck(atoms);
+                if (singleAtom) {
+                    getSingleAtomVariables();
+                    singleAtom();
                     if (writeSDF) outFile.close();
                     long endTime = System.nanoTime() - startTime;
                     double seconds = (double) endTime / 1000000000.0;
@@ -1720,43 +1700,66 @@ public class MAYGEN {
                     if (tsvoutput) {
                         System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
                     }
-                } else {
-                    generateOnSm();
-                    if (writeSDF) outFile.close();
-                    long endTime = System.nanoTime() - startTime;
-                    double seconds = (double) endTime / 1000000000.0;
-                    DecimalFormat d = new DecimalFormat(".###");
-                    if (verbose) {
-                        System.out.println("The number of structures is: " + count);
-                        System.out.println("Time: " + d.format(seconds) + " seconds");
-                    }
-                    if (tsvoutput) {
-                        System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
+                }else {
+                	checkOxygenSulfur(atoms);
+                	if (onlyDegree2) {
+                        if (oxygen == 0 || sulfur == 0) {
+                            degree2graph();
+                            if (writeSDF) outFile.close();
+                            long endTime = System.nanoTime() - startTime;
+                            double seconds = (double) endTime / 1000000000.0;
+                            DecimalFormat d = new DecimalFormat(".###");
+                            if (verbose) {
+                                System.out.println("The number of structures is: " + count);
+                                System.out.println("Time: " + d.format(seconds) + " seconds");
+                            }
+                            if (tsvoutput) {
+                                System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
+                            }
+                        } else {
+                            generateOnSm();
+                            if (writeSDF) outFile.close();
+                            long endTime = System.nanoTime() - startTime;
+                            double seconds = (double) endTime / 1000000000.0;
+                            DecimalFormat d = new DecimalFormat(".###");
+                            if (verbose) {
+                                System.out.println("The number of structures is: " + count);
+                                System.out.println("Time: " + d.format(seconds) + " seconds");
+                            }
+                            if (tsvoutput) {
+                                System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
+                            }
+                        }
+                    } else {
+                        if (canBuildIsomer(formula)) {
+                            getSymbolOccurrences();
+                            initialDegrees();
+                            structureGenerator();
+                            if (writeSDF) outFile.close();
+                            long endTime = System.nanoTime() - startTime;
+                            double seconds = (double) endTime / 1000000000.0;
+                            DecimalFormat d = new DecimalFormat(".###");
+                            if (verbose) {
+                                System.out.println("The number of structures is: " + count);
+                                System.out.println("Time: " + d.format(seconds) + " seconds");
+                            }
+                            if (tsvoutput) {
+                                System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
+                            }
+                        } else {
+                            if (verbose)
+                                System.out.println(
+                                        "The input formula, "
+                                                + formula
+                                                + ", does not represent any molecule.");
+                        }
                     }
                 }
-            } else {
-                if (canBuildIsomer(formula)) {
-                    getSymbolOccurrences();
-                    initialDegrees();
-                    structureGenerator();
-                    if (writeSDF) outFile.close();
-                    long endTime = System.nanoTime() - startTime;
-                    double seconds = (double) endTime / 1000000000.0;
-                    DecimalFormat d = new DecimalFormat(".###");
-                    if (!notRepresentingIsomer && verbose) {
-                        System.out.println("The number of structures is: " + count);
-                        System.out.println("Time: " + d.format(seconds) + " seconds");
-                    }
-                    if (!notRepresentingIsomer && tsvoutput) {
-                        System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
-                    }
-                } else {
-                    if (verbose)
-                        System.out.println(
-                                "The input formula, "
-                                        + formula
-                                        + ", does not represent any molecule.");
-                }
+            }else {
+            	if (verbose)
+                    System.out.println(
+                            "The input formula, " + formula + ", does not represent any molecule.");
+            	
             }
         }
     }
@@ -1769,7 +1772,6 @@ public class MAYGEN {
     	oxygen = 0;
     	sulfur = 0;
     	graphSize=0;
-    	notRepresentingIsomer = false;
     	callForward = true;
         connectivityIndices = new int[2];
         learningFromCanonicalTest = false;
