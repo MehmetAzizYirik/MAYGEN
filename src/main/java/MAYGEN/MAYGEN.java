@@ -2780,8 +2780,6 @@ public class MAYGEN {
     public static void write2SDF(int[][] mat) throws IOException {
     	   int numberOfBonds= numberOfBonds(mat);
     	   outFile.write("\nMolecule "+String.valueOf(count)+"\n    \n");
-
-
     	   outFile.write(" "+String.valueOf(matrixSize)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
     	   for (int i = 0; i < matrixSize; i++) {
     	      outFile.write("    0.0000    0.0000    0.0000  "+symbolArray[i]+" 0  0  0  0  0  0  0  0  0  0  0  0\n");
@@ -2812,21 +2810,13 @@ public class MAYGEN {
     	         }
     	      }
     	   }
-
-
-    	    outFile.write("M  END\n");
-
-    	    outFile.write("\n$$$$\n");
-
+    	   outFile.write("M  END\n");
+    	   outFile.write("\n$$$$\n");
     	}
-
-
-
+    
     public static void write2SDF(int[][] mat, String symbol) throws IOException {
     	   int numberOfBonds= numberOfBonds(mat);
     	   outFile.write("\nMolecule "+String.valueOf(count)+"\n    \n");
-
-
     	   outFile.write(" "+String.valueOf(matrixSize)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
     	   for (int i = 0; i < matrixSize; i++) {
     	      outFile.write("    0.0000    0.0000    0.0000  "+symbol+" 0  0  0  0  0  0  0  0  0  0  0  0\n");
@@ -2857,12 +2847,8 @@ public class MAYGEN {
     	         }
     	      }
     	   }
-
-
-    	    outFile.write("M  END\n");
-
-    	    outFile.write("\n$$$$\n");
-
+    	   outFile.write("M  END\n");
+    	   outFile.write("\n$$$$\n");
     	}
 
 
