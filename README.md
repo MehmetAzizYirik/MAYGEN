@@ -11,13 +11,10 @@ MAYGEN takes a molecular formula (such as C<sub>10</sub>H<sub>16</sub>O) as inpu
 
 As can be seen from these examples, MAYGEN makes no assumptions on chemical stability. In particular in small ring systems, this may lead to unlikely structures, such as C=1C=C1. 
 
-We benchmarked MAYGEN against the current state-of-the-art, but [closed-source structure generator Molgen](http://www.molgen.de) from the University of Bayreuth as well as against the [Open Molecule Generator (OMG)](https://sourceforge.net/projects/openmg/)[3], the only available open source structure generator. We did not test against the parallelised version of OMG - called PMG - to maintain the focus on algorithmic rather than technological speed. The following plot compares the timings. The generated numbers  of structures are identical for MAYGEN and Molgen 3.5.
+We benchmarked MAYGEN against the current state-of-the-art, but [closed-source structure generator Molgen](http://www.molgen.de) from the University of Bayreuth as well as against the [Parallel Molecule Generator (PMG)](https://sourceforge.net/projects/pmgcoordination/)[3], the fastest available open source structure generator. The following plot compares the timings. 
 
 ![A speed comparison of maygen against molgen. Maygen is consistently slower than molgen](/resources/maygen-molgen.png)
 
-MAYGEN is consistently slower than Molgen, but gets close to its performance for pure carbohydrates (Factor 1.4 slower). For example, MAYGEN generates the 400 mio isomers of C<sub>13</sub>H<sub>8</sub> in 14h on a current unix machine, whereas Molgen takes 11h. 
-
-![Results for the carbohydrates with oxygens](/resources/CarbohydratesWithOxygens.png)
 
 ## Download jar File
 
@@ -93,7 +90,7 @@ This project relies on the Chemistry Development Project (CDK), hosted under [CD
 
 2- Kerber, A., Laue, R., Meringer, M., Rücker, C. and Schymanski, E., 2013. Mathematical chemistry and chemoinformatics: structure generation, elucidation and quantitative structure-property relationships. Walter de Gruyter.
 
-3- Peironcely, J. E., Rojas-Chertó, M., Fichera, D., Reijmers, T., Coulier, L., Faulon, J.-L. & Hankemeier, T. OMG: Open Molecule Generator. J Cheminformatics 4, 21 (2012).
+3- Jaghoori MM, Jongmans SS, De Boer F, Peironcely J, Faulon JL, Reijmers T, Hankemeier T. PMG: multi-core metabolite identification. Electronic Notes in Theoretical Computer Science. 2013 Dec 25;299:53-60.
   
   
 
