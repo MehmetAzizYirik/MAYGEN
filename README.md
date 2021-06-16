@@ -13,7 +13,7 @@ MAYGEN takes a molecular formula (such as C<sub>10</sub>H<sub>16</sub>O) as inpu
 
 As can be seen from these examples, MAYGEN makes no assumptions on chemical stability. In particular in small ring systems, this may lead to unlikely structures, such as C=1C=C1. 
 
-We benchmarked MAYGEN V.1.4 against the current state-of-the-art, but [closed-source structure generator MOLGEN 5.0](http://www.molgen.de) from the University of Bayreuth as well as against the [Parallel Molecule Generator (PMG)](https://sourceforge.net/projects/pmgcoordination/)[3], the fastest available open source structure generator. The benchmark was performed in single-threaded mode for all these software. For randomly selected 50 formulae, MAYGEN was in average 3 times slower than MOLGEN but 47 times faster than PMG. For some formulae, PMG could not generate isomers. These are shown by gaps on the its plot.
+We benchmarked MAYGEN V.1.4 against the current state-of-the-art, but [closed-source structure generator MOLGEN 5.0](http://www.molgen.de) from the University of Bayreuth as well as against the [Parallel Molecule Generator (PMG)](https://sourceforge.net/projects/pmgcoordination/)[3], the fastest available open source structure generator. Since PMG can be run in multi-threaded mode, the benchmark was performed in single-threaded mode for algorithmic comparability. For randomly selected 50 formulae, MAYGEN was in average 3 times slower than MOLGEN but 47 times faster than PMG. For some formulae, PMG could not generate isomers. These are shown by gaps on the its plot.
 
 <p align="center">
   <img src=/resources/Benchmarking.png />
