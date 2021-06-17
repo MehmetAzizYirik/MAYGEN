@@ -93,7 +93,7 @@ public class MAYGEN {
     public static int[] hydrogens;
     public static int[] nodeLabels;
     public static int graphSize;
-    public static List<String[]> oxygenSulfur = new ArrayList<String[]>();
+    public static List<int[]> oxygenSulfur = new ArrayList<int[]>();
     public static int[] firstDegrees;
     public static int partSize = 0;
     public static int totalHydrogen = 0;
@@ -282,17 +282,22 @@ public class MAYGEN {
     public static void singleAtomCheck(String[] atoms) {
         String[] info;
         String symbol;
-        for (String atom : atoms) {
-            info = atom.split("(?=[0-9])", 2);
-            symbol = info[0];
-            if (!symbol.equals("H")) {
-                if (atomOccurrence(info) > 1) {
-                    singleAtom = false;
-                    break;
+        if(!(atoms.length==1 && atoms[0].split("(?=[0-9])", 2)[0].equals("H"))){
+        	for (String atom : atoms) {
+                info = atom.split("(?=[0-9])", 2);
+                symbol = info[0];
+                if (!symbol.equals("H")) {
+                    if (atomOccurrence(info) > 1) {
+                        singleAtom = false;
+                        break;
+                    }
                 }
             }
+        }else{
+        	singleAtom=false;
         }
     }
+    
 
     public static void checkOxygenSulfur(String[] atoms) {
         String[] info;
@@ -314,6 +319,7 @@ public class MAYGEN {
         }
         if (onlyDegree2) {
             matrixSize = sulfur + oxygen;
+            hIndex=matrixSize;
         }
     }
 
@@ -379,6 +385,7 @@ public class MAYGEN {
                 justH = true;
                 callHydrogenDistributor = false;
                 hIndex = hydrogens;
+                matrixSize=hIndex;
             } else {
                 callHydrogenDistributor = true;
             }
@@ -1306,9 +1313,9 @@ public class MAYGEN {
      * @throws CloneNotSupportedException
      */
     public static int[][] addHydrogens(int[][] A, int index) throws CloneNotSupportedException {
-        if (singleAtom) {
+    	if (singleAtom) {
             int hIndex = index;
-            int hydrogen = valences.get(symbolArrayCopy[0]);
+            int hydrogen = valences.get(symbolArray[0]);
             for (int j = hIndex; j < hydrogen + hIndex; j++) {
                 A[0][j] = 1;
                 A[j][0] = 1;
@@ -1650,7 +1657,7 @@ public class MAYGEN {
     	boolean check=true;
     	if(atoms.length==1) {
     		String[] info = atoms[0].split("(?=[0-9])", 2);
-    		if(info[1]=="2") {
+    		if(info[1].equals("2")) {
     			if(valences.get(info[0])>3){
     				check=false;
         		}
@@ -1717,7 +1724,7 @@ public class MAYGEN {
                                 System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
                             }
                         } else {
-                            generateOnSm();
+                        	distributeSulfurOxygen();
                             if (writeSDF) outFile.close();
                             long endTime = System.nanoTime() - startTime;
                             double seconds = (double) endTime / 1000000000.0;
@@ -1790,7 +1797,7 @@ public class MAYGEN {
         justH = false;
         noHydrogen = false;
         singleAtom = false;
-        oxygenSulfur = new ArrayList<String[]>();
+        oxygenSulfur = new ArrayList<int[]>();
         formerPermutations = new ArrayList<ArrayList<Permutation>>();
         partitionList = new int[size + 1][1];
         symbols = new ArrayList<String>();
@@ -2410,6 +2417,7 @@ public class MAYGEN {
             throws IOException {
         int[] values = idValues(sum(partition));
         int i = 0;
+        
         if (!equalSetCheck(max, check, partition)) {
             return values;
         } else {
@@ -2766,6 +2774,7 @@ public class MAYGEN {
 
     public static int numberOfBonds(int[][] mat) {
         int length = mat.length;
+        if(!justH) length =hIndex;
         int count = 0;
         for (int i = 0; i < length; i++) {
             for (int j = i + 1; j < length; j++) {
@@ -2777,16 +2786,86 @@ public class MAYGEN {
         return count;
     }
 
+    public static String indexWithSpace(int i) {
+    	String sourceDepiction="";
+    	if(String.valueOf(i + 1).length()==1){
+       	 sourceDepiction = "  "+String.valueOf(i + 1);
+        }else if(String.valueOf(i + 1).length()==2){
+       	 sourceDepiction = " "+String.valueOf(i + 1);
+        }else{
+       	 sourceDepiction = String.valueOf(i + 1);
+        }
+    	return sourceDepiction;
+    }
+    
+    public static void write2SDF(int[] ar) throws IOException {
+ 	   int numberOfBonds= ar.length;
+ 	   outFile.write("\nMolecule "+String.valueOf(count)+"\n    \n");
+ 	   outFile.write(" "+String.valueOf(matrixSize)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
+ 	   for (int i = 0; i < matrixSize/2; i++) {
+ 	      outFile.write("    0.0000    0.0000    0.0000  "+"O"+" 0  0  0  0  0  0  0  0  0  0  0  0\n");
+ 	   }
+ 	   
+ 	   for (int i = 0; i < matrixSize/2; i++) {
+ 	      outFile.write("    0.0000    0.0000    0.0000  "+"S"+" 0  0  0  0  0  0  0  0  0  0  0  0\n");
+ 	   }
+ 	   buildOnSm(ar);
+ 	   outFile.write("M  END\n");
+ 	   outFile.write("\n$$$$\n");
+ 	}
+    
+    public static void buildOnSm(int[] ar) throws IOException {
+    	int oxygen=0;
+    	int sulfur = graphSize/2;
+    	int x=0;
+    	int y=0;
+    	
+    	if(ar[graphSize-1]==0) {
+    		x=sulfur-1;
+    	}else {
+    		x=graphSize-1;
+    	}
+    	
+    	if(ar[0]==0) {
+    		y=0;
+    	}else {
+    		y=sulfur;
+    	}
+    	String sourceDepiction=indexWithSpace(x);
+    	String targetDepiction=indexWithSpace(y);
+    	outFile.write(sourceDepiction+targetDepiction+"  "+String.valueOf(1)+"   0  0  0  0\n");
+    	for(int i=0;i<graphSize-1;i++) {
+    		if(ar[i]==0) {
+    			x=oxygen;
+    			oxygen++;
+    		}else {
+    			x=sulfur;
+    			sulfur++;
+    		}
+    		if(ar[i+1]==0) {
+    			y=oxygen;
+    		}else {
+    			y=sulfur;
+    		}
+    		sourceDepiction=indexWithSpace(x);
+        	targetDepiction=indexWithSpace(y);
+        	outFile.write(sourceDepiction+targetDepiction+"  "+String.valueOf(1)+"   0  0  0  0\n");
+    	}
+    }
+    
     public static void write2SDF(int[][] mat) throws IOException {
     	   int numberOfBonds= numberOfBonds(mat);
+    	   int index=0;
+    	   if(justH) index=matrixSize;
+    	   else index=hIndex;
     	   outFile.write("\nMolecule "+String.valueOf(count)+"\n    \n");
-    	   outFile.write(" "+String.valueOf(matrixSize)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
-    	   for (int i = 0; i < matrixSize; i++) {
+    	   outFile.write(" "+String.valueOf(index)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
+    	   for (int i = 0; i < index; i++) {
     	      outFile.write("    0.0000    0.0000    0.0000  "+symbolArray[i]+" 0  0  0  0  0  0  0  0  0  0  0  0\n");
     	   }
 
-    	   for (int i = 0; i < matrixSize; i++) {
-    	      for (int j = i + 1; j < matrixSize; j++) {
+    	   for (int i = 0; i < index; i++) {
+    	      for (int j = i + 1; j < index; j++) {
     	         if (mat[i][j]!=0) {
     	             String sourceDepiction = "";
     	             String targetDepiction = "";
@@ -2817,33 +2896,33 @@ public class MAYGEN {
     public static void write2SDF(int[][] mat, String symbol) throws IOException {
     	   int numberOfBonds= numberOfBonds(mat);
     	   outFile.write("\nMolecule "+String.valueOf(count)+"\n    \n");
-    	   outFile.write(" "+String.valueOf(matrixSize)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
-    	   for (int i = 0; i < matrixSize; i++) {
+    	   outFile.write(" "+String.valueOf(hIndex)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
+    	   for (int i = 0; i < hIndex; i++) {
     	      outFile.write("    0.0000    0.0000    0.0000  "+symbol+" 0  0  0  0  0  0  0  0  0  0  0  0\n");
     	   }
 
-    	   for (int i = 0; i < matrixSize; i++) {
-    	      for (int j = i + 1; j < matrixSize; j++) {
+    	   for (int i = 0; i < hIndex; i++) {
+    	      for (int j = i + 1; j < hIndex; j++) {
     	         if (mat[i][j]!=0) {
     	             String sourceDepiction = "";
     	             String targetDepiction = "";
     	             if(String.valueOf(i + 1).length()==1){
-    	                    sourceDepiction = "  "+String.valueOf(i + 1);
-    	                }else if(String.valueOf(i + 1).length()==2){
-    	                    sourceDepiction = " "+String.valueOf(i + 1);
-    	                }else{
-    	                    sourceDepiction = String.valueOf(i + 1);
-    	                }
+    	            	 sourceDepiction = "  "+String.valueOf(i + 1);
+    	             }else if(String.valueOf(i + 1).length()==2){
+    	            	 sourceDepiction = " "+String.valueOf(i + 1);
+    	             }else{
+    	            	 sourceDepiction = String.valueOf(i + 1);
+    	             }
 
-    	                if(String.valueOf(j + 1).length()==1){
-    	                    targetDepiction = "  "+String.valueOf(j + 1);
-    	                }else if(String.valueOf(j + 1).length()==2){
-    	                    targetDepiction = " "+String.valueOf(j + 1);
-    	                }else{
-    	                    targetDepiction = String.valueOf(j + 1);
-    	                }
-
-    	            outFile.write(sourceDepiction+targetDepiction+"  "+String.valueOf(mat[i][j])+"   0  0  0  0\n");
+    	             if(String.valueOf(j + 1).length()==1){
+    	            	 targetDepiction = "  "+String.valueOf(j + 1);
+    	             }else if(String.valueOf(j + 1).length()==2){
+    	                 targetDepiction = " "+String.valueOf(j + 1);
+    	             }else{
+    	                 targetDepiction = String.valueOf(j + 1);
+    	             }
+    	             
+    	             outFile.write(sourceDepiction+targetDepiction+"  "+String.valueOf(mat[i][j])+"   0  0  0  0\n");
     	         }
     	      }
     	   }
@@ -2863,30 +2942,11 @@ public class MAYGEN {
         count++;
         String symbol = "";
         if (oxygen == 0) {
-            symbol.equals("S");
+            symbol="S";
         } else {
-            symbol.equals("O");
+            symbol="O";
         }
         if (writeSDF) write2SDF(mat, symbol);
-    }
-
-    public static void generateOnSm() throws IOException {
-        distributeSulfurOxygen();
-        if (writeSDF) {
-            count = 0;
-            int[][] mat = new int[matrixSize][matrixSize];
-            mat[0][1] = 1;
-            mat[0][2] = 1;
-            for (int i = 1; i < matrixSize - 2; i++) {
-                mat[i][i + 2] = 1;
-            }
-            mat[matrixSize - 2][matrixSize - 1] = 1;
-            for (String[] arr : oxygenSulfur) {
-                count++;
-                symbolArray = arr;
-                write2SDF(mat);
-            }
-        }
     }
 
     /**
@@ -2928,17 +2988,14 @@ public class MAYGEN {
         return 1;
     }
 
-    public static String[] build() {
-        String[] arr = new String[graphSize];
-        for (int i = 0; i < graphSize; i++) {
-            if (nodeLabels[i] == 0) {
-                arr[i] = "O";
-            } else {
-                arr[i] = "S";
-            }
+    public static int[] build() throws IOException {
+        int[] arr = new int[graphSize];
+        for (int i = 1; i < graphSize+1; i++) {
+            arr[i-1]=nodeLabels[i];
         }
         return arr;
     }
+    
 
     /**
      * Main function for the distribution of atom symbols: O and S for OnSm form formulae.
@@ -2954,6 +3011,7 @@ public class MAYGEN {
      *     the array
      * @param reversalIsSmaller boolean from the reversal comparison, using the boolean variable to
      *     know reveral is smaller than the bode labelling or not.
+     * @throws IOException 
      */
     public static void distributeSymbols(
             int oxy,
@@ -2963,7 +3021,7 @@ public class MAYGEN {
             int reversedLength,
             int leftEquivalents,
             int rightEquivalents,
-            boolean reversalIsSmaller) {
+            boolean reversalIsSmaller) throws IOException {
 
         if (2 * (nextSize - 1) > (graphSize + reversedLength)) {
             if (nodeLabels[nextSize - 1] > nodeLabels[graphSize - nextSize + 2 + reversedLength])
@@ -2975,7 +3033,7 @@ public class MAYGEN {
         if (nextSize > graphSize) {
             if (!reversalIsSmaller && (graphSize % currentSize) == 0) {
                 count++;
-                if (writeSDF) oxygenSulfur.add(build());
+                if (writeSDF) write2SDF(build());
             }
         } else {
             int oxy2 = oxy;
@@ -3063,16 +3121,16 @@ public class MAYGEN {
         }
     }
 
-    public static void distributeSulfurOxygen() {
+    public static void distributeSulfurOxygen() throws IOException {
         graphSize = oxygen + sulfur;
         nodeLabels = new int[graphSize + 1];
         nodeLabels[0] = 0;
         distributeSymbols(oxygen, sulfur, 1, 1, 0, 0, 0, false);
     }
-
+    
     public static void main(String[] args)
             throws CloneNotSupportedException, CDKException, IOException {
-        MAYGEN gen = new MAYGEN();
+    	MAYGEN gen = new MAYGEN();
         try {
             gen.parseArgs(args);
             MAYGEN.run();
