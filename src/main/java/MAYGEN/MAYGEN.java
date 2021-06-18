@@ -280,9 +280,17 @@ public class MAYGEN {
     }
 
     public static void singleAtomCheck(String[] atoms) {
-        String[] info;
-        String symbol;
-        if(!(atoms.length==1 && atoms[0].split("(?=[0-9])", 2)[0].equals("H"))){
+        String[] info=atoms[0].split("(?=[0-9])", 2);
+        String symbol=info[0];
+        if(atoms.length==1) {
+        	if(symbol.equals("H")) {
+        		singleAtom=false;
+        	}else {
+        		if (atomOccurrence(info) > 1) {
+                    singleAtom = false;
+        		}
+        	}
+        }else {
         	for (String atom : atoms) {
                 info = atom.split("(?=[0-9])", 2);
                 symbol = info[0];
@@ -293,8 +301,6 @@ public class MAYGEN {
                     }
                 }
             }
-        }else{
-        	singleAtom=false;
         }
     }
     
@@ -2774,7 +2780,7 @@ public class MAYGEN {
 
     public static int numberOfBonds(int[][] mat) {
         int length = mat.length;
-        if(!justH) length =hIndex;
+        //if(!justH) length =hIndex;
         int count = 0;
         for (int i = 0; i < length; i++) {
             for (int j = i + 1; j < length; j++) {
@@ -2799,20 +2805,41 @@ public class MAYGEN {
     }
     
     public static void write2SDF(int[] ar) throws IOException {
- 	   int numberOfBonds= ar.length;
- 	   outFile.write("\nMolecule "+String.valueOf(count)+"\n    \n");
- 	   outFile.write(" "+String.valueOf(matrixSize)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
+       int numberOfBonds= ar.length;
+	   outFile.write("\nMolecule "+String.valueOf(count)+"\n    MAYGEN 20210615\n");
+	    String allAtoms = "";
+	    String allBonds = "";
+	    if(String.valueOf(matrixSize).length()==1){
+	        allAtoms+="  "+String.valueOf(matrixSize);
+	    }else if (String.valueOf(matrixSize).length()==2){
+	        allAtoms+=" "+String.valueOf(matrixSize);
+	    }else{
+	        allAtoms+=String.valueOf(matrixSize);
+	    }
+
+	    if(String.valueOf(numberOfBonds).length()==1){
+	        allBonds+="  "+String.valueOf(numberOfBonds);
+	    }else if (String.valueOf(numberOfBonds).length()==2){
+	        allBonds+=" "+String.valueOf(numberOfBonds);
+	    }else{
+	        allBonds+=String.valueOf(numberOfBonds);
+	    }
+
+
+
+	    outFile.write(allAtoms+allBonds+"  0     0  0  0  0  0  0999 V2000\n");
  	   for (int i = 0; i < matrixSize/2; i++) {
- 	      outFile.write("    0.0000    0.0000    0.0000  "+"O"+" 0  0  0  0  0  0  0  0  0  0  0  0\n");
+ 	      outFile.write("    0.0000    0.0000    0.0000 "+"O"+"   0  0  0  0  0  0  0  0  0  0  0  0\n");
  	   }
- 	   
- 	   for (int i = 0; i < matrixSize/2; i++) {
- 	      outFile.write("    0.0000    0.0000    0.0000  "+"S"+" 0  0  0  0  0  0  0  0  0  0  0  0\n");
+   	   
+	   for (int i = 0; i < matrixSize/2; i++) {
+ 	      outFile.write("    0.0000    0.0000    0.0000 "+"S"+"   0  0  0  0  0  0  0  0  0  0  0  0\n");
  	   }
- 	   buildOnSm(ar);
- 	   outFile.write("M  END\n");
- 	   outFile.write("\n$$$$\n");
- 	}
+	   
+   	   buildOnSm(ar);
+   	   outFile.write("M  END\n");
+   	   outFile.write("\n$$$$\n");
+   	}
     
     public static void buildOnSm(int[] ar) throws IOException {
     	int oxygen=0;
@@ -2852,20 +2879,36 @@ public class MAYGEN {
         	outFile.write(sourceDepiction+targetDepiction+"  "+String.valueOf(1)+"   0  0  0  0\n");
     	}
     }
-    
     public static void write2SDF(int[][] mat) throws IOException {
     	   int numberOfBonds= numberOfBonds(mat);
-    	   int index=0;
-    	   if(justH) index=matrixSize;
-    	   else index=hIndex;
-    	   outFile.write("\nMolecule "+String.valueOf(count)+"\n    \n");
-    	   outFile.write(" "+String.valueOf(index)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
-    	   for (int i = 0; i < index; i++) {
-    	      outFile.write("    0.0000    0.0000    0.0000  "+symbolArray[i]+" 0  0  0  0  0  0  0  0  0  0  0  0\n");
+    	   outFile.write("\nMolecule "+String.valueOf(count)+"\n    MAYGEN 20210615\n");
+    	    String allAtoms = "";
+    	    String allBonds = "";
+    	    if(String.valueOf(matrixSize).length()==1){
+    	        allAtoms+="  "+String.valueOf(matrixSize);
+    	    }else if (String.valueOf(matrixSize).length()==2){
+    	        allAtoms+=" "+String.valueOf(matrixSize);
+    	    }else{
+    	        allAtoms+=String.valueOf(matrixSize);
+    	    }
+
+    	    if(String.valueOf(numberOfBonds).length()==1){
+    	        allBonds+="  "+String.valueOf(numberOfBonds);
+    	    }else if (String.valueOf(numberOfBonds).length()==2){
+    	        allBonds+=" "+String.valueOf(numberOfBonds);
+    	    }else{
+    	        allBonds+=String.valueOf(numberOfBonds);
+    	    }
+
+
+
+    	    outFile.write(allAtoms+allBonds+"  0     0  0  0  0  0  0999 V2000\n");
+    	   for (int i = 0; i < matrixSize; i++) {
+    	      outFile.write("    0.0000    0.0000    0.0000 "+symbolArray[i]+"   0  0  0  0  0  0  0  0  0  0  0  0\n");
     	   }
 
-    	   for (int i = 0; i < index; i++) {
-    	      for (int j = i + 1; j < index; j++) {
+    	   for (int i = 0; i < matrixSize; i++) {
+    	      for (int j = i + 1; j < matrixSize; j++) {
     	         if (mat[i][j]!=0) {
     	             String sourceDepiction = "";
     	             String targetDepiction = "";
@@ -2889,48 +2932,74 @@ public class MAYGEN {
     	         }
     	      }
     	   }
-    	   outFile.write("M  END\n");
-    	   outFile.write("\n$$$$\n");
+
+
+    	    outFile.write("M  END\n");
+
+    	    outFile.write("\n$$$$\n");
+
     	}
-    
+
     public static void write2SDF(int[][] mat, String symbol) throws IOException {
-    	   int numberOfBonds= numberOfBonds(mat);
-    	   outFile.write("\nMolecule "+String.valueOf(count)+"\n    \n");
-    	   outFile.write(" "+String.valueOf(hIndex)+" "+String.valueOf(numberOfBonds)+"  0     0  0  0  0  0  0999 V2000\n");
-    	   for (int i = 0; i < hIndex; i++) {
-    	      outFile.write("    0.0000    0.0000    0.0000  "+symbol+" 0  0  0  0  0  0  0  0  0  0  0  0\n");
-    	   }
+    	int numberOfBonds= numberOfBonds(mat);
+ 	    outFile.write("\nMolecule "+String.valueOf(count)+"\n    MAYGEN 20210615\n");
+ 	    String allAtoms = "";
+ 	    String allBonds = "";
+ 	    if(String.valueOf(matrixSize).length()==1){
+ 	        allAtoms+="  "+String.valueOf(matrixSize);
+ 	    }else if (String.valueOf(matrixSize).length()==2){
+ 	        allAtoms+=" "+String.valueOf(matrixSize);
+ 	    }else{
+ 	        allAtoms+=String.valueOf(matrixSize);
+ 	    }
 
-    	   for (int i = 0; i < hIndex; i++) {
-    	      for (int j = i + 1; j < hIndex; j++) {
-    	         if (mat[i][j]!=0) {
-    	             String sourceDepiction = "";
-    	             String targetDepiction = "";
-    	             if(String.valueOf(i + 1).length()==1){
-    	            	 sourceDepiction = "  "+String.valueOf(i + 1);
-    	             }else if(String.valueOf(i + 1).length()==2){
-    	            	 sourceDepiction = " "+String.valueOf(i + 1);
-    	             }else{
-    	            	 sourceDepiction = String.valueOf(i + 1);
-    	             }
+ 	    if(String.valueOf(numberOfBonds).length()==1){
+ 	        allBonds+="  "+String.valueOf(numberOfBonds);
+ 	    }else if (String.valueOf(numberOfBonds).length()==2){
+ 	        allBonds+=" "+String.valueOf(numberOfBonds);
+ 	    }else{
+ 	        allBonds+=String.valueOf(numberOfBonds);
+ 	    }
 
-    	             if(String.valueOf(j + 1).length()==1){
-    	            	 targetDepiction = "  "+String.valueOf(j + 1);
-    	             }else if(String.valueOf(j + 1).length()==2){
-    	                 targetDepiction = " "+String.valueOf(j + 1);
-    	             }else{
-    	                 targetDepiction = String.valueOf(j + 1);
-    	             }
-    	             
-    	             outFile.write(sourceDepiction+targetDepiction+"  "+String.valueOf(mat[i][j])+"   0  0  0  0\n");
-    	         }
-    	      }
-    	   }
-    	   outFile.write("M  END\n");
-    	   outFile.write("\n$$$$\n");
-    	}
+ 	    outFile.write(allAtoms+allBonds+"  0     0  0  0  0  0  0999 V2000\n");
+
+ 	   for (int i = 0; i < matrixSize; i++) {
+ 	      outFile.write("    0.0000    0.0000    0.0000 "+symbol+"   0  0  0  0  0  0  0  0  0  0  0  0\n");
+ 	   }
+
+ 	   for (int i = 0; i < matrixSize; i++) {
+ 	      for (int j = i + 1; j < matrixSize; j++) {
+ 	         if (mat[i][j]!=0) {
+ 	             String sourceDepiction = "";
+ 	             String targetDepiction = "";
+ 	             if(String.valueOf(i + 1).length()==1){
+ 	                    sourceDepiction = "  "+String.valueOf(i + 1);
+ 	                }else if(String.valueOf(i + 1).length()==2){
+ 	                    sourceDepiction = " "+String.valueOf(i + 1);
+ 	                }else{
+ 	                    sourceDepiction = String.valueOf(i + 1);
+ 	                }
+
+ 	                if(String.valueOf(j + 1).length()==1){
+ 	                    targetDepiction = "  "+String.valueOf(j + 1);
+ 	                }else if(String.valueOf(j + 1).length()==2){
+ 	                    targetDepiction = " "+String.valueOf(j + 1);
+ 	                }else{
+ 	                    targetDepiction = String.valueOf(j + 1);
+ 	                }
+
+ 	            outFile.write(sourceDepiction+targetDepiction+"  "+String.valueOf(mat[i][j])+"   0  0  0  0\n");
+ 	         }
+ 	      }
+ 	   }
 
 
+ 	    outFile.write("M  END\n");
+
+ 	    outFile.write("\n$$$$\n");
+
+ 	}
+    
     public static void degree2graph() throws IOException {
         int[][] mat = new int[matrixSize][matrixSize];
         mat[0][1] = 1;
