@@ -2636,6 +2636,7 @@ public class MAYGEN {
 
     public static int[] orderDegreeSymbols(int[] degree, String[] symbol, int index0, int index1) {
         int temp = 0;
+        int temp2 = 0;
         for (int i = index0; i < index1; i++) {
             for (int j = i + 1; j < index1; j++) {
                 if (degree[i] > degree[j]) {
@@ -2643,6 +2644,9 @@ public class MAYGEN {
                     temp = degree[i];
                     degree[i] = degree[j];
                     degree[j] = temp;
+                    temp2 = hydrogens[i];
+                    hydrogens[i] = hydrogens[j];
+                    hydrogens[j] = temp2;
                 }
             }
         }
@@ -2651,6 +2655,13 @@ public class MAYGEN {
 
     public static void swap(String[] array, int i, int j) {
         String temp = "";
+        temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    
+    public static void swap(int[][] array, int i, int j) {
+        int[] temp = new int[array.length];
         temp = array[i];
         array[i] = array[j];
         array[j] = temp;
@@ -2670,6 +2681,7 @@ public class MAYGEN {
                 if ((partition[m] > partition[m + 1])) {
                     swap(partition, m, (m + 1));
                     swap(degrees, m, (m + 1));
+                    swap(hydrogens, m, (m + 1));
                     swap(symbols, m, (m + 1));
                 }
             }
@@ -2880,8 +2892,9 @@ public class MAYGEN {
     	}
     }
     public static void write2SDF(int[][] mat) throws IOException {
-    	   int numberOfBonds= numberOfBonds(mat);
-    	   outFile.write("\nMolecule "+String.valueOf(count)+"\n    MAYGEN 20210615\n");
+    	    int[] indices= sortMatrix(mat,symbolArrayCopy);
+    	    int numberOfBonds= numberOfBonds(mat);
+    	    outFile.write("\nMolecule "+String.valueOf(count)+"\n    MAYGEN 20210615\n");
     	    String allAtoms = "";
     	    String allBonds = "";
     	    if(String.valueOf(matrixSize).length()==1){
@@ -2901,38 +2914,42 @@ public class MAYGEN {
     	    }
 
 
-
-    	    outFile.write(allAtoms+allBonds+"  0     0  0  0  0  0  0999 V2000\n");
+    	   outFile.write(allAtoms+allBonds+"  0     0  0  0  0  0  0999 V2000\n");
     	   for (int i = 0; i < matrixSize; i++) {
-    	      outFile.write("    0.0000    0.0000    0.0000 "+symbolArray[i]+"   0  0  0  0  0  0  0  0  0  0  0  0\n");
+    	      outFile.write("    0.0000    0.0000    0.0000 "+symbolArrayCopy[indices[i]]+"   0  0  0  0  0  0  0  0  0  0  0  0\n");
     	   }
-
+    	   int index=0;
     	   for (int i = 0; i < matrixSize; i++) {
-    	      for (int j = i + 1; j < matrixSize; j++) {
-    	         if (mat[i][j]!=0) {
-    	             String sourceDepiction = "";
-    	             String targetDepiction = "";
-    	             if(String.valueOf(i + 1).length()==1){
-    	                    sourceDepiction = "  "+String.valueOf(i + 1);
-    	                }else if(String.valueOf(i + 1).length()==2){
-    	                    sourceDepiction = " "+String.valueOf(i + 1);
-    	                }else{
-    	                    sourceDepiction = String.valueOf(i + 1);
-    	                }
-
-    	                if(String.valueOf(j + 1).length()==1){
-    	                    targetDepiction = "  "+String.valueOf(j + 1);
-    	                }else if(String.valueOf(j + 1).length()==2){
-    	                    targetDepiction = " "+String.valueOf(j + 1);
-    	                }else{
-    	                    targetDepiction = String.valueOf(j + 1);
-    	                }
-
-    	            outFile.write(sourceDepiction+targetDepiction+"  "+String.valueOf(mat[i][j])+"   0  0  0  0\n");
-    	         }
-    	      }
+    		   index=indices[i];
+    		   for (int j = index + 1; j < matrixSize; j++) {
+      	         if (mat[index][j]!=0) {
+      	             String sourceDepiction = "";
+      	             String targetDepiction = "";
+      	             if(String.valueOf(i + 1).length()==1){
+      	                    sourceDepiction = "  "+String.valueOf(i + 1);
+      	                }else if(String.valueOf(i + 1).length()==2){
+      	                    sourceDepiction = " "+String.valueOf(i + 1);
+      	                }else{
+      	                    sourceDepiction = String.valueOf(i + 1);
+      	                }
+      	             int jj=0;
+      	             for(int k=0;k<indices.length;k++) {
+      	            	 if(indices[k]==j) {
+      	            		 jj=k;
+      	            		 break;
+      	            	 }
+      	             }
+      	             if(String.valueOf(jj + 1).length()==1){
+      	            	 targetDepiction = "  "+String.valueOf(jj + 1);
+      	             }else if(String.valueOf(jj + 1).length()==2){
+      	                 targetDepiction = " "+String.valueOf(jj + 1);
+      	             }else{
+      	                 targetDepiction = String.valueOf(jj + 1);
+      	             }
+      	             outFile.write(sourceDepiction+targetDepiction+"  "+String.valueOf(mat[index][j])+"   0  0  0  0\n");
+      	         }
+      	      }
     	   }
-
 
     	    outFile.write("M  END\n");
 
@@ -3195,6 +3212,55 @@ public class MAYGEN {
         nodeLabels = new int[graphSize + 1];
         nodeLabels[0] = 0;
         distributeSymbols(oxygen, sulfur, 1, 1, 0, 0, 0, false);
+    }
+    
+    public static void sortWithSymbols(int[][] matrix, String[] symbols) {
+        int size = matrix.length;
+        for(int n = 0; n<size-1; n++) {
+        	for (int m = n+1; m<size; m++)   {
+                if ((symbols[m].compareTo(symbols[n]))>0) {
+                	swap(matrix, m, (m + 1));
+                }
+            }
+        }
+        
+    }
+    
+    public static int[] sortMatrix(int[][] mat, String[] arr) {
+    	int size = arr.length;
+    	String[] copy= Arrays.copyOf(arr, arr.length);
+    	int[] indices= new int[size];
+    	for(int i=0;i<size;i++) {
+    		indices[i]=i;
+    	}
+        for(int i = 0; i<hIndex-1; i++) {
+           for (int j = i+1; j<hIndex; j++) {
+              if(copy[i].compareTo(copy[j])>0) {
+            	 String key=copy[i];
+            	 copy[i] = copy[j];
+            	 copy[j] = key;
+            	 int temp = indices[i];
+            	 indices[i] = indices[j];
+            	 indices[j] = temp;
+              }
+           }
+        }
+        return indices;
+    }
+    
+    public static String[] sortSymbols(String[] arr) {
+    	int size = arr.length;
+    	String[] array= Arrays.copyOf(arr, size);
+        for(int i = 0; i<hIndex-1; i++) {
+           for (int j = i+1; j<hIndex; j++) {
+              if(array[i].compareTo(array[j])>0) {
+            	 String temp = array[i];
+            	 array[i] = array[j];
+            	 array[j] = temp;
+              }
+           }
+        }
+        return array;
     }
     
     public static void main(String[] args)
