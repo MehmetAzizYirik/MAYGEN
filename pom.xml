@@ -4,7 +4,7 @@
 
   <groupId>MAYGEN</groupId>
   <artifactId>MAYGEN</artifactId>
-  <version>1.0</version>
+  <version>1.5</version>
   <packaging>jar</packaging>
 
   <name>MAYGEN</name>
@@ -79,10 +79,11 @@
           				<mainClass>MAYGEN/MAYGEN</mainClass>
         			</manifest>
       			</archive>
-        		<finalName>MAYGEN</finalName> 
+        		<finalName>${project.artifactId}-${project.version}</finalName>
+        		<appendAssemblyId>false</appendAssemblyId>
         		<descriptorRefs>
         			<descriptorRef>jar-with-dependencies</descriptorRef>
-      			</descriptorRefs>                 
+        		</descriptorRefs>
     		</configuration>
   		</plugin> 
   		<plugin>
