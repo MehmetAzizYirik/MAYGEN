@@ -15,42 +15,42 @@ public class MaygenTest {
      */
     @Test
     public void test_C3Cl2H4() throws IOException, CDKException, CloneNotSupportedException {
-        MAYGEN.clearGlobals();
-        MAYGEN.formula = "C3Cl2H4";
-        MAYGEN.run();
-        assertEquals(7, MAYGEN.count);
+        MAYGEN maygen = new MAYGEN();
+        maygen.formula = "C3Cl2H4";
+        maygen.run();
+        assertEquals(7, maygen.count);
     }
 
     @Test
     public void test_O13S7() throws IOException, CDKException, CloneNotSupportedException {
-        MAYGEN.clearGlobals();
-        MAYGEN.formula = "O13S7";
-        MAYGEN.run();
-        assertEquals(1980, MAYGEN.count);
+        MAYGEN maygen = new MAYGEN();
+        maygen.formula = "O13S7";
+        maygen.run();
+        assertEquals(1980, maygen.count);
     }
 
     @Test
     public void test_O10S10() throws IOException, CDKException, CloneNotSupportedException {
-        MAYGEN.clearGlobals();
-        MAYGEN.formula = "O10S10";
-        MAYGEN.run();
-        assertEquals(4752, MAYGEN.count);
+        MAYGEN maygen = new MAYGEN();
+        maygen.formula = "O10S10";
+        maygen.run();
+        assertEquals(4752, maygen.count);
     }
 
     @Test
     public void test_S27() throws IOException, CDKException, CloneNotSupportedException {
-        MAYGEN.clearGlobals();
-        MAYGEN.formula = "S27";
-        MAYGEN.run();
-        assertEquals(1, MAYGEN.count);
+        MAYGEN maygen = new MAYGEN();
+        maygen.formula = "S27";
+        maygen.run();
+        assertEquals(1, maygen.count);
     }
 
     @Test
     public void test_O18() throws IOException, CDKException, CloneNotSupportedException {
-        MAYGEN.clearGlobals();
-        MAYGEN.formula = "O18";
-        MAYGEN.run();
-        assertEquals(1, MAYGEN.count);
+        MAYGEN maygen = new MAYGEN();
+        maygen.formula = "O18";
+        maygen.run();
+        assertEquals(1, maygen.count);
     }
 
     /**@Test
