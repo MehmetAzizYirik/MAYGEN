@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,10 +39,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.cli.CommandLine;
@@ -1135,7 +1138,6 @@ public class MAYGEN {
                 }
             }
         }
-        C.get();
     }
 
     /**
@@ -1697,63 +1699,23 @@ public class MAYGEN {
                 if (singleAtom) {
                     getSingleAtomVariables();
                     singleAtom();
-                    if (writeSDF) outFile.close();
-                    long endTime = System.nanoTime() - startTime;
-                    double seconds = (double) endTime / 1000000000.0;
-                    DecimalFormat d = new DecimalFormat(".###");
-                    if (verbose) {
-                        System.out.println("The number of structures is: " + count);
-                        System.out.println("Time: " + d.format(seconds) + " seconds");
-                    }
-                    if (tsvoutput) {
-                        System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
-                    }
+                    displayStatistic(startTime);
                 }else {
                 	checkOxygenSulfur(atoms);
                 	if (onlyDegree2) {
                         if (oxygen == 0 || sulfur == 0) {
                             degree2graph();
-                            if (writeSDF) outFile.close();
-                            long endTime = System.nanoTime() - startTime;
-                            double seconds = (double) endTime / 1000000000.0;
-                            DecimalFormat d = new DecimalFormat(".###");
-                            if (verbose) {
-                                System.out.println("The number of structures is: " + count);
-                                System.out.println("Time: " + d.format(seconds) + " seconds");
-                            }
-                            if (tsvoutput) {
-                                System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
-                            }
+                            displayStatistic(startTime);
                         } else {
                         	distributeSulfurOxygen();
-                            if (writeSDF) outFile.close();
-                            long endTime = System.nanoTime() - startTime;
-                            double seconds = (double) endTime / 1000000000.0;
-                            DecimalFormat d = new DecimalFormat(".###");
-                            if (verbose) {
-                                System.out.println("The number of structures is: " + count);
-                                System.out.println("Time: " + d.format(seconds) + " seconds");
-                            }
-                            if (tsvoutput) {
-                                System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
-                            }
+                            displayStatistic(startTime);
                         }
                     } else {
                         if (canBuildIsomer(formula)) {
                             getSymbolOccurrences();
                             initialDegrees();
                             structureGenerator();
-                            if (writeSDF) outFile.close();
-                            long endTime = System.nanoTime() - startTime;
-                            double seconds = (double) endTime / 1000000000.0;
-                            DecimalFormat d = new DecimalFormat(".###");
-                            if (verbose) {
-                                System.out.println("The number of structures is: " + count);
-                                System.out.println("Time: " + d.format(seconds) + " seconds");
-                            }
-                            if (tsvoutput) {
-                                System.out.println(formula + "\t" + count + "\t" + d.format(seconds));
-                            }
+                            displayStatistic(startTime);
                         } else {
                             if (verbose)
                                 System.out.println(
@@ -1769,6 +1731,22 @@ public class MAYGEN {
                             "The input formula, " + formula + ", does not represent any molecule.");
             	
             }
+        }
+    }
+
+    private void displayStatistic(long startTime) throws IOException {
+        if (writeSDF) outFile.close();
+        long endTime = System.nanoTime() - startTime;
+        double seconds = (double) endTime / 1000000000.0;
+        DecimalFormat d = new DecimalFormat(".###");
+        d.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        if (verbose) {
+            System.out.println("The number of structures is: " + count);
+            System.out.println("Time: " + d.format(seconds) + " seconds");
+        }
+        if (tsvoutput) {
+            System.out.println(formula + "\t" + count + "\t" + d.format(seconds)
+                    + "\t" + ForkJoinPool.commonPool().getParallelism());
         }
     }
 
