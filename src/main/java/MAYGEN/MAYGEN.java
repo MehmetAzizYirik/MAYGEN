@@ -1905,6 +1905,7 @@ public class MAYGEN {
         nonCanonicalIndices.set(new int[2]);
         learningFromCanonicalTest.set(false);
         learningFromConnectivity.set(false);
+        System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "" + size);
         newDegrees.parallelStream().forEach(degree -> {
             setHydrogens(degree);
             int[] newPartition = getPartition(degree);
