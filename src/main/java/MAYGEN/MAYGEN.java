@@ -1932,10 +1932,9 @@ public class MAYGEN {
         nonCanonicalIndices = new int[2];
         learningFromCanonicalTest = false;
         learningFromConnectivity = false;
-        int[] newPartition;
-        for (int[] degree : newDegrees) {
+        newDegrees.stream().forEach(degree -> {
             setHydrogens(degree);
-            newPartition = getPartition(degree);
+            int[] newPartition = getPartition(degree);
             if (writeSDF) symbolArrayCopy = Arrays.copyOf(symbolArray, symbolArray.length);
             if (writeSDF) {
                 sortWithPartition(newPartition, degree, symbolArrayCopy);
@@ -1949,11 +1948,14 @@ public class MAYGEN {
             learningFromCanonicalTest = false;
             partitionList = new int[size + 1][1];
             formerPermutations.clear();
-            partSize += (findZeros(initialPartition) - 1);
-            setYZValues();
-            partitionList[0] = initialPartition;
-            generate(degree);
-        }
+            try {
+                partSize += (findZeros(initialPartition) - 1);
+                setYZValues();
+                partitionList[0] = initialPartition;
+                generate(degree);
+            } catch (IOException | CloneNotSupportedException | CDKException ignored) {
+            }
+        });
     }
 
     /** 3.6.2. Connectivity Test */
