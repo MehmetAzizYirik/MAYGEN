@@ -55,7 +55,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
 
@@ -95,7 +94,7 @@ public class MAYGEN {
     public ThreadLocal<Integer> y = ThreadLocal.withInitial(() -> 0);
     public ThreadLocal<Integer> z = ThreadLocal.withInitial(() -> 0);
     public String[] symbolArrayCopy;
-    public ThreadLocal<int[]> hydrogens = new ThreadLocal<>();
+//    public ThreadLocal<int[]> hydrogens = new ThreadLocal<>();
     public int[] nodeLabels;
     public int graphSize;
     public List<int[]> oxygenSulfur = new ArrayList<int[]>();
@@ -1213,7 +1212,7 @@ public class MAYGEN {
      */
     public void generate(int[] degreeList, int[] initialPartition, int[][] partitionList, int[] connectivityIndices,
                          boolean[] learningFromConnectivity, int[] nonCanonicalIndices,
-                         ArrayList<ArrayList<Permutation>> formerPermutations)
+                         ArrayList<ArrayList<Permutation>> formerPermutations, int[] hydrogens)
             throws IOException, CloneNotSupportedException, CDKException {
         int[][] A = new int[matrixSize][matrixSize];
         int[] degrees = degreeList;
@@ -1230,7 +1229,8 @@ public class MAYGEN {
         z.set(zs.get()[r.get()]);
         while (flag.get()) {
         	nextStep(A, indices, degrees, initialPartition, partitionList, callForward,
-                    connectivityIndices, learningFromConnectivity, nonCanonicalIndices, formerPermutations);
+                    connectivityIndices, learningFromConnectivity, nonCanonicalIndices, formerPermutations,
+                    hydrogens);
             if (!flag.get()) {
             	break;
             }
@@ -1304,11 +1304,12 @@ public class MAYGEN {
      */
     public void nextStep(int[][] A, int[] indices, int[] degrees, int[] initialPartition, int[][] partitionList,
                          boolean[] callForward, int[] connectivityIndices, boolean[] learningFromConnectivity,
-                         int[] nonCanonicalIndices, ArrayList<ArrayList<Permutation>> formerPermutations)
+                         int[] nonCanonicalIndices, ArrayList<ArrayList<Permutation>> formerPermutations,
+                         int[] hydrogens)
             throws IOException, CloneNotSupportedException, CDKException {
         if (callForward[0]) {
             forward(A, indices, degrees, initialPartition, partitionList, callForward, connectivityIndices,
-                    learningFromConnectivity, nonCanonicalIndices, formerPermutations);
+                    learningFromConnectivity, nonCanonicalIndices, formerPermutations, hydrogens);
         } else {
             backward(A, indices, degrees, initialPartition, callForward);
         }
@@ -1322,7 +1323,7 @@ public class MAYGEN {
      * @return
      * @throws CloneNotSupportedException
      */
-    public int[][] addHydrogens(int[][] A, int index) throws CloneNotSupportedException {
+    public int[][] addHydrogens(int[][] A, int index, int[] hydrogens) throws CloneNotSupportedException {
     	if (singleAtom) {
             int hIndex = index;
             int hydrogen = valences.get(symbolArray[0]);
@@ -1335,7 +1336,7 @@ public class MAYGEN {
             int limit = 0;
             int hydrogen = 0;
             for (int i = 0; i < index; i++) {
-                hydrogen = hydrogens.get()[i];
+                hydrogen = hydrogens[i];
                 limit = hIndex + hydrogen;
                 for (int j = hIndex; j < limit; j++) {
                     A[i][j] = 1;
@@ -1455,7 +1456,8 @@ public class MAYGEN {
      */
     public int[][] forward(int[][] A, int[] indices, int[] degrees, int[] initialPartition, int[][] partitionList,
                            boolean[] callForward, int[] connectivityIndices, boolean[] learningFromConnectivity,
-                           int[] nonCanonicalIndices, ArrayList<ArrayList<Permutation>> formerPermutations)
+                           int[] nonCanonicalIndices, ArrayList<ArrayList<Permutation>> formerPermutations,
+                           int[] hydrogens)
             throws IOException, CloneNotSupportedException, CDKException {
         int i = indices[0];
         int j = indices[1];
@@ -1465,13 +1467,14 @@ public class MAYGEN {
         int maximumValue = maximalEntry(minimumValue, lInverse, L.get()[i][j], cInverse, C.get()[i][j]);
         callForward[0] = true;
         return forward(lInverse, cInverse, maximumValue, i, j, A, indices, initialPartition, partitionList,
-                callForward, connectivityIndices, learningFromConnectivity, nonCanonicalIndices, formerPermutations);
+                callForward, connectivityIndices, learningFromConnectivity, nonCanonicalIndices,
+                formerPermutations, hydrogens);
     }
 
     public int[][] forward(
             int lInverse, int cInverse, int maximalX, int i, int j, int[][] A, int[] indices, int[] initialPartition,
             int[][] partitionList, boolean[] callForward, int[] connectivityIndices, boolean[] learningFromConnectivity,
-            int[] nonCanonicalIndices, ArrayList<ArrayList<Permutation>> formerPermutations)
+            int[] nonCanonicalIndices, ArrayList<ArrayList<Permutation>> formerPermutations, int[] hydrogens)
             throws CloneNotSupportedException, CDKException, IOException {
         if (((lInverse - maximalX) <= L.get()[i][j]) && ((cInverse - maximalX) <= C.get()[i][j])) {
             A[i][j] = maximalX;
@@ -1480,7 +1483,7 @@ public class MAYGEN {
                 if (canonicalTest(A, initialPartition, partitionList, nonCanonicalIndices, formerPermutations)) {
                     if (connectivityTest(A, connectivityIndices, learningFromConnectivity)) {
                         count.incrementAndGet();
-                        if (writeSDF) write2SDF(addHydrogens(A, hIndex));
+                        if (writeSDF) write2SDF(addHydrogens(A, hIndex, hydrogens));
                         callForward[0] = false;
                     } else {
                         callForward[0] = false;
@@ -1709,7 +1712,7 @@ public class MAYGEN {
                 singleAtomCheck(atoms);
                 if (singleAtom) {
                     getSingleAtomVariables();
-                    singleAtom();
+                    singleAtom(new int[] {});
                     displayStatistic(startTime);
                 }else {
                 	checkOxygenSulfur(atoms);
@@ -1841,20 +1844,21 @@ public class MAYGEN {
         return (sum(initialPartition, r) - 1);
     }
 
-    public void singleAtom() throws CloneNotSupportedException, CDKException, IOException {
+    public void singleAtom(int[] hydrogens) throws CloneNotSupportedException, CDKException, IOException {
         int[][] A = new int[matrixSize][matrixSize];
         count.incrementAndGet();
-        if (writeSDF) write2SDF(addHydrogens(A, hIndex));
+        if (writeSDF) write2SDF(addHydrogens(A, hIndex, hydrogens));
     }
 
     /**
      * Calling the generate function for each degree values after the hydrogen distribution.
      */
-    public void setHydrogens(int[] degree) {
-        hydrogens.set(new int[size]);
+    public int[] setHydrogens(int[] degree) {
+        int[] hydrogens = new int[size];
         for (int i = 0; i < size; i++) {
-            hydrogens.get()[i] = firstDegrees[i] - degree[i];
+            hydrogens[i] = firstDegrees[i] - degree[i];
         }
+        return hydrogens;
     }
 
     public void structureGenerator()
@@ -1873,14 +1877,14 @@ public class MAYGEN {
             boolean[] learningFromConnectivity = new boolean[] {false};
             int[] nonCanonicalIndices = new int[2];
             ArrayList<ArrayList<Permutation>> formerPermutations = new ArrayList<>();
-            setHydrogens(degree);
+            int[] hydrogens = setHydrogens(degree);
             int[] newPartition = getPartition(degree);
             if (writeSDF) symbolArrayCopy = Arrays.copyOf(symbolArray, symbolArray.length);
             final int[] initialPartition;
             if (writeSDF) {
-                initialPartition = sortWithPartition(newPartition, degree, symbolArrayCopy);
+                initialPartition = sortWithPartition(newPartition, degree, symbolArrayCopy, hydrogens);
             } else {
-                initialPartition = sortWithPartition(newPartition, degree, symbolArray);
+                initialPartition = sortWithPartition(newPartition, degree, symbolArray, hydrogens);
             }
             partSize.set(0);
             int[] connectivityIndices = new int[2];
@@ -1892,7 +1896,7 @@ public class MAYGEN {
                 setYZValues(initialPartition);
                 partitionList[0] = initialPartition;
                 generate(degree, initialPartition, partitionList, connectivityIndices, learningFromConnectivity,
-                        nonCanonicalIndices, formerPermutations);
+                        nonCanonicalIndices, formerPermutations, hydrogens);
             } catch (IOException | CloneNotSupportedException | CDKException ignored) {
             }
         });
@@ -2572,7 +2576,7 @@ public class MAYGEN {
         }
     }
 
-    public void orderDegreeSymbols(int[] degree, String[] symbol, int index0, int index1) {
+    public void orderDegreeSymbols(int[] degree, String[] symbol, int index0, int index1, int[] hydrogens) {
         int temp = 0;
         int temp2 = 0;
         for (int i = index0; i < index1; i++) {
@@ -2582,9 +2586,9 @@ public class MAYGEN {
                     temp = degree[i];
                     degree[i] = degree[j];
                     degree[j] = temp;
-                    temp2 = hydrogens.get()[i];
-                    hydrogens.get()[i] = hydrogens.get()[j];
-                    hydrogens.get()[j] = temp2;
+                    temp2 = hydrogens[i];
+                    hydrogens[i] = hydrogens[j];
+                    hydrogens[j] = temp2;
                 }
             }
         }
@@ -2610,7 +2614,7 @@ public class MAYGEN {
         array[j] = swapString;
     }
 
-    public int[] sortWithPartition(int[] partitionList, int[] degrees, String[] symbols) {
+    public int[] sortWithPartition(int[] partitionList, int[] degrees, String[] symbols, int[] hydrogens) {
         int[] partition = buildArray(partitionList);
         int size = partition.length;
         for (int n = 0; n < size; n++) {
@@ -2618,12 +2622,12 @@ public class MAYGEN {
                 if ((partition[m] > partition[m + 1])) {
                     swap(partition, m, (m + 1));
                     swap(degrees, m, (m + 1));
-                    swap(hydrogens.get(), m, (m + 1));
+                    swap(hydrogens, m, (m + 1));
                     swap(symbols, m, (m + 1));
                 }
             }
         }
-        reOrder(partition, degrees, symbols);
+        reOrder(partition, degrees, symbols, hydrogens);
         return initialPartition(partition);
     }
 
@@ -2652,12 +2656,12 @@ public class MAYGEN {
         return partitionArray;
     }
 
-    public void reOrder(int[] partition, int[] degrees, String[] symbols) {
+    public void reOrder(int[] partition, int[] degrees, String[] symbols, int[] hydrogens) {
         int index = 0;
         int part;
         while (index != (hIndex)) {
             part = partition[index];
-            orderDegreeSymbols(degrees, symbols, index, (index + part));
+            orderDegreeSymbols(degrees, symbols, index, (index + part), hydrogens);
             index = index + part;
         }
     }
