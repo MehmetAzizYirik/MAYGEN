@@ -34,7 +34,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -45,12 +44,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -311,7 +306,7 @@ public class MAYGEN {
             }
         }
     }
-    
+
 
     public void checkOxygenSulfur(String[] atoms) {
         String[] info;
@@ -1193,10 +1188,10 @@ public class MAYGEN {
                                 max.get()[i][j] = (di);
                             } else {
                                 if (di != 1) {
-                                    
+
                                     max.get()[i][j] = (di - 1);
                                 } else {
-                                    
+
                                     max.get()[i][j] = (di);
                                 }
                             }
@@ -1748,7 +1743,7 @@ public class MAYGEN {
             	if (verbose)
                     System.out.println(
                             "The input formula, " + formula + ", does not represent any molecule.");
-            	
+
             }
         }
     }
@@ -1878,39 +1873,7 @@ public class MAYGEN {
         ArrayList<int[]> newDegrees = distributeHydrogens();
         learningFromCanonicalTest.set(false);
         System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "" + size);
-        ExecutorService executor = Executors.newFixedThreadPool(size);
-        Collection<Callable<Object>> degreesToExecute = newDegrees.stream().map(degree ->
-                (Runnable) () -> {
-                    boolean[] learningFromConnectivity = new boolean[]{false};
-                    int[] nonCanonicalIndices = new int[2];
-                    ArrayList<ArrayList<Permutation>> formerPermutations = new ArrayList<>();
-                    int[] hydrogens = setHydrogens(degree);
-                    int[] newPartition = getPartition(degree);
-                    if (writeSDF) symbolArrayCopy = Arrays.copyOf(symbolArray, symbolArray.length);
-                    final int[] initialPartition;
-                    if (writeSDF) {
-                        initialPartition = sortWithPartition(newPartition, degree, symbolArrayCopy, hydrogens);
-                    } else {
-                        initialPartition = sortWithPartition(newPartition, degree, symbolArray, hydrogens);
-                    }
-                    partSize.set(0);
-                    int[] connectivityIndices = new int[2];
-                    learningFromConnectivity[0] = false;
-                    learningFromCanonicalTest.set(false);
-                    int[][] partitionList = new int[size + 1][1];
-                    try {
-                        partSize.set(partSize.get() + (findZeros(initialPartition) - 1));
-                        setYZValues(initialPartition);
-                        partitionList[0] = initialPartition;
-                        generate(degree, initialPartition, partitionList, connectivityIndices, learningFromConnectivity,
-                                nonCanonicalIndices, formerPermutations, hydrogens);
-                    } catch (IOException | CloneNotSupportedException | CDKException ignored) {
-                    }
-            }).map(Executors::callable).collect(Collectors.toList());
-        try {
-            executor.invokeAll(degreesToExecute);
-        } catch (InterruptedException ignored) {
-        }
+        newDegrees.parallelStream().forEach(new NewClass(this)::run);
     }
 
     /** 3.6.2. Connectivity Test */
