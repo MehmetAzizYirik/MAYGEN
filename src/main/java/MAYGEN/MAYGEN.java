@@ -66,25 +66,15 @@ public class MAYGEN {
     public boolean multiThread = false;
     public ThreadLocal<int[]> ys = new ThreadLocal<>();
     public ThreadLocal<int[]> zs = new ThreadLocal<>();
-//    public ThreadLocal<int[]> nonCanonicalIndices = ThreadLocal.withInitial(() -> new int[2]);
     public int hIndex = 0;
     public AtomicInteger count = new AtomicInteger();
     public int matrixSize = 0;
     public boolean verbose = false;
-//    public ThreadLocal<Boolean> callForward = ThreadLocal.withInitial(() -> true);
-//    public ThreadLocal<int[]> connectivityIndices = ThreadLocal.withInitial(() -> new int[2]);
-//    public ThreadLocal<Boolean> learningFromConnectivity = ThreadLocal.withInitial(() -> false);
     public FileWriter outFile;
     public String formula;
     public String filedir;
     public ThreadLocal<Boolean> flag = ThreadLocal.withInitial(() -> true);
     public ThreadLocal<Boolean> learningFromCanonicalTest = ThreadLocal.withInitial(() -> false);
-//    public ThreadLocal<Boolean> biggest = ThreadLocal.withInitial(() -> true);
-//    public ThreadLocal<ArrayList<ArrayList<Permutation>>> formerPermutations =
-//            ThreadLocal.withInitial(ArrayList::new);
-//    public ThreadLocal<int[]> degrees = new ThreadLocal<>();
-//    public ThreadLocal<int[]> initialPartition = new ThreadLocal<int[]>();
-//    public ThreadLocal<int[][]> partitionList = new ThreadLocal<int[][]>();
     public ArrayList<String> symbols = new ArrayList<String>();
     public int[] occurrences;
     public Map<String, Integer> valences;
@@ -95,7 +85,6 @@ public class MAYGEN {
     public ThreadLocal<Integer> y = ThreadLocal.withInitial(() -> 0);
     public ThreadLocal<Integer> z = ThreadLocal.withInitial(() -> 0);
     public String[] symbolArrayCopy;
-//    public ThreadLocal<int[]> hydrogens = new ThreadLocal<>();
     public int[] nodeLabels;
     public int graphSize;
     public List<int[]> oxygenSulfur = new ArrayList<int[]>();
