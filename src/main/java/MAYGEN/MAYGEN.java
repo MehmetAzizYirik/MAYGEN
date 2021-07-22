@@ -1681,6 +1681,7 @@ public class MAYGEN {
      * @throws CloneNotSupportedException
      */
     public void run() throws IOException, CDKException, CloneNotSupportedException {
+        clearGlobals();
         formula = normalizeFormula(formula);
         String[] unsupportedSymbols = validateFormula(formula);
         if (unsupportedSymbols.length > 0) {
@@ -1868,6 +1869,41 @@ public class MAYGEN {
         } else {
             newDegrees.stream().forEach(new NewClass(this)::run);
         }
+    }
+
+    /** For several calls of the run function, setting the global variables. */
+    public void clearGlobals() {
+        singleAtom = true;
+        onlyDegree2 = true;
+        OnSm = true;
+        oxygen = 0;
+        sulfur = 0;
+        graphSize=0;
+        learningFromCanonicalTest.set(false);
+        callHydrogenDistributor = false;
+        total = 0;
+        totalHydrogen = 0;
+        writeSDF = false;
+        size = 0;
+        sizePart = 0;
+        hIndex = 0;
+        count.set(0);
+        matrixSize = 0;
+        noHydrogen = false;
+        justH = false;
+        noHydrogen = false;
+        singleAtom = false;
+        oxygenSulfur = new ArrayList<int[]>();
+        symbols = new ArrayList<String>();
+        occurrences = null;
+        symbolArray = null;
+        r.set(0);
+        y.set(0);
+        z.set(0);
+        partSize.set(0);
+        firstSymbols = new ArrayList<String>();
+        symbols = new ArrayList<String>();
+        firstOccurrences = null;
     }
 
     /** 3.6.2. Connectivity Test */
