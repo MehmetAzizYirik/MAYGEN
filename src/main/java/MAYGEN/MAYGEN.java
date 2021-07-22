@@ -63,6 +63,7 @@ public class MAYGEN {
     public int total = 0;
     public boolean tsvoutput = false;
     public boolean writeSDF = false;
+    public boolean multiThread = false;
     public ThreadLocal<int[]> ys = new ThreadLocal<>();
     public ThreadLocal<int[]> zs = new ThreadLocal<>();
 //    public ThreadLocal<int[]> nonCanonicalIndices = ThreadLocal.withInitial(() -> new int[2]);
@@ -1872,8 +1873,12 @@ public class MAYGEN {
         }
         ArrayList<int[]> newDegrees = distributeHydrogens();
         learningFromCanonicalTest.set(false);
-        System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "" + size);
-        newDegrees.parallelStream().forEach(new NewClass(this)::run);
+        if (multiThread) {
+            System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "" + size);
+            newDegrees.parallelStream().forEach(new NewClass(this)::run);
+        } else {
+            newDegrees.stream().forEach(new NewClass(this)::run);
+        }
     }
 
     /** 3.6.2. Connectivity Test */
@@ -2653,6 +2658,7 @@ public class MAYGEN {
             }
             if (cmd.hasOption("verbose")) this.verbose = true;
             if (cmd.hasOption("tsvoutput")) this.tsvoutput = true;
+            if (cmd.hasOption("multithread")) this.multiThread = true;
         } catch (ParseException e) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.setOptionComparator(null);
@@ -2702,6 +2708,13 @@ public class MAYGEN {
                         .desc("Store output in given file")
                         .build();
         options.addOption(filedir);
+        Option multithread =
+                Option.builder("m")
+                        .required(false)
+                        .longOpt("multithread")
+                        .desc("Use multi thread")
+                        .build();
+        options.addOption(multithread);
         return options;
     }
 
