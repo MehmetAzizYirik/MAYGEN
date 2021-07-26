@@ -367,7 +367,7 @@ public class MaygenTest {
 
     @Test
     public void test_C3O3NH5() throws IOException, CDKException, CloneNotSupportedException {
-         MAYGEN maygen = new MAYGEN();
+        MAYGEN maygen = new MAYGEN();
         maygen.formula = "C3O3NH5";
         maygen.run();
         assertEquals(2644, maygen.count.get());

@@ -27,12 +27,11 @@
  */
 package MAYGEN;
 
-import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.group.Permutation;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.group.Permutation;
 
 public class NewClass {
     private final MAYGEN maygen;
@@ -42,18 +41,22 @@ public class NewClass {
     }
 
     public void run(int[] degree) {
-        boolean[] learningFromConnectivity = new boolean[]{false};
+        boolean[] learningFromConnectivity = new boolean[] {false};
         int[] nonCanonicalIndices = new int[2];
-        ArrayList<ArrayList<Permutation>> formerPermutations = new ArrayList<ArrayList<Permutation>>();
+        ArrayList<ArrayList<Permutation>> formerPermutations =
+                new ArrayList<ArrayList<Permutation>>();
         int[] hydrogens = maygen.setHydrogens(degree);
         int[] newPartition = maygen.getPartition(degree);
         if (maygen.writeSDF)
             maygen.symbolArrayCopy = Arrays.copyOf(maygen.symbolArray, maygen.symbolArray.length);
         final int[] initialPartition;
         if (maygen.writeSDF) {
-            initialPartition = maygen.sortWithPartition(newPartition, degree, maygen.symbolArrayCopy, hydrogens);
+            initialPartition =
+                    maygen.sortWithPartition(
+                            newPartition, degree, maygen.symbolArrayCopy, hydrogens);
         } else {
-            initialPartition = maygen.sortWithPartition(newPartition, degree, maygen.symbolArray, hydrogens);
+            initialPartition =
+                    maygen.sortWithPartition(newPartition, degree, maygen.symbolArray, hydrogens);
         }
         maygen.partSize.set(0);
         int[] connectivityIndices = new int[2];
@@ -64,8 +67,15 @@ public class NewClass {
             maygen.partSize.set(maygen.partSize.get() + (maygen.findZeros(initialPartition) - 1));
             maygen.setYZValues(initialPartition);
             partitionList[0] = initialPartition;
-            maygen.generate(degree, initialPartition, partitionList, connectivityIndices, learningFromConnectivity,
-                    nonCanonicalIndices, formerPermutations, hydrogens);
+            maygen.generate(
+                    degree,
+                    initialPartition,
+                    partitionList,
+                    connectivityIndices,
+                    learningFromConnectivity,
+                    nonCanonicalIndices,
+                    formerPermutations,
+                    hydrogens);
         } catch (IOException | CloneNotSupportedException | CDKException ignored) {
         }
     }
