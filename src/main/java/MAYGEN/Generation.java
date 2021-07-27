@@ -33,10 +33,10 @@ import java.util.Arrays;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
 
-public class NewClass {
+public class Generation {
     private final MAYGEN maygen;
 
-    public NewClass(MAYGEN maygen) {
+    public Generation(MAYGEN maygen) {
         this.maygen = maygen;
     }
 
