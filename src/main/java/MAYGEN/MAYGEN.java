@@ -1954,9 +1954,9 @@ public class MAYGEN {
         learningFromCanonicalTest.set(false);
         if (multiThread) {
             System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "" + size);
-            newDegrees.parallelStream().forEach(new NewClass(this)::run);
+            newDegrees.parallelStream().forEach(new Generation(this)::run);
         } else {
-            newDegrees.stream().forEach(new NewClass(this)::run);
+            newDegrees.stream().forEach(new Generation(this)::run);
         }
     }
 
