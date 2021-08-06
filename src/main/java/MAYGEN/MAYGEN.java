@@ -1845,8 +1845,7 @@ public class MAYGEN {
     }
 
     private void displayStatistic(long startTime) throws IOException {
-        if (writeSDF) outFile.close();
-        else if (writeSMILES) {
+        if (writeSDF || writeSMILES) {
             outFile.close();
         }
         long endTime = System.nanoTime() - startTime;
