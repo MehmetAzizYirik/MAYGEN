@@ -1568,8 +1568,9 @@ public class MAYGEN {
                         formerPermutations)) {
                     if (connectivityTest(A, connectivityIndices, learningFromConnectivity)) {
                         count.incrementAndGet();
-                        if (writeSDF) write2SDF(addHydrogens(A, hIndex, hydrogens));
-                        if (writeSMILES) {
+                        if (writeSDF) {
+                            write2SDF(addHydrogens(A, hIndex, hydrogens));
+                        } else if (writeSMILES) {
                             write2smiles(addHydrogens(A, hIndex, hydrogens));
                         }
                         callForward[0] = false;
