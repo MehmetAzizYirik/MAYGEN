@@ -61,6 +61,8 @@ directory is needed to be specified.
  -t,--tsvoutput                Output formula, number of structures and execution time in CSV format
  
  -d,--filedir <arg>            Store output in given file 
+ 
+ -m,--multithread              Use multi thread 
 
 Please report issues at https://github.com/MehmetAzizYirik/MAYGEN
 ```
