@@ -2843,12 +2843,13 @@ public class MAYGEN {
             HelpFormatter formatter = new HelpFormatter();
             formatter.setOptionComparator(null);
             String header =
-                    "\nGenerates 	molecular structures for a given molecular formula."
-                            + " The input is a molecular formula string."
-                            + "For example 'C2OH4'."
-                            + "If user wants an output file, the directory is needed to be specified."
-                            + "It is also possible to generate SMILES instead of an SDF file, but it will slow down the generation time.\n For this, use the 'outputSMILES' option"
-                            + "file. \n\n";
+                    "\nGenerates molecular structures for a given molecular formula."
+                            + "\nThe input is a molecular formula string."
+                            + "\n\nFor example 'C2OH4'."
+                            + "\n\nIf user wants an output file, the directory is needed to be specified."
+                            + "\nIt is also possible to generate SMILES instead of an SDF file, but it will slow down "
+                            + "the generation time. For this, use the 'outputSMILES' option."
+                            + "\n\n";
             String footer = "\nPlease report issues at https://github.com/MehmetAzizYirik/MAYGEN";
             formatter.printHelp("java -jar MAYGEN.jar", header, options, footer, true);
             throw new ParseException("Problem parsing command line");
