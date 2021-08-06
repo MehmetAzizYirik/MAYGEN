@@ -1864,7 +1864,7 @@ public class MAYGEN {
                             + "\t"
                             + d.format(seconds)
                             + "\t"
-                            + ForkJoinPool.commonPool().getParallelism());
+                            + (multiThread ? ForkJoinPool.commonPool().getParallelism() : 1));
         }
     }
 
@@ -2830,11 +2830,11 @@ public class MAYGEN {
             if (cmd.hasOption("filedir")) {
                 String filedir = cmd.getOptionValue("filedir");
                 this.filedir = Objects.isNull(filedir) ? "." : filedir;
-            }
-            if (cmd.hasOption("os")) {
-                this.writeSMILES = true;
-            } else {
-                this.writeSDF = true;
+                if (cmd.hasOption("os")) {
+                    this.writeSMILES = true;
+                } else {
+                    this.writeSDF = true;
+                }
             }
             if (cmd.hasOption("verbose")) this.verbose = true;
             if (cmd.hasOption("tsvoutput")) this.tsvoutput = true;
