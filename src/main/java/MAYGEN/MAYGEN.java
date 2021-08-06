@@ -1972,7 +1972,6 @@ public class MAYGEN {
         callHydrogenDistributor = false;
         total = 0;
         totalHydrogen = 0;
-        writeSDF = false;
         size = 0;
         sizePart = 0;
         hIndex = 0;
