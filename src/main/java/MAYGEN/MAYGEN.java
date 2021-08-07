@@ -2846,7 +2846,8 @@ public class MAYGEN {
                         .required(false)
                         .longOpt("tsvoutput")
                         .desc(
-                                "Output formula, number of structures and execution time in CSV format")
+                                "Output formula, number of structures and execution time in CSV format."
+                                + "In multithread, the 4th column in the output is the number of threads.")
                         .build();
         options.addOption(tvsoutput);
         Option filedir =
