@@ -112,8 +112,8 @@ public class MAYGEN {
     public int oxygen = 0;
     public int sulfur = 0;
 
-    public static IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
-    public static SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
+    public IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+    public SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
 
     {
         // The atom valences from CDK.
@@ -3197,7 +3197,7 @@ public class MAYGEN {
      * @return IAtomContainer
      * @throws CloneNotSupportedException
      */
-    public static IAtomContainer buildAtomContainerFromMatrix(
+    public IAtomContainer buildAtomContainerFromMatrix(
             int[][] mat, IAtomContainer atomContainer) {
 
         for (int i = 0; i < mat.length; i++) {
