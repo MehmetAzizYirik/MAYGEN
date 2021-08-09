@@ -77,6 +77,7 @@ public class MAYGEN {
     public ThreadLocal<int[]> zs = new ThreadLocal<>();
     public int hIndex = 0;
     public AtomicInteger count = new AtomicInteger();
+    public AtomicInteger indexSmiles = new AtomicInteger();
     public int matrixSize = 0;
     public boolean verbose = false;
     public FileWriter outFile;
@@ -3162,7 +3163,7 @@ public class MAYGEN {
         IAtomContainer atomContainer = buildAtomContainer(mat);
         try {
             String smilesString = smilesGenerator.create(atomContainer);
-            outFile.write(smilesString + " " + String.valueOf(count) + "\n");
+            outFile.write(smilesString + " " + indexSmiles.incrementAndGet() + "\n");
         } catch (CDKException e) {
             e.printStackTrace();
         }
