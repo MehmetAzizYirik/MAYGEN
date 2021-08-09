@@ -1978,6 +1978,7 @@ public class MAYGEN {
         sizePart = 0;
         hIndex = 0;
         count.set(0);
+        indexSdf.set(0);
         matrixSize = 0;
         noHydrogen = false;
         justH = false;
