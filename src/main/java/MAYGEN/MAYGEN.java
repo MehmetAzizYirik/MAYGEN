@@ -68,6 +68,7 @@ public class MAYGEN {
     public ThreadLocal<int[]> zs = new ThreadLocal<>();
     public int hIndex = 0;
     public AtomicInteger count = new AtomicInteger();
+    public AtomicInteger indexSdf = new AtomicInteger();
     public int matrixSize = 0;
     public boolean verbose = false;
     public FileWriter outFile;
@@ -2987,7 +2988,7 @@ public class MAYGEN {
         int[] indices = sortMatrix(mat, symbolArrayCopy);
         int numberOfBonds = numberOfBonds(mat);
         StringJoiner stringJoiner = new StringJoiner("");
-        stringJoiner.add("\nMolecule " + String.valueOf(count) + "\n    MAYGEN 20210615\n");
+        stringJoiner.add("\nMolecule " + String.valueOf(indexSdf.incrementAndGet()) + "\n    MAYGEN 20210615\n");
         String allAtoms = "";
         String allBonds = "";
         if (String.valueOf(matrixSize).length() == 1) {
@@ -3060,7 +3061,7 @@ public class MAYGEN {
     public void write2SDF(int[][] mat, String symbol) throws IOException {
         int numberOfBonds = numberOfBonds(mat);
         StringJoiner stringJoiner = new StringJoiner("");
-        stringJoiner.add("\nMolecule " + String.valueOf(count) + "\n    MAYGEN 20210615\n");
+        stringJoiner.add("\nMolecule " + String.valueOf(indexSdf.incrementAndGet()) + "\n    MAYGEN 20210615\n");
         String allAtoms = "";
         String allBonds = "";
         if (String.valueOf(matrixSize).length() == 1) {
