@@ -2003,6 +2003,7 @@ public class MAYGEN {
         sizePart = 0;
         hIndex = 0;
         count.set(0);
+        indexSmiles.set(0);
         matrixSize = 0;
         noHydrogen = false;
         justH = false;
