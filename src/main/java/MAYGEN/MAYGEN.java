@@ -113,8 +113,8 @@ public class MAYGEN {
     public int oxygen = 0;
     public int sulfur = 0;
 
-    public static IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
-    public static SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
+    public IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+    public SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
 
     {
         // The atom valences from CDK.
@@ -465,13 +465,13 @@ public class MAYGEN {
         }
     }
 
-    private String normalizeFormula(String formula) {
+    public String normalizeFormula(String formula) {
         String[] from = {"cl", "CL", "c", "n", "o", "s", "p", "f", "i", "br", "BR", "h"};
         String[] to = {"Cl", "Cl", "C", "N", "O", "S", "P", "F", "I", "Br", "Br", "H"};
         return StringUtils.replaceEach(formula, from, to);
     }
 
-    private String[] validateFormula(String formula) {
+    public String[] validateFormula(String formula) {
         String[] from = {"Cl", "C", "N", "O", "S", "P", "F", "I", "Br", "H"};
         String[] to = {"", "", "", "", "", "", "", "", "", ""};
         String result = StringUtils.replaceEach(formula.replaceAll("[0-9]", ""), from, to);
@@ -1845,7 +1845,7 @@ public class MAYGEN {
         }
     }
 
-    private void displayStatistic(long startTime) throws IOException {
+    public void displayStatistic(long startTime) throws IOException {
         if (writeSDF || writeSMILES) {
             outFile.close();
         }
@@ -2822,7 +2822,7 @@ public class MAYGEN {
         }
     }
 
-    private void parseArgs(String[] args) throws ParseException {
+    public void parseArgs(String[] args) throws ParseException {
         Options options = setupOptions();
         CommandLineParser parser = new DefaultParser();
         try {
@@ -2857,7 +2857,7 @@ public class MAYGEN {
         }
     }
 
-    private Options setupOptions() {
+    public Options setupOptions() {
         Options options = new Options();
         Option formula =
                 Option.builder("f")
@@ -3198,7 +3198,7 @@ public class MAYGEN {
      * @return IAtomContainer
      * @throws CloneNotSupportedException
      */
-    public static IAtomContainer buildAtomContainerFromMatrix(
+    public IAtomContainer buildAtomContainerFromMatrix(
             int[][] mat, IAtomContainer atomContainer) {
 
         for (int i = 0; i < mat.length; i++) {
@@ -3473,7 +3473,7 @@ public class MAYGEN {
             gen.parseArgs(args);
             gen.run();
         } catch (Exception e) {
-            if (gen.verbose) e.getCause();
+            if (gen.verbose) e.printStackTrace();
         }
     }
 }
