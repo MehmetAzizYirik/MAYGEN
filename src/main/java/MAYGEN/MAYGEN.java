@@ -2901,7 +2901,7 @@ public class MAYGEN {
     public void write2SDF(int[] ar) throws IOException {
         int numberOfBonds = ar.length;
         StringJoiner stringJoiner = new StringJoiner("");
-        stringJoiner.add("\nMolecule " + count + "\n    MAYGEN 20210615\n");
+        stringJoiner.add("\nMolecule " + indexSdf.incrementAndGet() + "\n    MAYGEN 20210615\n");
         String allAtoms = "";
         String allBonds = "";
         if (String.valueOf(matrixSize).length() == 1) {
