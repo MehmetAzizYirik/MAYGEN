@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.cli.CommandLine;
@@ -67,6 +68,7 @@ public class MAYGEN {
     public ThreadLocal<int[]> zs = new ThreadLocal<>();
     public int hIndex = 0;
     public AtomicInteger count = new AtomicInteger();
+    public AtomicInteger indexSdf = new AtomicInteger();
     public int matrixSize = 0;
     public boolean verbose = false;
     public FileWriter outFile;
@@ -1976,6 +1978,7 @@ public class MAYGEN {
         sizePart = 0;
         hIndex = 0;
         count.set(0);
+        indexSdf.set(0);
         matrixSize = 0;
         noHydrogen = false;
         justH = false;
@@ -2897,7 +2900,8 @@ public class MAYGEN {
 
     public void write2SDF(int[] ar) throws IOException {
         int numberOfBonds = ar.length;
-        outFile.write("\nMolecule " + count + "\n    MAYGEN 20210615\n");
+        StringJoiner stringJoiner = new StringJoiner("");
+        stringJoiner.add("\nMolecule " + count + "\n    MAYGEN 20210615\n");
         String allAtoms = "";
         String allBonds = "";
         if (String.valueOf(matrixSize).length() == 1) {
@@ -2916,27 +2920,28 @@ public class MAYGEN {
             allBonds += String.valueOf(numberOfBonds);
         }
 
-        outFile.write(allAtoms + allBonds + "  0     0  0  0  0  0  0999 V2000\n");
+        stringJoiner.add(allAtoms + allBonds + "  0     0  0  0  0  0  0999 V2000\n");
         for (int i = 0; i < matrixSize / 2; i++) {
-            outFile.write(
+            stringJoiner.add(
                     "    0.0000    0.0000    0.0000 "
                             + "O"
                             + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
         }
 
         for (int i = 0; i < matrixSize / 2; i++) {
-            outFile.write(
+            stringJoiner.add(
                     "    0.0000    0.0000    0.0000 "
                             + "S"
                             + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
         }
 
-        buildOnSm(ar);
-        outFile.write("M  END\n");
-        outFile.write("\n$$$$\n");
+        buildOnSm(ar, stringJoiner);
+        stringJoiner.add("M  END\n");
+        stringJoiner.add("\n$$$$\n");
+        outFile.write(stringJoiner.toString());
     }
 
-    public void buildOnSm(int[] ar) throws IOException {
+    public void buildOnSm(int[] ar, StringJoiner stringJoiner) throws IOException {
         int oxygen = 0;
         int sulfur = graphSize / 2;
         int x = 0;
@@ -2955,7 +2960,7 @@ public class MAYGEN {
         }
         String sourceDepiction = indexWithSpace(x);
         String targetDepiction = indexWithSpace(y);
-        outFile.write(
+        stringJoiner.add(
                 sourceDepiction + targetDepiction + "  " + String.valueOf(1) + "   0  0  0  0\n");
         for (int i = 0; i < graphSize - 1; i++) {
             if (ar[i] == 0) {
@@ -2972,7 +2977,7 @@ public class MAYGEN {
             }
             sourceDepiction = indexWithSpace(x);
             targetDepiction = indexWithSpace(y);
-            outFile.write(
+            stringJoiner.add(
                     sourceDepiction
                             + targetDepiction
                             + "  "
@@ -2984,7 +2989,8 @@ public class MAYGEN {
     public void write2SDF(int[][] mat) throws IOException {
         int[] indices = sortMatrix(mat, symbolArrayCopy);
         int numberOfBonds = numberOfBonds(mat);
-        outFile.write("\nMolecule " + String.valueOf(count) + "\n    MAYGEN 20210615\n");
+        StringJoiner stringJoiner = new StringJoiner("");
+        stringJoiner.add("\nMolecule " + String.valueOf(indexSdf.incrementAndGet()) + "\n    MAYGEN 20210615\n");
         String allAtoms = "";
         String allBonds = "";
         if (String.valueOf(matrixSize).length() == 1) {
@@ -3003,9 +3009,9 @@ public class MAYGEN {
             allBonds += String.valueOf(numberOfBonds);
         }
 
-        outFile.write(allAtoms + allBonds + "  0     0  0  0  0  0  0999 V2000\n");
+        stringJoiner.add(allAtoms + allBonds + "  0     0  0  0  0  0  0999 V2000\n");
         for (int i = 0; i < matrixSize; i++) {
-            outFile.write(
+            stringJoiner.add(
                     "    0.0000    0.0000    0.0000 "
                             + symbolArrayCopy[indices[i]]
                             + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
@@ -3038,7 +3044,7 @@ public class MAYGEN {
                     } else {
                         targetDepiction = String.valueOf(jj + 1);
                     }
-                    outFile.write(
+                    stringJoiner.add(
                             sourceDepiction
                                     + targetDepiction
                                     + "  "
@@ -3048,14 +3054,16 @@ public class MAYGEN {
             }
         }
 
-        outFile.write("M  END\n");
+        stringJoiner.add("M  END\n");
 
-        outFile.write("\n$$$$\n");
+        stringJoiner.add("\n$$$$\n");
+        outFile.write(stringJoiner.toString());
     }
 
     public void write2SDF(int[][] mat, String symbol) throws IOException {
         int numberOfBonds = numberOfBonds(mat);
-        outFile.write("\nMolecule " + String.valueOf(count) + "\n    MAYGEN 20210615\n");
+        StringJoiner stringJoiner = new StringJoiner("");
+        stringJoiner.add("\nMolecule " + String.valueOf(indexSdf.incrementAndGet()) + "\n    MAYGEN 20210615\n");
         String allAtoms = "";
         String allBonds = "";
         if (String.valueOf(matrixSize).length() == 1) {
@@ -3074,10 +3082,10 @@ public class MAYGEN {
             allBonds += String.valueOf(numberOfBonds);
         }
 
-        outFile.write(allAtoms + allBonds + "  0     0  0  0  0  0  0999 V2000\n");
+        stringJoiner.add(allAtoms + allBonds + "  0     0  0  0  0  0  0999 V2000\n");
 
         for (int i = 0; i < matrixSize; i++) {
-            outFile.write(
+            stringJoiner.add(
                     "    0.0000    0.0000    0.0000 "
                             + symbol
                             + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
@@ -3104,7 +3112,7 @@ public class MAYGEN {
                         targetDepiction = String.valueOf(j + 1);
                     }
 
-                    outFile.write(
+                    stringJoiner.add(
                             sourceDepiction
                                     + targetDepiction
                                     + "  "
@@ -3114,9 +3122,10 @@ public class MAYGEN {
             }
         }
 
-        outFile.write("M  END\n");
+        stringJoiner.add("M  END\n");
 
-        outFile.write("\n$$$$\n");
+        stringJoiner.add("\n$$$$\n");
+        outFile.write(stringJoiner.toString());
     }
 
     public void degree2graph() throws IOException {
