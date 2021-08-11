@@ -1842,7 +1842,7 @@ public class MAYGEN {
                             + "\t"
                             + d.format(seconds)
                             + "\t"
-                            + ForkJoinPool.commonPool().getParallelism());
+                            + (multiThread ? ForkJoinPool.commonPool().getParallelism() : 1));
         }
     }
 
