@@ -3364,8 +3364,8 @@ public class MAYGEN {
         return array;
     }
 
-    public static void main(String[] args)
-            throws CloneNotSupportedException, CDKException, IOException {
+    
+    public static void main(String[] args) throws CloneNotSupportedException, CDKException, IOException {
         MAYGEN gen = new MAYGEN();
         try {
             gen.parseArgs(args);
