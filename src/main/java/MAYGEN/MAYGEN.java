@@ -2835,7 +2835,7 @@ public class MAYGEN {
             if (cmd.hasOption("filedir")) {
                 String filedir = cmd.getOptionValue("filedir");
                 this.filedir = Objects.isNull(filedir) ? "." : filedir;
-                if (cmd.hasOption("os")) {
+                if (cmd.hasOption("smi")) {
                     this.writeSMILES = true;
                 } else {
                     this.writeSDF = true;
@@ -2853,7 +2853,7 @@ public class MAYGEN {
                             + "\n\nFor example 'C2OH4'."
                             + "\n\nIf user wants an output file, the directory is needed to be specified."
                             + "\nIt is also possible to generate SMILES instead of an SDF file, but it will slow down "
-                            + "the generation time. For this, use the 'outputSMILES' option."
+                            + "the generation time. For this, use the '--smiles' option."
                             + "\n\n";
             String footer = "\nPlease report issues at https://github.com/MehmetAzizYirik/MAYGEN";
             formatter.printHelp("java -jar MAYGEN.jar", header, options, footer, true);
@@ -2904,9 +2904,9 @@ public class MAYGEN {
                         .build();
         options.addOption(multithread);
         Option type =
-                Option.builder("os")
+                Option.builder("smi")
                         .required(false)
-                        .longOpt("outputSMILES")
+                        .longOpt("smiles")
                         .desc("Store output in SMILES format in given file")
                         .build();
         options.addOption(type);
