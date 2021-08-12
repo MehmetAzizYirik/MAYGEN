@@ -59,8 +59,11 @@ directory is needed to be specified.
  -v,--verbose                  Print messages about structure generation
  
  -t,--tsvoutput                Output formula, number of structures and execution time in CSV format
+                               In multithread, the 4th column in the output is the number of threads.
  
  -d,--filedir <arg>            Store output in given file 
+ 
+ -m,--multithread              Use multi thread 
 
 Please report issues at https://github.com/MehmetAzizYirik/MAYGEN
 ```
