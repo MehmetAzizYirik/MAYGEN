@@ -2942,7 +2942,7 @@ public class MAYGEN {
     public void write2SDF(int[] ar) throws IOException {
         int numberOfBonds = ar.length;
         StringJoiner stringJoiner = new StringJoiner("");
-        stringJoiner.add("\nMolecule " + count + "\n    MAYGEN 20210615\n");
+        stringJoiner.add("\nMolecule " + indexSdf.incrementAndGet() + "\n    MAYGEN 20210615\n");
         String allAtoms = "";
         String allBonds = "";
         if (String.valueOf(matrixSize).length() == 1) {
@@ -2970,6 +2970,7 @@ public class MAYGEN {
         }
 
         for (int i = 0; i < matrixSize / 2; i++) {
+
             stringJoiner.add(
                     "    0.0000    0.0000    0.0000 "
                             + "S"
@@ -3018,6 +3019,7 @@ public class MAYGEN {
             }
             sourceDepiction = indexWithSpace(x);
             targetDepiction = indexWithSpace(y);
+
             stringJoiner.add(
                     sourceDepiction
                             + targetDepiction
