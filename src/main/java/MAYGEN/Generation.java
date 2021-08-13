@@ -45,6 +45,8 @@ public class Generation {
         int[] r = new int[] {0};
         int[] y = new int[] {0};
         int[] z = new int[] {0};
+        int[][] ys = new int[][] {new int[0]};
+        int[][] zs = new int[][] {new int[0]};
         boolean[] learningFromConnectivity = new boolean[] {false};
         int[] nonCanonicalIndices = new int[2];
         ArrayList<ArrayList<Permutation>> formerPermutations =
@@ -68,7 +70,7 @@ public class Generation {
         int[][] partitionList = new int[maygen.size + 1][1];
         try {
             partSize[0] = partSize[0] + (maygen.findZeros(initialPartition) - 1);
-            maygen.setYZValues(initialPartition);
+            maygen.setYZValues(initialPartition, ys, zs);
             partitionList[0] = initialPartition;
             maygen.generate(
                     degree,
@@ -82,7 +84,9 @@ public class Generation {
                     partSize,
                     r,
                     y,
-                    z);
+                    z,
+                    ys,
+                    zs);
         } catch (IOException | CloneNotSupportedException | CDKException ignored) {
         }
     }
