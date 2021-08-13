@@ -1,3 +1,5 @@
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.javadev/MAYGEN.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.javadev%22%20AND%20a%3A%22MAYGEN%22)
+
 # MAYGEN - A chemical structure generator for constitutional isomers based on the orderly generation principle
 
 Copyright 2021 Mehmet Aziz Yirik
