@@ -72,7 +72,6 @@ public class MAYGEN {
     public FileWriter outFile;
     public String formula;
     public String filedir;
-    public ThreadLocal<Boolean> flag = ThreadLocal.withInitial(() -> true);
     public ArrayList<String> symbols = new ArrayList<String>();
     public int[] occurrences;
     public Map<String, Integer> valences;
@@ -846,10 +845,8 @@ public class MAYGEN {
      * @param A int[][] adjacency matrix
      * @param permutation Permutation permutation from canonical test
      * @return int[]
-     * @throws IOException
      */
-    public int[] limit(int index, int nextRowIndex, int[][] A, Permutation permutation)
-            throws IOException {
+    public int[] limit(int index, int nextRowIndex, int[][] A, Permutation permutation) {
         int[] original = A[index];
         int[] permuted = A[nextRowIndex];
         int[] limit = new int[2];
@@ -877,10 +874,8 @@ public class MAYGEN {
      * @param A int[][] adjacency matrix
      * @param permutation Permutation permutation from canonical test
      * @return int[]
-     * @throws IOException
      */
-    public int[] lowerIndex(int index, int nextRowIndex, int[][] A, Permutation permutation)
-            throws IOException {
+    public int[] lowerIndex(int index, int nextRowIndex, int[][] A, Permutation permutation) {
         int max = 0;
         int upperLimit = limit(index, nextRowIndex, A, permutation)[1];
         int[] permuted = A[nextRowIndex];
@@ -912,10 +907,8 @@ public class MAYGEN {
      * @param A int[][] adjacency matrix
      * @param permutation Permutation permutation from canonical test
      * @return int[]
-     * @throws IOException
      */
-    public int[] upperIndex(int index, int nextRowIndex, int[][] A, Permutation permutation)
-            throws IOException {
+    public int[] upperIndex(int index, int nextRowIndex, int[][] A, Permutation permutation) {
         int[] limit = limit(index, nextRowIndex, A, permutation);
         int[] lowerLimit = lowerIndex(index, nextRowIndex, A, permutation);
         int[] upperLimit = new int[2];
@@ -1230,7 +1223,7 @@ public class MAYGEN {
             throws IOException, CloneNotSupportedException, CDKException {
         int[][] A = new int[matrixSize][matrixSize];
         int[] degrees = degreeList;
-        flag.set(true);
+        boolean[] flag = new boolean[] {true};
         int[][][] max = new int[][][] {new int[0][0]};
         int[][][] L = new int[][][] {new int[0][0]};
         int[][][] C = new int[][][] {new int[0][0]};
@@ -1244,7 +1237,7 @@ public class MAYGEN {
         r[0] = 0;
         y[0] = ys[0][r[0]];
         z[0] = zs[0][r[0]];
-        while (flag.get()) {
+        while (flag[0]) {
             nextStep(
                     A,
                     indices,
@@ -1266,8 +1259,9 @@ public class MAYGEN {
                     C,
                     ys,
                     zs,
-                    learningFromCanonicalTest);
-            if (!flag.get()) {
+                    learningFromCanonicalTest,
+                    flag);
+            if (!flag[0]) {
                 break;
             }
             if (learningFromConnectivity[0]) {
@@ -1359,7 +1353,8 @@ public class MAYGEN {
             int[][][] C,
             int[][] ys,
             int[][] zs,
-            boolean[] learningFromCanonicalTest)
+            boolean[] learningFromCanonicalTest,
+            boolean[] flag)
             throws IOException, CDKException, CloneNotSupportedException {
         if (callForward[0]) {
             forward(
@@ -1385,7 +1380,7 @@ public class MAYGEN {
                     zs,
                     learningFromCanonicalTest);
         } else {
-            backward(A, indices, degrees, initialPartition, callForward, r, max, L, C);
+            backward(A, indices, degrees, initialPartition, callForward, r, max, L, C, flag);
         }
     }
 
@@ -1496,13 +1491,14 @@ public class MAYGEN {
             int[] r,
             int[][][] max,
             int[][][] L,
-            int[][][] C)
+            int[][][] C,
+            boolean[] flag)
             throws IOException {
         int i = indices[0];
         int j = indices[1];
 
         if (i == 0 && j == 1) {
-            flag.set(false);
+            flag[0] = false;
         } else {
             indices = predecessor(indices, max[0].length);
             // UPODAE
