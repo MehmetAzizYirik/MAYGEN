@@ -47,6 +47,7 @@ public class Generation {
         int[] z = new int[] {0};
         int[][] ys = new int[][] {new int[0]};
         int[][] zs = new int[][] {new int[0]};
+        boolean[] learningFromCanonicalTest = new boolean[] {false};
         boolean[] learningFromConnectivity = new boolean[] {false};
         int[] nonCanonicalIndices = new int[2];
         ArrayList<ArrayList<Permutation>> formerPermutations =
@@ -66,7 +67,7 @@ public class Generation {
         }
         int[] connectivityIndices = new int[2];
         learningFromConnectivity[0] = false;
-        maygen.learningFromCanonicalTest.set(false);
+        learningFromCanonicalTest[0] = false;
         int[][] partitionList = new int[maygen.size + 1][1];
         try {
             partSize[0] = partSize[0] + (maygen.findZeros(initialPartition) - 1);
@@ -86,7 +87,8 @@ public class Generation {
                     y,
                     z,
                     ys,
-                    zs);
+                    zs,
+                    learningFromCanonicalTest);
         } catch (IOException | CloneNotSupportedException | CDKException ignored) {
         }
     }
