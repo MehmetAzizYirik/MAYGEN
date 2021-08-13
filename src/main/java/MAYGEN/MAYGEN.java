@@ -83,15 +83,15 @@ public class MAYGEN {
     public ThreadLocal<int[][]> max = new ThreadLocal<>();
     public ThreadLocal<int[][]> L = new ThreadLocal<>();
     public ThreadLocal<int[][]> C = new ThreadLocal<>();
-    public ThreadLocal<Integer> r = ThreadLocal.withInitial(() -> 0);
-    public ThreadLocal<Integer> y = ThreadLocal.withInitial(() -> 0);
-    public ThreadLocal<Integer> z = ThreadLocal.withInitial(() -> 0);
+    //    public ThreadLocal<Integer> r = ThreadLocal.withInitial(() -> 0);
+    //    public ThreadLocal<Integer> y = ThreadLocal.withInitial(() -> 0);
+    //    public ThreadLocal<Integer> z = ThreadLocal.withInitial(() -> 0);
     public String[] symbolArrayCopy;
     public int[] nodeLabels;
     public int graphSize;
     public List<int[]> oxygenSulfur = new ArrayList<int[]>();
     public int[] firstDegrees;
-    public ThreadLocal<Integer> partSize = ThreadLocal.withInitial(() -> 0);
+    //    public ThreadLocal<Integer> partSize = ThreadLocal.withInitial(() -> 0);
     public int totalHydrogen = 0;
     public ArrayList<String> firstSymbols = new ArrayList<String>();
     public int[] firstOccurrences;
@@ -1218,7 +1218,11 @@ public class MAYGEN {
             boolean[] learningFromConnectivity,
             int[] nonCanonicalIndices,
             ArrayList<ArrayList<Permutation>> formerPermutations,
-            int[] hydrogens)
+            int[] hydrogens,
+            int[] partSize,
+            int[] r,
+            int[] y,
+            int[] z)
             throws IOException, CloneNotSupportedException, CDKException {
         int[][] A = new int[matrixSize][matrixSize];
         int[] degrees = degreeList;
@@ -1230,9 +1234,9 @@ public class MAYGEN {
         indices[0] = 0;
         indices[1] = 1;
         boolean[] callForward = {true};
-        r.set(0);
-        y.set(ys.get()[r.get()]);
-        z.set(zs.get()[r.get()]);
+        r[0] = 0;
+        y[0] = y[0] = ys.get()[r[0]];
+        z[0] = zs.get()[r[0]];
         while (flag.get()) {
             nextStep(
                     A,
@@ -1245,22 +1249,26 @@ public class MAYGEN {
                     learningFromConnectivity,
                     nonCanonicalIndices,
                     formerPermutations,
-                    hydrogens);
+                    hydrogens,
+                    partSize,
+                    r,
+                    y,
+                    z);
             if (!flag.get()) {
                 break;
             }
             if (learningFromConnectivity[0]) {
                 indices = connectivityIndices;
-                findR(indices, initialPartition);
-                int value = indexYZ(initialPartition);
-                y.set(ys.get()[value]);
-                clearFormers(false, y.get(), partitionList, formerPermutations);
+                findR(indices, initialPartition, r);
+                int value = indexYZ(initialPartition, r);
+                y[0] = ys.get()[value];
+                clearFormers(false, y[0], partitionList, formerPermutations);
                 learningFromConnectivity[0] = false;
                 callForward[0] = false;
             } else {
                 if (learningFromCanonicalTest.get()) {
                     indices = successor(nonCanonicalIndices, max.get().length);
-                    findR(indices, initialPartition);
+                    findR(indices, initialPartition, r);
                     learningFromCanonicalTest.set(false);
                     callForward[0] = false;
                 }
@@ -1328,7 +1336,11 @@ public class MAYGEN {
             boolean[] learningFromConnectivity,
             int[] nonCanonicalIndices,
             ArrayList<ArrayList<Permutation>> formerPermutations,
-            int[] hydrogens)
+            int[] hydrogens,
+            int[] partSize,
+            int[] r,
+            int[] y,
+            int[] z)
             throws IOException, CloneNotSupportedException, CDKException {
         if (callForward[0]) {
             forward(
@@ -1342,9 +1354,13 @@ public class MAYGEN {
                     learningFromConnectivity,
                     nonCanonicalIndices,
                     formerPermutations,
-                    hydrogens);
+                    hydrogens,
+                    partSize,
+                    r,
+                    y,
+                    z);
         } else {
-            backward(A, indices, degrees, initialPartition, callForward);
+            backward(A, indices, degrees, initialPartition, callForward, r);
         }
     }
 
@@ -1391,17 +1407,17 @@ public class MAYGEN {
      * @param indices int[] atom valences
      * @return
      */
-    public void updateR(int[] indices) {
-        int y = ys.get()[r.get()];
-        int z = zs.get()[r.get()];
+    public void updateR(int[] indices, int[] r) {
+        int y = ys.get()[r[0]];
+        int z = zs.get()[r[0]];
         if (indices[0] < y) {
-            r.set(r.get() - 1);
+            r[0] = r[0] - 1;
         } else if (indices[0] > z) {
-            r.set(r.get() + 1);
+            r[0] = r[0] + 1;
         }
     }
 
-    public void findR(int[] indices, int[] initialPartition) throws IOException {
+    public void findR(int[] indices, int[] initialPartition, int[] r) throws IOException {
         int block = 0;
         int index = 0;
         int part = 0;
@@ -1416,7 +1432,7 @@ public class MAYGEN {
             }
             index = index + part;
         }
-        r.set(block);
+        r[0] = block;
     }
     /**
      * The third line of the backward method in Grund 3.2.3. The criteria to decide which function
@@ -1447,7 +1463,12 @@ public class MAYGEN {
      * @throws IOException
      */
     public int[][] backward(
-            int[][] A, int[] indices, int[] degrees, int[] initialPartition, boolean[] callForward)
+            int[][] A,
+            int[] indices,
+            int[] degrees,
+            int[] initialPartition,
+            boolean[] callForward,
+            int[] r)
             throws IOException {
         int i = indices[0];
         int j = indices[1];
@@ -1457,7 +1478,7 @@ public class MAYGEN {
         } else {
             indices = predecessor(indices, max.get().length);
             // UPODAE
-            findR(indices, initialPartition);
+            findR(indices, initialPartition, r);
             i = indices[0];
             j = indices[1];
             int x = A[i][j];
@@ -1471,7 +1492,7 @@ public class MAYGEN {
                 A[j][i] = (x - 1);
                 indices = successor(indices, max.get().length);
                 // UOPDATE
-                findR(indices, initialPartition);
+                findR(indices, initialPartition, r);
                 callForward[0] = true;
             } else {
                 callForward[0] = false;
@@ -1501,7 +1522,11 @@ public class MAYGEN {
             boolean[] learningFromConnectivity,
             int[] nonCanonicalIndices,
             ArrayList<ArrayList<Permutation>> formerPermutations,
-            int[] hydrogens)
+            int[] hydrogens,
+            int[] partSize,
+            int[] r,
+            int[] y,
+            int[] z)
             throws IOException, CloneNotSupportedException, CDKException {
         int i = indices[0];
         int j = indices[1];
@@ -1526,7 +1551,11 @@ public class MAYGEN {
                 learningFromConnectivity,
                 nonCanonicalIndices,
                 formerPermutations,
-                hydrogens);
+                hydrogens,
+                partSize,
+                r,
+                y,
+                z);
     }
 
     public int[][] forward(
@@ -1544,7 +1573,11 @@ public class MAYGEN {
             boolean[] learningFromConnectivity,
             int[] nonCanonicalIndices,
             ArrayList<ArrayList<Permutation>> formerPermutations,
-            int[] hydrogens)
+            int[] hydrogens,
+            int[] partSize,
+            int[] r,
+            int[] y,
+            int[] z)
             throws CloneNotSupportedException, CDKException, IOException {
         if (((lInverse - maximalX) <= L.get()[i][j]) && ((cInverse - maximalX) <= C.get()[i][j])) {
             A[i][j] = maximalX;
@@ -1555,7 +1588,11 @@ public class MAYGEN {
                         initialPartition,
                         partitionList,
                         nonCanonicalIndices,
-                        formerPermutations)) {
+                        formerPermutations,
+                        partSize,
+                        r,
+                        y,
+                        z)) {
                     if (connectivityTest(A, connectivityIndices, learningFromConnectivity)) {
                         count.incrementAndGet();
                         if (writeSDF) write2SDF(addHydrogens(A, hIndex, hydrogens));
@@ -1570,7 +1607,7 @@ public class MAYGEN {
                     }
                 }
             } else {
-                int value = indexYZ(initialPartition);
+                int value = indexYZ(initialPartition, r);
                 if (indices[0] == zs.get()[value] && indices[1] == (max.get().length - 1)) {
                     callForward[0] =
                             canonicalTest(
@@ -1578,18 +1615,22 @@ public class MAYGEN {
                                     initialPartition,
                                     partitionList,
                                     nonCanonicalIndices,
-                                    formerPermutations);
+                                    formerPermutations,
+                                    partSize,
+                                    r,
+                                    y,
+                                    z);
                     if (callForward[0]) {
                         indices = successor(indices, max.get().length);
                         // update
-                        findR(indices, initialPartition);
+                        findR(indices, initialPartition, r);
                     } else {
                         callForward[0] = false;
                     }
                 } else {
                     indices = successor(indices, max.get().length);
                     // update
-                    findR(indices, initialPartition);
+                    findR(indices, initialPartition, r);
                     callForward[0] = true;
                 }
             }
@@ -1955,11 +1996,12 @@ public class MAYGEN {
         }
         ArrayList<int[]> newDegrees = distributeHydrogens();
         learningFromCanonicalTest.set(false);
+
         if (multiThread) {
             System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "" + size);
             newDegrees.parallelStream().forEach(new Generation(this)::run);
         } else {
-            newDegrees.stream().forEach(new Generation(this)::run);
+            newDegrees.forEach(new Generation(this)::run);
         }
     }
 
@@ -1989,10 +2031,6 @@ public class MAYGEN {
         symbols = new ArrayList<String>();
         occurrences = null;
         symbolArray = null;
-        r.set(0);
-        y.set(0);
-        z.set(0);
-        partSize.set(0);
         firstSymbols = new ArrayList<String>();
         symbols = new ArrayList<String>();
         firstOccurrences = null;
@@ -2177,9 +2215,9 @@ public class MAYGEN {
      * @param initialPartition
      * @return int
      */
-    public int indexYZ(int[] initialPartition) {
+    public int indexYZ(int[] initialPartition, int[] r) {
         int index = 0;
-        for (int i = 0; i <= r.get(); i++) {
+        for (int i = 0; i <= r[0]; i++) {
             index = index + initialPartition[i];
         }
         return index - 1;
@@ -2190,36 +2228,41 @@ public class MAYGEN {
             int[] initialPartition,
             int[][] partitionList,
             int[] nonCanonicalIndices,
-            ArrayList<ArrayList<Permutation>> formerPermutations)
+            ArrayList<ArrayList<Permutation>> formerPermutations,
+            int[] partSize,
+            int[] r,
+            int[] y,
+            int[] z)
             throws IOException {
         boolean check = true;
         learningFromCanonicalTest.set(false);
-        int value = indexYZ(initialPartition);
-        y.set(ys.get()[value]);
-        z.set(zs.get()[value]);
-        if (partSize.get().equals(r.get()) && z.get() != 1) {
-            z.set(z.get() - 1);
+        int value = indexYZ(initialPartition, r);
+        y[0] = ys.get()[value];
+        z[0] = zs.get()[value];
+        if (partSize[0] == r[0] && z[0] != 1) {
+            z[0] = z[0] - 1;
         }
-        clearFormers(false, y.get(), partitionList, formerPermutations);
+        clearFormers(false, y[0], partitionList, formerPermutations);
         boolean test = true;
-        for (int i = y.get(); i <= z.get(); i++) {
+        for (int i = y[0]; i <= z[0]; i++) {
             test =
                     rowCanonicalTest(
                             i,
-                            r.get(),
+                            r,
                             A,
                             partitionList[i],
                             canonicalPartition(i, partitionList[i]),
                             initialPartition,
                             partitionList,
                             nonCanonicalIndices,
-                            formerPermutations);
+                            formerPermutations,
+                            y);
             if (!test) {
                 check = false;
                 break;
             }
         }
-        clearFormers(check, y.get(), partitionList, formerPermutations);
+        clearFormers(check, y[0], partitionList, formerPermutations);
         return check;
     }
 
@@ -2308,21 +2351,22 @@ public class MAYGEN {
      */
     public boolean rowCanonicalTest(
             int index,
-            int r,
+            int[] r,
             int[][] A,
             int[] partition,
             int[] newPartition,
             int[] initialPartition,
             int[][] partitionList,
             int[] nonCanonicalIndices,
-            ArrayList<ArrayList<Permutation>> formerPermutations)
+            ArrayList<ArrayList<Permutation>> formerPermutations,
+            int[] y)
             throws IOException {
         boolean check;
         if (!rowDescendingTest(index, A, newPartition, nonCanonicalIndices)) {
             check = false;
         } else {
-            int value = indexYZ(initialPartition);
-            y.set(ys.get()[value]);
+            int value = indexYZ(initialPartition, r);
+            y[0] = ys.get()[value];
             ArrayList<Permutation> cycles = new ArrayList<Permutation>();
             if (partition[size - 1] != 0) {
                 Permutation id = new Permutation(size);
@@ -2331,7 +2375,7 @@ public class MAYGEN {
                 cycles = cycleTranspositions(index, partition);
             }
             candidatePermutations(index, cycles, formerPermutations);
-            check = check(index, y.get(), size, A, newPartition, formerPermutations);
+            check = check(index, y[0], size, A, newPartition, formerPermutations);
             if (!check) {
                 if (cycles.size() != 1) {
                     getLernenIndices(index, A, cycles, newPartition, nonCanonicalIndices);
