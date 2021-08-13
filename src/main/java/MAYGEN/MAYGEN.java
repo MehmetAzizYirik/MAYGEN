@@ -45,6 +45,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.cli.CommandLine;
@@ -1933,7 +1934,7 @@ public class MAYGEN {
                             + "\t"
                             + d.format(seconds)
                             + "\t"
-                            + (multiThread ? ForkJoinPool.commonPool().getParallelism() : 1));
+                            + (multiThread ? size : 1));
         }
     }
 
@@ -2033,7 +2034,7 @@ public class MAYGEN {
         return hydrogens;
     }
 
-    public void structureGenerator() throws IOException, CloneNotSupportedException, CDKException {
+    public void structureGenerator() {
         if (noHydrogen) {
             size = sum(firstOccurrences, firstOccurrences.length - 1);
         } else if (justH) {
@@ -2044,8 +2045,17 @@ public class MAYGEN {
         ArrayList<int[]> newDegrees = distributeHydrogens();
 
         if (multiThread) {
-            System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "" + size);
-            newDegrees.parallelStream().forEach(new Generation(this)::run);
+            try {
+                new ForkJoinPool(size)
+                        .submit(
+                                () ->
+                                        newDegrees
+                                                .parallelStream()
+                                                .forEach(new Generation(this)::run))
+                        .get();
+            } catch (InterruptedException | ExecutionException e) {
+                if (verbose) e.printStackTrace();
+            }
         } else {
             newDegrees.forEach(new Generation(this)::run);
         }
@@ -3492,7 +3502,7 @@ public class MAYGEN {
             gen.parseArgs(args);
             gen.run();
         } catch (Exception e) {
-            if (gen.verbose) e.getCause();
+            if (gen.verbose) e.printStackTrace();
         }
     }
 }
