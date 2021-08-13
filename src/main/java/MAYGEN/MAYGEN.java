@@ -68,7 +68,6 @@ public class MAYGEN {
     public ThreadLocal<int[]> zs = new ThreadLocal<>();
     public int hIndex = 0;
     public AtomicInteger count = new AtomicInteger();
-
     public AtomicInteger indexSdf = new AtomicInteger();
     public int matrixSize = 0;
     public boolean verbose = false;
@@ -80,18 +79,11 @@ public class MAYGEN {
     public ArrayList<String> symbols = new ArrayList<String>();
     public int[] occurrences;
     public Map<String, Integer> valences;
-    public ThreadLocal<int[][]> max = new ThreadLocal<>();
-    public ThreadLocal<int[][]> L = new ThreadLocal<>();
-    public ThreadLocal<int[][]> C = new ThreadLocal<>();
-    //    public ThreadLocal<Integer> r = ThreadLocal.withInitial(() -> 0);
-    //    public ThreadLocal<Integer> y = ThreadLocal.withInitial(() -> 0);
-    //    public ThreadLocal<Integer> z = ThreadLocal.withInitial(() -> 0);
     public String[] symbolArrayCopy;
     public int[] nodeLabels;
     public int graphSize;
     public List<int[]> oxygenSulfur = new ArrayList<int[]>();
     public int[] firstDegrees;
-    //    public ThreadLocal<Integer> partSize = ThreadLocal.withInitial(() -> 0);
     public int totalHydrogen = 0;
     public ArrayList<String> firstSymbols = new ArrayList<String>();
     public int[] firstOccurrences;
@@ -1097,18 +1089,18 @@ public class MAYGEN {
      * L; upper triangular matrix like given in 3.2.1. For (i,j), after the index, giving the
      * maximum line capacity.
      */
-    public void upperTriangularL(int[] degrees) {
-        L.set(new int[hIndex][hIndex]);
+    public void upperTriangularL(int[] degrees, int[][][] max, int[][][] L) {
+        L[0] = new int[hIndex][hIndex];
         if (hIndex == 2) {
             for (int i = 0; i < hIndex; i++) {
                 for (int j = i + 1; j < hIndex; j++) {
-                    L.get()[i][j] = Math.min(degrees[i], Lsum(i, j));
+                    L[0][i][j] = Math.min(degrees[i], Lsum(i, j, max));
                 }
             }
         } else {
             for (int i = 0; i < hIndex; i++) {
                 for (int j = i + 1; j < hIndex; j++) {
-                    L.get()[i][j] = Math.min(degrees[i], Lsum(i, j + 1));
+                    L[0][i][j] = Math.min(degrees[i], Lsum(i, j + 1, max));
                 }
             }
         }
@@ -1121,18 +1113,18 @@ public class MAYGEN {
      * @param degrees int[] valences
      * @throws IOException
      */
-    public void upperTriangularC(int[] degrees) throws IOException {
-        C.set(new int[hIndex][hIndex]);
+    public void upperTriangularC(int[] degrees, int[][][] max, int[][][] C) throws IOException {
+        C[0] = new int[hIndex][hIndex];
         if (hIndex == 2) {
             for (int i = 0; i < hIndex; i++) {
                 for (int j = i + 1; j < hIndex; j++) {
-                    C.get()[i][j] = Math.min(degrees[j], Csum(i, j));
+                    C[0][i][j] = Math.min(degrees[j], Csum(i, j, max));
                 }
             }
         } else {
             for (int i = 0; i < hIndex; i++) {
                 for (int j = i + 1; j < hIndex; j++) {
-                    C.get()[i][j] = Math.min(degrees[j], Csum(i + 1, j));
+                    C[0][i][j] = Math.min(degrees[j], Csum(i + 1, j, max));
                 }
             }
         }
@@ -1145,10 +1137,10 @@ public class MAYGEN {
      * @param j int column index
      * @return
      */
-    public int Lsum(int i, int j) {
+    public int Lsum(int i, int j, int[][][] max) {
         int sum = 0;
         for (int k = j; k < hIndex; k++) {
-            sum = sum + max.get()[i][k];
+            sum = sum + max[0][i][k];
         }
         return sum;
     }
@@ -1160,39 +1152,37 @@ public class MAYGEN {
      * @param j int row index
      * @return
      */
-    public int Csum(int i, int j) {
+    public int Csum(int i, int j, int[][][] max) {
         int sum = 0;
         for (int k = i; k < hIndex; k++) {
-            sum = sum + max.get()[k][j];
+            sum = sum + max[0][k][j];
         }
         return sum;
     }
 
     /** Possible maximal edge multiplicity for the atom pair (i,j). */
-    public void maximalMatrix(int[] degrees) {
-        max.set(new int[hIndex][hIndex]);
+    public void maximalMatrix(int[] degrees, int[][][] max) {
+        max[0] = new int[hIndex][hIndex];
         for (int i = 0; i < hIndex; i++) {
             for (int j = 0; j < hIndex; j++) {
                 int di = degrees[i];
                 int dj = degrees[j];
                 if (i == j) {
-                    max.get()[i][j] = 0;
+                    max[0][i][j] = 0;
                 } else {
                     if (di != dj) {
-                        max.get()[i][j] = Math.min(di, dj);
+                        max[0][i][j] = Math.min(di, dj);
                     } else if (di == dj && i != j) {
                         if (justH) {
-                            max.get()[i][j] = (di);
+                            max[0][i][j] = (di);
                         } else {
                             if (hIndex == 2) {
-                                max.get()[i][j] = (di);
+                                max[0][i][j] = (di);
                             } else {
                                 if (di != 1) {
-
-                                    max.get()[i][j] = (di - 1);
+                                    max[0][i][j] = (di - 1);
                                 } else {
-
-                                    max.get()[i][j] = (di);
+                                    max[0][i][j] = (di);
                                 }
                             }
                         }
@@ -1227,9 +1217,12 @@ public class MAYGEN {
         int[][] A = new int[matrixSize][matrixSize];
         int[] degrees = degreeList;
         flag.set(true);
-        maximalMatrix(degrees);
-        upperTriangularL(degrees);
-        upperTriangularC(degrees);
+        int[][][] max = new int[][][] {new int[0][0]};
+        int[][][] L = new int[][][] {new int[0][0]};
+        int[][][] C = new int[][][] {new int[0][0]};
+        maximalMatrix(degrees, max);
+        upperTriangularL(degrees, max, L);
+        upperTriangularC(degrees, max, C);
         int[] indices = new int[2];
         indices[0] = 0;
         indices[1] = 1;
@@ -1253,7 +1246,10 @@ public class MAYGEN {
                     partSize,
                     r,
                     y,
-                    z);
+                    z,
+                    max,
+                    L,
+                    C);
             if (!flag.get()) {
                 break;
             }
@@ -1267,7 +1263,7 @@ public class MAYGEN {
                 callForward[0] = false;
             } else {
                 if (learningFromCanonicalTest.get()) {
-                    indices = successor(nonCanonicalIndices, max.get().length);
+                    indices = successor(nonCanonicalIndices, max[0].length);
                     findR(indices, initialPartition, r);
                     learningFromCanonicalTest.set(false);
                     callForward[0] = false;
@@ -1340,8 +1336,11 @@ public class MAYGEN {
             int[] partSize,
             int[] r,
             int[] y,
-            int[] z)
-            throws IOException, CloneNotSupportedException, CDKException {
+            int[] z,
+            int[][][] max,
+            int[][][] L,
+            int[][][] C)
+            throws IOException, CDKException, CloneNotSupportedException {
         if (callForward[0]) {
             forward(
                     A,
@@ -1358,9 +1357,12 @@ public class MAYGEN {
                     partSize,
                     r,
                     y,
-                    z);
+                    z,
+                    max,
+                    L,
+                    C);
         } else {
-            backward(A, indices, degrees, initialPartition, callForward, r);
+            backward(A, indices, degrees, initialPartition, callForward, r, max, L, C);
         }
     }
 
@@ -1468,7 +1470,10 @@ public class MAYGEN {
             int[] degrees,
             int[] initialPartition,
             boolean[] callForward,
-            int[] r)
+            int[] r,
+            int[][][] max,
+            int[][][] L,
+            int[][][] C)
             throws IOException {
         int i = indices[0];
         int j = indices[1];
@@ -1476,7 +1481,7 @@ public class MAYGEN {
         if (i == 0 && j == 1) {
             flag.set(false);
         } else {
-            indices = predecessor(indices, max.get().length);
+            indices = predecessor(indices, max[0].length);
             // UPODAE
             findR(indices, initialPartition, r);
             i = indices[0];
@@ -1486,11 +1491,11 @@ public class MAYGEN {
             int c2 = CInverse(i, j, A, degrees);
 
             if (x > 0
-                    && (backwardCriteria((x), l2, L.get()[i][j])
-                            && backwardCriteria((x), c2, C.get()[i][j]))) {
+                    && (backwardCriteria((x), l2, L[0][i][j])
+                            && backwardCriteria((x), c2, C[0][i][j]))) {
                 A[i][j] = (x - 1);
                 A[j][i] = (x - 1);
-                indices = successor(indices, max.get().length);
+                indices = successor(indices, max[0].length);
                 // UOPDATE
                 findR(indices, initialPartition, r);
                 callForward[0] = true;
@@ -1526,15 +1531,17 @@ public class MAYGEN {
             int[] partSize,
             int[] r,
             int[] y,
-            int[] z)
+            int[] z,
+            int[][][] max,
+            int[][][] L,
+            int[][][] C)
             throws IOException, CloneNotSupportedException, CDKException {
         int i = indices[0];
         int j = indices[1];
         int lInverse = LInverse(i, j, A, degrees);
         int cInverse = CInverse(i, j, A, degrees);
-        int minimumValue = Math.min(max.get()[i][j], Math.min(lInverse, cInverse));
-        int maximumValue =
-                maximalEntry(minimumValue, lInverse, L.get()[i][j], cInverse, C.get()[i][j]);
+        int minimumValue = Math.min(max[0][i][j], Math.min(lInverse, cInverse));
+        int maximumValue = maximalEntry(minimumValue, lInverse, L[0][i][j], cInverse, C[0][i][j]);
         callForward[0] = true;
         return forward(
                 lInverse,
@@ -1555,7 +1562,10 @@ public class MAYGEN {
                 partSize,
                 r,
                 y,
-                z);
+                z,
+                max,
+                L,
+                C);
     }
 
     public int[][] forward(
@@ -1577,12 +1587,15 @@ public class MAYGEN {
             int[] partSize,
             int[] r,
             int[] y,
-            int[] z)
-            throws CloneNotSupportedException, CDKException, IOException {
-        if (((lInverse - maximalX) <= L.get()[i][j]) && ((cInverse - maximalX) <= C.get()[i][j])) {
+            int[] z,
+            int[][][] max,
+            int[][][] L,
+            int[][][] C)
+            throws CloneNotSupportedException, IOException {
+        if (((lInverse - maximalX) <= L[0][i][j]) && ((cInverse - maximalX) <= C[0][i][j])) {
             A[i][j] = maximalX;
             A[j][i] = maximalX;
-            if (i == (max.get().length - 2) && j == (max.get().length - 1)) {
+            if (i == (max[0].length - 2) && j == (max[0].length - 1)) {
                 if (canonicalTest(
                         A,
                         initialPartition,
@@ -1608,7 +1621,7 @@ public class MAYGEN {
                 }
             } else {
                 int value = indexYZ(initialPartition, r);
-                if (indices[0] == zs.get()[value] && indices[1] == (max.get().length - 1)) {
+                if (indices[0] == zs.get()[value] && indices[1] == (max[0].length - 1)) {
                     callForward[0] =
                             canonicalTest(
                                     A,
@@ -1621,14 +1634,14 @@ public class MAYGEN {
                                     y,
                                     z);
                     if (callForward[0]) {
-                        indices = successor(indices, max.get().length);
+                        indices = successor(indices, max[0].length);
                         // update
                         findR(indices, initialPartition, r);
                     } else {
                         callForward[0] = false;
                     }
                 } else {
-                    indices = successor(indices, max.get().length);
+                    indices = successor(indices, max[0].length);
                     // update
                     findR(indices, initialPartition, r);
                     callForward[0] = true;
