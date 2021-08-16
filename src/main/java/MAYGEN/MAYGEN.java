@@ -56,17 +56,28 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.smiles.SmiFlavor;
+import org.openscience.cdk.smiles.SmilesGenerator;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public class MAYGEN {
     public int size = 0;
     public int total = 0;
     public boolean tsvoutput = false;
     public boolean writeSDF = false;
+    public boolean writeSMILES = false;
     public boolean multiThread = false;
     public int hIndex = 0;
     public AtomicInteger count = new AtomicInteger();
+    public AtomicInteger indexSmiles = new AtomicInteger();
     public AtomicInteger indexSdf = new AtomicInteger();
     public int matrixSize = 0;
     public boolean verbose = false;
@@ -93,6 +104,9 @@ public class MAYGEN {
     public boolean OnSm = true;
     public int oxygen = 0;
     public int sulfur = 0;
+
+    public IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+    public SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
 
     {
         // The atom valences from CDK.
@@ -443,13 +457,13 @@ public class MAYGEN {
         }
     }
 
-    private String normalizeFormula(String formula) {
+    public String normalizeFormula(String formula) {
         String[] from = {"cl", "CL", "c", "n", "o", "s", "p", "f", "i", "br", "BR", "h"};
         String[] to = {"Cl", "Cl", "C", "N", "O", "S", "P", "F", "I", "Br", "Br", "H"};
         return StringUtils.replaceEach(formula, from, to);
     }
 
-    private String[] validateFormula(String formula) {
+    public String[] validateFormula(String formula) {
         String[] from = {"Cl", "C", "N", "O", "S", "P", "F", "I", "Br", "H"};
         String[] to = {"", "", "", "", "", "", "", "", "", ""};
         String result = StringUtils.replaceEach(formula.replaceAll("[0-9]", ""), from, to);
@@ -1640,7 +1654,11 @@ public class MAYGEN {
                         learningFromCanonicalTest)) {
                     if (connectivityTest(A, connectivityIndices, learningFromConnectivity)) {
                         count.incrementAndGet();
-                        if (writeSDF) write2SDF(addHydrogens(A, hIndex, hydrogens));
+                        if (writeSDF) {
+                            write2SDF(addHydrogens(A, hIndex, hydrogens));
+                        } else if (writeSMILES) {
+                            write2smiles(addHydrogens(A, hIndex, hydrogens));
+                        }
                         callForward[0] = false;
                     } else {
                         callForward[0] = false;
@@ -1875,6 +1893,9 @@ public class MAYGEN {
             if (writeSDF) {
                 new File(filedir).mkdirs();
                 outFile = new FileWriter(filedir + "/" + normalizeFormula(formula) + ".sdf");
+            } else if (writeSMILES) {
+                new File(filedir).mkdirs();
+                outFile = new FileWriter(filedir + "/" + normalizeFormula(formula) + ".smi");
             }
             String[] atoms = formula.split("(?=[A-Z])");
             if (checkLengthTwoFormula(atoms)) {
@@ -1916,8 +1937,10 @@ public class MAYGEN {
         }
     }
 
-    private void displayStatistic(long startTime) throws IOException {
-        if (writeSDF) outFile.close();
+    public void displayStatistic(long startTime) throws IOException {
+        if (writeSDF || writeSMILES) {
+            outFile.close();
+        }
         long endTime = System.nanoTime() - startTime;
         double seconds = (double) endTime / 1000000000.0;
         DecimalFormat d = new DecimalFormat(".###");
@@ -2022,7 +2045,11 @@ public class MAYGEN {
             throws CloneNotSupportedException, CDKException, IOException {
         int[][] A = new int[matrixSize][matrixSize];
         count.incrementAndGet();
-        if (writeSDF) write2SDF(addHydrogens(A, hIndex, hydrogens));
+        if (writeSDF) {
+            write2SDF(addHydrogens(A, hIndex, hydrogens));
+        } else if (writeSMILES) {
+            write2smiles(addHydrogens(A, hIndex, hydrogens));
+        }
     }
 
     /** Calling the generate function for each degree values after the hydrogen distribution. */
@@ -2076,6 +2103,7 @@ public class MAYGEN {
         sizePart = 0;
         hIndex = 0;
         count.set(0);
+        indexSmiles.set(0);
         indexSdf.set(0);
         matrixSize = 0;
         noHydrogen = false;
@@ -2912,16 +2940,20 @@ public class MAYGEN {
         }
     }
 
-    private void parseArgs(String[] args) throws ParseException {
+    public void parseArgs(String[] args) throws ParseException {
         Options options = setupOptions();
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(options, args);
             this.formula = cmd.getOptionValue("formula");
             if (cmd.hasOption("filedir")) {
-                this.writeSDF = true;
                 String filedir = cmd.getOptionValue("filedir");
                 this.filedir = Objects.isNull(filedir) ? "." : filedir;
+                if (cmd.hasOption("smi")) {
+                    this.writeSMILES = true;
+                } else {
+                    this.writeSDF = true;
+                }
             }
             if (cmd.hasOption("verbose")) this.verbose = true;
             if (cmd.hasOption("tsvoutput")) this.tsvoutput = true;
@@ -2930,18 +2962,20 @@ public class MAYGEN {
             HelpFormatter formatter = new HelpFormatter();
             formatter.setOptionComparator(null);
             String header =
-                    "\nGenerates 	molecular structures for a given molecular formula."
-                            + " The input is a molecular formula string."
-                            + "For example 'C2OH4'."
-                            + "If user wants an output file, the directory is needed to be specified."
-                            + "file. \n\n";
+                    "\nGenerates molecular structures for a given molecular formula."
+                            + "\nThe input is a molecular formula string."
+                            + "\n\nFor example 'C2OH4'."
+                            + "\n\nIf user wants an output file, the directory is needed to be specified."
+                            + "\nIt is also possible to generate SMILES instead of an SDF file, but it will slow down "
+                            + "the generation time. For this, use the '--smiles' option."
+                            + "\n\n";
             String footer = "\nPlease report issues at https://github.com/MehmetAzizYirik/MAYGEN";
             formatter.printHelp("java -jar MAYGEN.jar", header, options, footer, true);
             throw new ParseException("Problem parsing command line");
         }
     }
 
-    private Options setupOptions() {
+    public Options setupOptions() {
         Options options = new Options();
         Option formula =
                 Option.builder("f")
@@ -2983,6 +3017,13 @@ public class MAYGEN {
                         .desc("Use multi thread")
                         .build();
         options.addOption(multithread);
+        Option type =
+                Option.builder("smi")
+                        .required(false)
+                        .longOpt("smiles")
+                        .desc("Store output in SMILES format in given file")
+                        .build();
+        options.addOption(type);
         return options;
     }
 
@@ -3250,6 +3291,64 @@ public class MAYGEN {
         outFile.write(stringJoiner.toString());
     }
 
+    public void write2smiles(int[][] mat) throws IOException {
+
+        IAtomContainer atomContainer = buildAtomContainer(mat);
+        try {
+            String smilesString = smilesGenerator.create(atomContainer);
+            outFile.write(smilesString + " " + indexSmiles.incrementAndGet() + "\n");
+        } catch (CDKException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Building an atom container from a string of atom-implicit hydrogen information.
+     *
+     * @throws IOException
+     * @throws CloneNotSupportedException
+     * @throws CDKException
+     */
+    public IAtomContainer buildAtomContainer(int[][] mat) {
+        IAtomContainer atomContainer = this.builder.newAtomContainer();
+        for (String s : this.symbolArray) {
+            atomContainer.addAtom(new Atom(s));
+        }
+
+        for (IAtom atom : atomContainer.atoms()) {
+            atom.setImplicitHydrogenCount(0);
+        }
+
+        atomContainer = buildAtomContainerFromMatrix(mat, atomContainer);
+
+        return atomContainer;
+    }
+
+    /**
+     * Building an atom container for an adjacency matrix.
+     *
+     * @param mat int[][] adjacency matrix
+     * @return IAtomContainer
+     * @throws CloneNotSupportedException
+     */
+    public IAtomContainer buildAtomContainerFromMatrix(int[][] mat, IAtomContainer atomContainer) {
+
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = i + 1; j < mat.length; j++) {
+                if (mat[i][j] == 1) {
+                    atomContainer.addBond(i, j, IBond.Order.SINGLE);
+                } else if (mat[i][j] == 2) {
+                    atomContainer.addBond(i, j, IBond.Order.DOUBLE);
+                } else if (mat[i][j] == 3) {
+                    atomContainer.addBond(i, j, IBond.Order.TRIPLE);
+                }
+            }
+        }
+
+        atomContainer = AtomContainerManipulator.removeHydrogens(atomContainer);
+        return atomContainer;
+    }
+
     public void degree2graph() throws IOException {
         int[][] mat = new int[matrixSize][matrixSize];
         mat[0][1] = 1;
@@ -3265,7 +3364,11 @@ public class MAYGEN {
         } else {
             symbol = "O";
         }
-        if (writeSDF) write2SDF(mat, symbol);
+        if (writeSDF) {
+            write2SDF(mat, symbol);
+        } else if (writeSMILES) {
+            write2smiles(mat);
+        }
     }
 
     /**
