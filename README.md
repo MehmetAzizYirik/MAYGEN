@@ -64,6 +64,8 @@ directory is needed to be specified.
  -d,--filedir <arg>            Store output in given file 
  
  -m,--multithread              Use multi thread 
+ 
+ -smi,--smiles Store output in SMILES format in given file
 
 Please report issues at https://github.com/MehmetAzizYirik/MAYGEN
 ```
