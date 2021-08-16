@@ -41,6 +41,13 @@ public class Generation {
     }
 
     public void run(int[] degree) {
+        int[] partSize = new int[] {0};
+        int[] r = new int[] {0};
+        int[] y = new int[] {0};
+        int[] z = new int[] {0};
+        int[][] ys = new int[][] {new int[0]};
+        int[][] zs = new int[][] {new int[0]};
+        boolean[] learningFromCanonicalTest = new boolean[] {false};
         boolean[] learningFromConnectivity = new boolean[] {false};
         int[] nonCanonicalIndices = new int[2];
         ArrayList<ArrayList<Permutation>> formerPermutations =
@@ -58,14 +65,13 @@ public class Generation {
             initialPartition =
                     maygen.sortWithPartition(newPartition, degree, maygen.symbolArray, hydrogens);
         }
-        maygen.partSize.set(0);
         int[] connectivityIndices = new int[2];
         learningFromConnectivity[0] = false;
-        maygen.learningFromCanonicalTest.set(false);
+        learningFromCanonicalTest[0] = false;
         int[][] partitionList = new int[maygen.size + 1][1];
         try {
-            maygen.partSize.set(maygen.partSize.get() + (maygen.findZeros(initialPartition) - 1));
-            maygen.setYZValues(initialPartition);
+            partSize[0] = partSize[0] + (maygen.findZeros(initialPartition) - 1);
+            maygen.setYZValues(initialPartition, ys, zs);
             partitionList[0] = initialPartition;
             maygen.generate(
                     degree,
@@ -75,7 +81,14 @@ public class Generation {
                     learningFromConnectivity,
                     nonCanonicalIndices,
                     formerPermutations,
-                    hydrogens);
+                    hydrogens,
+                    partSize,
+                    r,
+                    y,
+                    z,
+                    ys,
+                    zs,
+                    learningFromCanonicalTest);
         } catch (IOException | CloneNotSupportedException | CDKException ignored) {
         }
     }
