@@ -1,31 +1,31 @@
-package MAYGEN;
-/**
- * MIT License
- *
- * <p>Copyright (c) 2018 Mehmet Aziz Yirik
- *
- * <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- * and associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * <p>The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- *
- * <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+package maygen;
+/*
+ MIT License
 
-/**
- * This class is for the distribution of hydrogens into chemical structures. For a given chemical
- * formula, all the possible distributions of the hydrogen atoms to the hetero atoms are generated.
- *
- * @author Mehmet Aziz Yirik
- */
+ <p>Copyright (c) 2018 Mehmet Aziz Yirik
+
+ <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ and associated documentation files (the "Software"), to deal in the Software without restriction,
+ including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ <p>The above copyright notice and this permission notice shall be included in all copies or
+ substantial portions of the Software.
+
+ <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+/*
+ This class is for the distribution of hydrogens into chemical structures. For a given chemical
+ formula, all the possible distributions of the hydrogen atoms to the hetero atoms are generated.
+
+ @author Mehmet Aziz Yirik
+*/
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -58,7 +58,13 @@ public class HydrogenDistributor {
         capacities.put(35, 0);
     }
 
-    /** The basic functions used in the hydrogen distributor. */
+    /**
+     * The basic functions used in the hydrogen distributor.
+     *
+     * @param a the a
+     * @param e the e
+     * @return the new array
+     */
     public static int[] addElement(int[] a, int e) {
         a = Arrays.copyOf(a, a.length + 1);
         a[a.length - 1] = e;
@@ -139,7 +145,13 @@ public class HydrogenDistributor {
         return comb;
     }
 
-    /** To initialise the inputs and run the functions while recording the duration time. */
+    /**
+     * To initialise the inputs and run the functions while recording the duration time.
+     *
+     * @param partition the partition
+     * @param degrees the degrees
+     * @return the list of int arrays
+     */
     public static List<int[]> run(int[] partition, int[] degrees) {
         int partitionSize = partition.length;
         int hydrogen = partition[partitionSize - 1];
@@ -172,7 +184,14 @@ public class HydrogenDistributor {
         return result;
     }
 
-    /** These functions are built for the integer partitioning problem. */
+    /**
+     * These functions are built for the integer partitioning problem.
+     *
+     * @param n the n
+     * @param d the d
+     * @param depth the depth
+     * @return the list of int arrays
+     */
     public static List<int[]> partition(int n, int d, int depth) {
         if (d == depth) {
             List<int[]> array = new ArrayList<int[]>();
