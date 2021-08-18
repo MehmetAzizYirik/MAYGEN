@@ -36,7 +36,7 @@ import org.junit.Test;
 public class MaygenTest {
 
     @Test
-    public void test_C3Cl2H4() throws IOException, CloneNotSupportedException {
+    public void test_C3Cl2H4() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C3Cl2H4";
         maygen.run();
@@ -47,7 +47,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_O13S7() throws IOException, CloneNotSupportedException {
+    public void test_O13S7() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "O13S7";
         maygen.run();
@@ -58,7 +58,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_O10S10() throws IOException, CloneNotSupportedException {
+    public void test_O10S10() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "O10S10";
         maygen.run();
@@ -69,7 +69,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_S27() throws IOException, CloneNotSupportedException {
+    public void test_S27() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "S27";
         maygen.run();
@@ -80,7 +80,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_O18() throws IOException, CloneNotSupportedException {
+    public void test_O18() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "O18";
         maygen.run();
@@ -91,7 +91,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C2NO2H5() throws IOException, CloneNotSupportedException {
+    public void test_C2NO2H5() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C2NO2H5";
         maygen.run();
@@ -102,7 +102,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C6H6() throws IOException, CloneNotSupportedException {
+    public void test_C6H6() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C6H6";
         maygen.run();
@@ -113,7 +113,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C3O3H4() throws IOException, CloneNotSupportedException {
+    public void test_C3O3H4() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C3O3H4";
         maygen.run();
@@ -124,7 +124,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_Cl2C5H4() throws IOException, CloneNotSupportedException {
+    public void test_Cl2C5H4() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "Cl2C5H4";
         maygen.run();
@@ -135,7 +135,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C5H9ClO() throws IOException, CloneNotSupportedException {
+    public void test_C5H9ClO() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C5H9ClO";
         maygen.run();
@@ -146,7 +146,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C6OF2H12() throws IOException, CloneNotSupportedException {
+    public void test_C6OF2H12() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C6OF2H12";
         maygen.run();
@@ -157,7 +157,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C7H10() throws IOException, CloneNotSupportedException {
+    public void test_C7H10() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C7H10";
         maygen.run();
@@ -168,7 +168,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C6O2H12() throws IOException, CloneNotSupportedException {
+    public void test_C6O2H12() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C6O2H12";
         maygen.run();
@@ -179,7 +179,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_F2P3BrNO2H() throws IOException, CloneNotSupportedException {
+    public void test_F2P3BrNO2H() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "F2P3BrNO2H";
         maygen.run();
@@ -190,7 +190,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C6OH6() throws IOException, CloneNotSupportedException {
+    public void test_C6OH6() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C6OH6";
         maygen.run();
@@ -201,7 +201,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C5H6BrN() throws IOException, CloneNotSupportedException {
+    public void test_C5H6BrN() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C5H6BrN";
         maygen.run();
@@ -212,7 +212,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C6H7F2I() throws IOException, CloneNotSupportedException {
+    public void test_C6H7F2I() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C6H7F2I";
         maygen.run();
@@ -223,7 +223,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C5F2O2H2() throws IOException, CloneNotSupportedException {
+    public void test_C5F2O2H2() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C5F2O2H2";
         maygen.run();
@@ -234,7 +234,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C7OH10() throws IOException, CloneNotSupportedException {
+    public void test_C7OH10() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C7OH10";
         maygen.run();
@@ -245,7 +245,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C4ClHF2O3() throws IOException, CloneNotSupportedException {
+    public void test_C4ClHF2O3() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C4ClHF2O3";
         maygen.run();
@@ -256,7 +256,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C4O5H6() throws IOException, CloneNotSupportedException {
+    public void test_C4O5H6() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C4O5H6";
         maygen.run();
@@ -267,7 +267,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C5ClHF2O2() throws IOException, CloneNotSupportedException {
+    public void test_C5ClHF2O2() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C5ClHF2O2";
         maygen.run();
@@ -278,7 +278,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C5H10BrF2OP() throws IOException, CloneNotSupportedException {
+    public void test_C5H10BrF2OP() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C5H10BrF2OP";
         maygen.run();
@@ -289,7 +289,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C9H12() throws IOException, CloneNotSupportedException {
+    public void test_C9H12() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C9H12";
         maygen.run();
@@ -300,7 +300,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C6H10O2Br2() throws IOException, CloneNotSupportedException {
+    public void test_C6H10O2Br2() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C6H10O2Br2";
         maygen.run();
@@ -311,7 +311,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C10H16() throws IOException, CloneNotSupportedException {
+    public void test_C10H16() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C10H16";
         maygen.run();
@@ -322,7 +322,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C6H6ClOI() throws IOException, CloneNotSupportedException {
+    public void test_C6H6ClOI() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C6H6ClOI";
         maygen.run();
@@ -333,7 +333,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C4H5O2Br2N() throws IOException, CloneNotSupportedException {
+    public void test_C4H5O2Br2N() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C4H5O2Br2N";
         maygen.run();
@@ -344,7 +344,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C4H10NOSP() throws IOException, CloneNotSupportedException {
+    public void test_C4H10NOSP() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C4H10NOSP";
         maygen.run();
@@ -355,7 +355,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C7O2H10() throws IOException, CloneNotSupportedException {
+    public void test_C7O2H10() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C7O2H10";
         maygen.run();
@@ -366,7 +366,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_P3O3NCl2() throws IOException, CloneNotSupportedException {
+    public void test_P3O3NCl2() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "P3O3NCl2";
         maygen.run();
@@ -377,7 +377,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C5H5SI5() throws IOException, CloneNotSupportedException {
+    public void test_C5H5SI5() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C5H5SI5";
         maygen.run();
@@ -388,7 +388,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C3O3NH5() throws IOException, CloneNotSupportedException {
+    public void test_C3O3NH5() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C3O3NH5";
         maygen.run();
@@ -399,7 +399,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C5H9ClOS() throws IOException, CloneNotSupportedException {
+    public void test_C5H9ClOS() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C5H9ClOS";
         maygen.run();
@@ -410,7 +410,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C3NO2SH7() throws IOException, CloneNotSupportedException {
+    public void test_C3NO2SH7() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C3NO2SH7";
         maygen.run();
@@ -421,7 +421,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C4H8Cl3O2P() throws IOException, CloneNotSupportedException {
+    public void test_C4H8Cl3O2P() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C4H8Cl3O2P";
         maygen.run();
@@ -432,7 +432,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C5H2F2SO() throws IOException, CloneNotSupportedException {
+    public void test_C5H2F2SO() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C5H2F2SO";
         maygen.run();
@@ -443,7 +443,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C7H11ClS() throws IOException, CloneNotSupportedException {
+    public void test_C7H11ClS() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C7H11ClS";
         maygen.run();
@@ -454,7 +454,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C4NO3H7() throws IOException, CloneNotSupportedException {
+    public void test_C4NO3H7() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C4NO3H7";
         maygen.run();
@@ -465,7 +465,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C4H5O2F2P() throws IOException, CloneNotSupportedException {
+    public void test_C4H5O2F2P() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C4H5O2F2P";
         maygen.run();
@@ -476,7 +476,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C3N3O2H7() throws IOException, CloneNotSupportedException {
+    public void test_C3N3O2H7() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C3N3O2H7";
         maygen.run();
@@ -487,7 +487,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C5N3H9() throws IOException, CloneNotSupportedException {
+    public void test_C5N3H9() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C5N3H9";
         maygen.run();
@@ -498,7 +498,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C3O6PH5() throws IOException, CloneNotSupportedException {
+    public void test_C3O6PH5() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C3O6PH5";
         maygen.run();
@@ -509,7 +509,7 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C5H5POBr2() throws IOException, CloneNotSupportedException {
+    public void test_C5H5POBr2() throws IOException {
         MAYGEN maygen = new MAYGEN();
         maygen.formula = "C5H5POBr2";
         maygen.run();
