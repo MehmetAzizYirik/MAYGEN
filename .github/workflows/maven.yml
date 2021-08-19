@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [11]
+        java: [8, 11]
 
     steps:
     - uses: actions/checkout@v2
@@ -18,9 +18,9 @@ jobs:
         java-version: ${{ matrix.java }}
     - name: Build with Maven
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn -B test jacoco:report sonar:sonar -Dsonar.projectKey=MehmetAzizYirik_MAYGEN
+      run: mvn -B test jacoco:report package
     - uses: codecov/codecov-action@v1
       with:
         file: ./**/target/site/jacoco/jacoco.xml
