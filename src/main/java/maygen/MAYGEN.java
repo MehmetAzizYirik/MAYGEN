@@ -526,9 +526,8 @@ public class MAYGEN {
      * @param array2 int[] second array
      * @param partition int[] atom partition
      * @return boolean
-     * @throws IOException in case of IOException
      */
-    public boolean equalSetCheck(int[] array1, int[] array2, int[] partition) throws IOException {
+    public boolean equalSetCheck(int[] array1, int[] array2, int[] partition) {
         int[] temp = cloneArray(array2);
         temp = descendingSortWithPartition(temp, partition);
         return equalSetCheck2(partition, array1, temp);
@@ -706,7 +705,6 @@ public class MAYGEN {
      * @param partition the atom partition
      * @param nonCanonicalIndices the nonCanonicalIndices
      * @param learningFromCanonicalTest the learningFromCanonicalTest
-     * @throws IOException in case of IOException
      */
     public void getLernenIndices(
             int index,
@@ -714,8 +712,7 @@ public class MAYGEN {
             ArrayList<Permutation> cycles,
             int[] partition,
             int[] nonCanonicalIndices,
-            boolean[] learningFromCanonicalTest)
-            throws IOException {
+            boolean[] learningFromCanonicalTest) {
         int[] check = new int[size];
         for (Permutation cycle : cycles) {
             check = row2compare(index, A, cycle);
@@ -743,7 +740,6 @@ public class MAYGEN {
      * @param partition int[] atom partition
      * @param nonCanonicalIndices the nonCanonicalIndices
      * @param learningFromCanonicalTest the learningFromCanonicalTest
-     * @throws IOException in case of IOException
      */
     public void setLernenIndices(
             int rowIndex1,
@@ -752,8 +748,7 @@ public class MAYGEN {
             int[] secondRow,
             int[] partition,
             int[] nonCanonicalIndices,
-            boolean[] learningFromCanonicalTest)
-            throws IOException {
+            boolean[] learningFromCanonicalTest) {
         System.arraycopy(new int[2], 0, nonCanonicalIndices, 0, 2);
         learningFromCanonicalTest[0] = false;
         int rowIndex2 = cycle.get(rowIndex1);
@@ -770,10 +765,9 @@ public class MAYGEN {
      * @param cycle the cycle
      * @param partition the partition
      * @return the Permutation
-     * @throws IOException in case of IOException
      */
     public Permutation getNonCanonicalMakerPermutation(
-            int[] array, Permutation cycle, int[] partition) throws IOException {
+            int[] array, Permutation cycle, int[] partition) {
         int[] sorted = cloneArray(array);
         sorted = descendingSortWithPartition(sorted, partition);
         Permutation permutation = getCanonicalPermutation(sorted, array, partition);
@@ -803,8 +797,7 @@ public class MAYGEN {
             int[][] A,
             int[] partition,
             int[] nonCanonicalIndices,
-            boolean[] learningFromCanonicalTest)
-            throws IOException {
+            boolean[] learningFromCanonicalTest) {
         boolean check = true;
         if (zero(partition)) {
             if (!descendingOrderCheck(partition, A[index])) {
@@ -1232,8 +1225,6 @@ public class MAYGEN {
      * @param zs the zs
      * @param learningFromCanonicalTest the learningFromCanonicalTest
      * @throws IOException in case of IOException
-     * @throws CloneNotSupportedException in case of CloneNotSupportedException
-     * @throws CDKException in case of CDKException
      */
     public void generate(
             int[] degreeList,
@@ -1251,7 +1242,7 @@ public class MAYGEN {
             int[][] ys,
             int[][] zs,
             boolean[] learningFromCanonicalTest)
-            throws IOException, CloneNotSupportedException, CDKException {
+            throws IOException {
         int[][] A = new int[matrixSize][matrixSize];
         int[] degrees = degreeList;
         boolean[] flag = new boolean[] {true};
@@ -1380,7 +1371,6 @@ public class MAYGEN {
      * @param learningFromCanonicalTest the learningFromCanonicalTest
      * @param flag the flag
      * @throws IOException in case of IOException
-     * @throws CloneNotSupportedException in case of CloneNotSupportedException
      */
     public void nextStep(
             int[][] A,
@@ -1405,7 +1395,7 @@ public class MAYGEN {
             int[][] zs,
             boolean[] learningFromCanonicalTest,
             boolean[] flag)
-            throws IOException, CloneNotSupportedException {
+            throws IOException {
         if (callForward[0]) {
             forward(
                     A,
@@ -1469,7 +1459,7 @@ public class MAYGEN {
         return A;
     }
 
-    public void findR(int[] indices, int[] initialPartition, int[] r) throws IOException {
+    public void findR(int[] indices, int[] initialPartition, int[] r) {
         int block = 0;
         int index = 0;
         int part = 0;
@@ -1516,7 +1506,6 @@ public class MAYGEN {
      * @param C the C
      * @param flag the flag
      * @return the int[][]
-     * @throws IOException in case of IOException
      */
     public int[][] backward(
             int[][] A,
@@ -1528,8 +1517,7 @@ public class MAYGEN {
             int[][][] max,
             int[][][] L,
             int[][][] C,
-            boolean[] flag)
-            throws IOException {
+            boolean[] flag) {
         int i = indices[0];
         int j = indices[1];
 
@@ -1587,7 +1575,6 @@ public class MAYGEN {
      * @param learningFromCanonicalTest the learningFromCanonicalTest
      * @return int[][]
      * @throws IOException in case of IOException
-     * @throws CloneNotSupportedException in case of CloneNotSupportedException
      */
     public int[][] forward(
             int[][] A,
@@ -1611,7 +1598,7 @@ public class MAYGEN {
             int[][] ys,
             int[][] zs,
             boolean[] learningFromCanonicalTest)
-            throws IOException, CloneNotSupportedException {
+            throws IOException {
         int i = indices[0];
         int j = indices[1];
         int lInverse = LInverse(i, j, A, degrees);
@@ -1673,7 +1660,7 @@ public class MAYGEN {
             int[][] ys,
             int[][] zs,
             boolean[] learningFromCanonicalTest)
-            throws CloneNotSupportedException, IOException {
+            throws IOException {
         if (((lInverse - maximalX) <= L[0][i][j]) && ((cInverse - maximalX) <= C[0][i][j])) {
             A[i][j] = maximalX;
             A[j][i] = maximalX;
@@ -1917,9 +1904,8 @@ public class MAYGEN {
      * Main function to initialize the global variables and calling the generate function.
      *
      * @throws IOException in case of IOException
-     * @throws CloneNotSupportedException in case of CloneNotSupportedException
      */
-    public void run() throws IOException, CloneNotSupportedException {
+    public void run() throws IOException {
         clearGlobals();
         formula = normalizeFormula(formula);
         String[] unsupportedSymbols = validateFormula(formula);
@@ -2042,9 +2028,8 @@ public class MAYGEN {
      * @param initialPartition the initial partition
      * @param ys the ys
      * @param zs the zs
-     * @throws IOException in case of IOException
      */
-    public void setYZValues(int[] initialPartition, int[][] ys, int[][] zs) throws IOException {
+    public void setYZValues(int[] initialPartition, int[][] ys, int[][] zs) {
         ys[0] = new int[size];
         zs[0] = new int[size];
         int limit = findZeros(initialPartition);
@@ -2086,7 +2071,7 @@ public class MAYGEN {
         return (sum(initialPartition, r) - 1);
     }
 
-    public void singleAtom(int[] hydrogens) throws CloneNotSupportedException, IOException {
+    public void singleAtom(int[] hydrogens) throws IOException {
         int[][] A = new int[matrixSize][matrixSize];
         count.incrementAndGet();
         if (writeSDF) {
@@ -2373,8 +2358,7 @@ public class MAYGEN {
             int[] z,
             int[][] ys,
             int[][] zs,
-            boolean[] learningFromCanonicalTest)
-            throws IOException {
+            boolean[] learningFromCanonicalTest) {
         boolean check = true;
         learningFromCanonicalTest[0] = false;
         int value = indexYZ(initialPartition, r);
@@ -2423,7 +2407,7 @@ public class MAYGEN {
             int y,
             int[][] partitionList,
             ArrayList<ArrayList<Permutation>> formerPermutations) {
-        if (check == false) {
+        if (!check) {
             int formerSize = formerPermutations.size() - 1;
             if (formerSize >= y) {
                 formerPermutations.subList(y, formerSize + 1).clear();
@@ -2500,7 +2484,6 @@ public class MAYGEN {
      * @param ys the ys
      * @param learningFromCanonicalTest the learningFromCanonicalTest
      * @return boolean
-     * @throws IOException in case of IOException
      */
     public boolean rowCanonicalTest(
             int index,
@@ -2514,8 +2497,7 @@ public class MAYGEN {
             ArrayList<ArrayList<Permutation>> formerPermutations,
             int[] y,
             int[][] ys,
-            boolean[] learningFromCanonicalTest)
-            throws IOException {
+            boolean[] learningFromCanonicalTest) {
         boolean check;
         if (!rowDescendingTest(
                 index, A, newPartition, nonCanonicalIndices, learningFromCanonicalTest)) {
@@ -2669,10 +2651,9 @@ public class MAYGEN {
      * @param rowToCheck int[] row to compare with
      * @param partition int[] partition
      * @return Permutation
-     * @throws IOException in case of IOException
      */
-    public Permutation getCanonicalPermutation(int[] originalRow, int[] rowToCheck, int[] partition)
-            throws IOException {
+    public Permutation getCanonicalPermutation(
+            int[] originalRow, int[] rowToCheck, int[] partition) {
         int[] cycles = getCanonicalPermutation2(partition, originalRow, rowToCheck);
         int[] perm = new int[size];
         for (int i = 0; i < size; i++) {
@@ -2695,10 +2676,8 @@ public class MAYGEN {
      * @param max int[] max
      * @param check int[] check
      * @return int[]
-     * @throws IOException in case of IOException
      */
-    public int[] getCanonicalPermutation2(int[] partition, int[] max, int[] check)
-            throws IOException {
+    public int[] getCanonicalPermutation2(int[] partition, int[] max, int[] check) {
         int[] values = idValues(sum(partition));
         int i = 0;
 
@@ -2756,15 +2735,13 @@ public class MAYGEN {
     }
 
     public Permutation getEqualPerm(
-            Permutation cycleTransposition, int index, int[][] A, int[] newPartition)
-            throws IOException {
+            Permutation cycleTransposition, int index, int[][] A, int[] newPartition) {
         int[] check = row2compare(index, A, cycleTransposition);
         return getCanonicalPermutation(A[index], check, newPartition);
     }
 
     public Permutation getCanonicalCycle(
-            int index, int total, int[][] A, int[] newPartition, Permutation cycleTransposition)
-            throws IOException {
+            int index, int total, int[][] A, int[] newPartition, Permutation cycleTransposition) {
         Permutation canonicalPermutation = idPermutation(total);
         if (!equalRowsCheck(index, A, cycleTransposition, canonicalPermutation)) {
             canonicalPermutation = getEqualPerm(cycleTransposition, index, A, newPartition);
@@ -2780,8 +2757,7 @@ public class MAYGEN {
             int total,
             int[][] A,
             int[] newPartition,
-            ArrayList<ArrayList<Permutation>> formerPermutations)
-            throws IOException {
+            ArrayList<ArrayList<Permutation>> formerPermutations) {
         boolean check = true;
         ArrayList<Permutation> formerList = new ArrayList<>();
         ArrayList<Permutation> form = formerPermutations.get(index);
@@ -2853,9 +2829,8 @@ public class MAYGEN {
      * @param i int row index
      * @param partition int[] partition
      * @return int[]
-     * @throws IOException in case of IOException
      */
-    public int[] canonicalPartition(int i, int[] partition) throws IOException {
+    public int[] canonicalPartition(int i, int[] partition) {
         return partitionCriteria(partition, i + 1);
     }
 

@@ -30,7 +30,6 @@ package maygen;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
 
 public class Generation {
@@ -66,8 +65,6 @@ public class Generation {
                     maygen.sortWithPartition(newPartition, degree, maygen.symbolArray, hydrogens);
         }
         int[] connectivityIndices = new int[2];
-        learningFromConnectivity[0] = false;
-        learningFromCanonicalTest[0] = false;
         int[][] partitionList = new int[maygen.size + 1][1];
         try {
             partSize[0] = partSize[0] + (maygen.findZeros(initialPartition) - 1);
@@ -89,7 +86,7 @@ public class Generation {
                     ys,
                     zs,
                     learningFromCanonicalTest);
-        } catch (IOException | CloneNotSupportedException | CDKException ignored) {
+        } catch (IOException | CloneNotSupportedException ignored) {
         }
     }
 }
