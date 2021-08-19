@@ -16,7 +16,7 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
     - name: Build with Maven
-      run: mvn -B test jacoco:report package
+      run: mvn -B test jacoco:report sonar:sonar -Dsonar.projectKey=MehmetAzizYirik_MAYGEN -Dsonar.organization=mehmetazizyirik -Dsonar.login=$SONAR_TOKEN
     - uses: codecov/codecov-action@v1
       with:
         file: ./**/target/site/jacoco/jacoco.xml
