@@ -3396,7 +3396,7 @@ public class MAYGEN {
         if (writeSDF) {
             write2SDF(mat, symbol);
         } else if (writeSMILES) {
-            write2smiles(mat);
+            outFile.write("Sn formula is not supported " + indexSmiles.incrementAndGet() + "\n");
         }
     }
 
