@@ -4,11 +4,10 @@ on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [8, 11]
+        java: [8, 11, 16]
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK ${{ matrix.java }}
@@ -16,7 +15,7 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
     - name: Build with Maven
-      run: mvn -B -X test jacoco:report sonar:sonar -Dsonar.projectKey=MehmetAzizYirik_MAYGEN -Dsonar.login=$SONAR_TOKEN
+      run: mvn -B test jacoco:report
     - uses: codecov/codecov-action@v1
       with:
         file: ./**/target/site/jacoco/jacoco.xml
