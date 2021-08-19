@@ -20,7 +20,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn test jacoco:report sonar:sonar -Dsonar.projectKey=MehmetAzizYirik_MAYGEN -Dsonar.host.url=https://sonarcloud.io
+      run: mvn -B test jacoco:report verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=MehmetAzizYirik_MAYGEN
     - uses: codecov/codecov-action@v1
       with:
         file: ./**/target/site/jacoco/jacoco.xml
