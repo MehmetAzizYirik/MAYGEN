@@ -86,7 +86,7 @@ public class Generation {
                     ys,
                     zs,
                     learningFromCanonicalTest);
-        } catch (IOException | CloneNotSupportedException ignored) {
+        } catch (IOException ignored) {
         }
     }
 }
