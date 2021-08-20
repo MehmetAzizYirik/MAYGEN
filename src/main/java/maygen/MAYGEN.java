@@ -397,41 +397,41 @@ public class MAYGEN {
     }
 
     public int[] nextCount(int index, int i, int size, ArrayList<String> symbols, int[] partition) {
-        int count = 1;
+        int localCount = 1;
         if (i == (size - 1)) {
             partition[index] = 1;
             index++;
         } else {
             for (int j = i + 1; j < size; j++) {
                 if (symbols.get(i).equals(symbols.get(j))) {
-                    count++;
+                    localCount++;
                     if (j == (size - 1)) {
-                        partition[index] = count;
+                        partition[index] = localCount;
                         index++;
                         break;
                     }
                 } else {
-                    partition[index] = count;
+                    partition[index] = localCount;
                     index++;
                     break;
                 }
             }
         }
-        return new int[] {count, index};
+        return new int[] {localCount, index};
     }
 
     public int[] getPartition(ArrayList<String> symbols) {
         int i = 0;
         int[] partition = new int[sizePart + 1];
-        int size = symbols.size();
+        int localSize = symbols.size();
         int next = 0;
         int index = 0;
         int[] result = new int[2];
-        while (i < size) {
-            result = nextCount(index, i, size, symbols, partition);
+        while (i < localSize) {
+            result = nextCount(index, i, localSize, symbols, partition);
             next = (i + result[0]);
             index = result[1];
-            if (next == size) {
+            if (next == localSize) {
                 break;
             } else {
                 i = next;
@@ -483,21 +483,20 @@ public class MAYGEN {
         String[] atoms = normalizeFormula(formula).split(LETTERS_FROM_A_TO_Z);
         String[] info;
         String symbol;
-        int occur, valence;
-        int size = 0;
+        int occur;
+        int valence;
+        int localSize = 0;
         int sum = 0;
         for (String atom : atoms) {
             info = atom.split(NUMBERS_FROM_0_TO_9, 2);
             symbol = info[0];
             valence = valences.get(symbol);
             occur = atomOccurrence(info);
-            size += occur;
+            localSize += occur;
             sum += (valence * occur);
         }
-        total = size;
-        if (sum % 2 != 0) {
-            canBuildIsomer = false;
-        } else if (sum < 2 * (size - 1)) {
+        total = localSize;
+        if (sum % 2 != 0 || sum < 2 * (localSize - 1)) {
             canBuildIsomer = false;
         }
         return canBuildIsomer;
