@@ -264,10 +264,10 @@ public class MAYGEN {
                             Map.Entry<String, Integer> value1, Map.Entry<String, Integer> value2) {
                         int comparison = (value2.getValue()).compareTo(value1.getValue());
                         if (comparison == 0) {
-                            return -(valences.get(value2.getKey()))
-                                    .compareTo(valences.get(value1.getKey()));
+                            return valences.get(value1.getKey())
+                                    .compareTo(valences.get(value2.getKey()));
                         } else {
-                            return -(value2.getValue()).compareTo(value1.getValue());
+                            return value1.getValue().compareTo(value2.getValue());
                         }
                     }
                 });
