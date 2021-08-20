@@ -2116,6 +2116,7 @@ public class MAYGEN {
                         .get();
             } catch (InterruptedException | ExecutionException e) {
                 if (verbose) e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         } else {
             newDegrees.forEach(new Generation(this)::run);
