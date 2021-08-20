@@ -87,16 +87,16 @@ public class MAYGEN {
     public FileWriter outFile;
     public String formula;
     public String filedir;
-    public ArrayList<String> symbols = new ArrayList<String>();
+    public ArrayList<String> symbols = new ArrayList<>();
     public int[] occurrences;
     public Map<String, Integer> valences;
     public String[] symbolArrayCopy;
     public int[] nodeLabels;
     public int graphSize;
-    public List<int[]> oxygenSulfur = new ArrayList<int[]>();
+    public List<int[]> oxygenSulfur = new ArrayList<>();
     public int[] firstDegrees;
     public int totalHydrogen = 0;
-    public ArrayList<String> firstSymbols = new ArrayList<String>();
+    public ArrayList<String> firstSymbols = new ArrayList<>();
     public int[] firstOccurrences;
     public boolean callHydrogenDistributor = false;
     public boolean justH = false;
@@ -114,7 +114,7 @@ public class MAYGEN {
 
     {
         // The atom valences from CDK.
-        valences = new HashMap<String, Integer>();
+        valences = new HashMap<>();
 
         valences.put("C", 4);
         valences.put("N", 3);
@@ -239,7 +239,7 @@ public class MAYGEN {
      * @param symbols the symbols
      */
     public void sortAscending(ArrayList<String> symbols) {
-        HashMap<String, Integer> inputs = new HashMap<String, Integer>();
+        HashMap<String, Integer> inputs = new HashMap<>();
         for (int i = 0; i < symbols.size(); i++) {
             if (inputs.containsKey(symbols.get(i))) {
                 Integer count = inputs.get(symbols.get(i)) + 1;
@@ -256,21 +256,16 @@ public class MAYGEN {
     public void sort(ArrayList<String> symbols, Set<Entry<String, Integer>> set) {
         int index = 0;
         int value = 0;
-        ArrayList<Entry<String, Integer>> list = new ArrayList<Entry<String, Integer>>(set);
-        Collections.sort(
-                list,
-                new Comparator<Map.Entry<String, Integer>>() {
-                    public int compare(
-                            Map.Entry<String, Integer> value1, Map.Entry<String, Integer> value2) {
-                        int comparison = (value2.getValue()).compareTo(value1.getValue());
-                        if (comparison == 0) {
-                            return valences.get(value1.getKey())
-                                    .compareTo(valences.get(value2.getKey()));
-                        } else {
-                            return value1.getValue().compareTo(value2.getValue());
-                        }
-                    }
-                });
+        ArrayList<Entry<String, Integer>> list = new ArrayList<>(set);
+        list.sort((value1, value2) -> {
+            int comparison = (value2.getValue()).compareTo(value1.getValue());
+            if (comparison == 0) {
+                return valences.get(value1.getKey())
+                        .compareTo(valences.get(value2.getKey()));
+            } else {
+                return value1.getValue().compareTo(value2.getValue());
+            }
+        });
 
         for (Entry<String, Integer> entry : list) {
             value = entry.getValue();
@@ -332,7 +327,7 @@ public class MAYGEN {
 
     public void getSingleAtomVariables() {
         String[] atoms = formula.split("(?=[A-Z])");
-        ArrayList<String> symbolList = new ArrayList<String>();
+        ArrayList<String> symbolList = new ArrayList<>();
         String[] info;
         int hydrogens = 0;
         String symbol;
@@ -355,7 +350,7 @@ public class MAYGEN {
 
     public void getSymbolOccurrences() {
         String[] atoms = formula.split("(?=[A-Z])");
-        ArrayList<String> symbolList = new ArrayList<String>();
+        ArrayList<String> symbolList = new ArrayList<>();
         String[] info;
         int occur = 0;
         int hydrogens = 0;
@@ -1998,7 +1993,7 @@ public class MAYGEN {
      * @return the list of int arrays
      */
     public ArrayList<int[]> distributeHydrogens() {
-        ArrayList<int[]> degreeList = new ArrayList<int[]>();
+        ArrayList<int[]> degreeList = new ArrayList<>();
         if (!callHydrogenDistributor) {
             degreeList.add(firstDegrees);
         } else {
@@ -2150,12 +2145,12 @@ public class MAYGEN {
         justH = false;
         noHydrogen = false;
         singleAtom = false;
-        oxygenSulfur = new ArrayList<int[]>();
-        symbols = new ArrayList<String>();
+        oxygenSulfur = new ArrayList<>();
+        symbols = new ArrayList<>();
         occurrences = null;
         symbolArray = null;
-        firstSymbols = new ArrayList<String>();
-        symbols = new ArrayList<String>();
+        firstSymbols = new ArrayList<>();
+        symbols = new ArrayList<>();
         firstOccurrences = null;
     }
 
@@ -2170,7 +2165,7 @@ public class MAYGEN {
      * @return the nValues
      */
     public Set<Integer> nValues(int index, int total, int[][] mat) {
-        Set<Integer> nValues = new HashSet<Integer>();
+        Set<Integer> nValues = new HashSet<>();
         nValues.add(index);
         int[] theRow = mat[index];
         for (int i = (index + 1); i < total; i++) {
@@ -2189,7 +2184,7 @@ public class MAYGEN {
      * @return the wValues
      */
     public Set<Integer> wValues(Set<Integer> nValues, int[] Kformer) {
-        Set<Integer> wValues = new HashSet<Integer>();
+        Set<Integer> wValues = new HashSet<>();
         for (Integer i : nValues) {
             wValues.add(Kformer[i]);
         }
@@ -2244,9 +2239,9 @@ public class MAYGEN {
         learningFromConnectivity[0] = false;
         boolean check = false;
         int[] kValues = initialKList(hIndex);
-        Set<Integer> nValues = new HashSet<Integer>();
-        Set<Integer> wValues = new HashSet<Integer>();
-        Set<Integer> zValues = new HashSet<Integer>();
+        Set<Integer> nValues = new HashSet<>();
+        Set<Integer> wValues = new HashSet<>();
+        Set<Integer> zValues = new HashSet<>();
         int zValue = 0;
         for (int i = 0; i < hIndex; i++) {
             nValues = nValues(i, hIndex, mat);
@@ -2440,7 +2435,7 @@ public class MAYGEN {
             int index,
             ArrayList<Permutation> cycles,
             ArrayList<ArrayList<Permutation>> formerPermutations) {
-        ArrayList<Permutation> newList = new ArrayList<Permutation>(cycles);
+        ArrayList<Permutation> newList = new ArrayList<>(cycles);
         if (index != 0) {
             ArrayList<Permutation> formers = formerPermutations.get(index - 1);
             for (Permutation form : formers) {
@@ -2448,13 +2443,13 @@ public class MAYGEN {
                     newList.add(form);
                 }
             }
-            ArrayList<Permutation> newForm = new ArrayList<Permutation>();
+            ArrayList<Permutation> newForm = new ArrayList<>();
             for (Permutation frm : formers) {
                 if (!frm.isIdentity()) {
                     newForm.add(frm);
                 }
             }
-            ArrayList<Permutation> newCycles = new ArrayList<Permutation>();
+            ArrayList<Permutation> newCycles = new ArrayList<>();
             if (cycles.size() != 1) {
                 for (Permutation cyc : cycles) {
                     if (!cyc.isIdentity()) {
@@ -2511,7 +2506,7 @@ public class MAYGEN {
         } else {
             int value = indexYZ(initialPartition, r);
             y[0] = ys[0][value];
-            ArrayList<Permutation> cycles = new ArrayList<Permutation>();
+            ArrayList<Permutation> cycles = new ArrayList<>();
             if (partition[size - 1] != 0) {
                 Permutation id = new Permutation(size);
                 cycles.add(id);
@@ -2802,7 +2797,7 @@ public class MAYGEN {
     }
 
     public ArrayList<Permutation> cycleTranspositions(int index, int[] partition) {
-        ArrayList<Permutation> perms = new ArrayList<Permutation>();
+        ArrayList<Permutation> perms = new ArrayList<>();
         int lValue = LValue(partition, index);
         int[] values;
         int former;
