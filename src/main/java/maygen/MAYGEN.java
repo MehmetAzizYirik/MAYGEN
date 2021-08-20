@@ -70,6 +70,8 @@ import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public class MAYGEN {
+    public static final String NUMBERS_FROM_0_TO_9 = "(?=[0-9])";
+    public static final String LETTERS_FROM_A_TO_Z = "(?=[A-Z])";
     public int size = 0;
     public int total = 0;
     public boolean tsvoutput = false;
@@ -276,7 +278,7 @@ public class MAYGEN {
     }
 
     public void singleAtomCheck(String[] atoms) {
-        String[] info = atoms[0].split("(?=[0-9])", 2);
+        String[] info = atoms[0].split(NUMBERS_FROM_0_TO_9, 2);
         String symbol = info[0];
         if (atoms.length == 1) {
             if (symbol.equals("H")) {
@@ -288,7 +290,7 @@ public class MAYGEN {
             }
         } else {
             for (String atom : atoms) {
-                info = atom.split("(?=[0-9])", 2);
+                info = atom.split(NUMBERS_FROM_0_TO_9, 2);
                 symbol = info[0];
                 if (!symbol.equals("H")) {
                     if (atomOccurrence(info) > 1) {
@@ -304,7 +306,7 @@ public class MAYGEN {
         String[] info;
         String symbol;
         for (String atom : atoms) {
-            info = atom.split("(?=[0-9])", 2);
+            info = atom.split(NUMBERS_FROM_0_TO_9, 2);
             symbol = info[0];
             if (valences.get(symbol) != 2) {
                 onlyDegree2 = false;
@@ -325,14 +327,14 @@ public class MAYGEN {
     }
 
     public void getSingleAtomVariables() {
-        String[] atoms = formula.split("(?=[A-Z])");
+        String[] atoms = formula.split(LETTERS_FROM_A_TO_Z);
         ArrayList<String> symbolList = new ArrayList<>();
         String[] info;
         int hydrogens = 0;
         String symbol;
         hIndex = 1;
         for (String atom : atoms) {
-            info = atom.split("(?=[0-9])", 2);
+            info = atom.split(NUMBERS_FROM_0_TO_9, 2);
             symbol = info[0];
             if (!symbol.equals("H")) {
                 symbolList.add(symbol);
@@ -348,14 +350,14 @@ public class MAYGEN {
     }
 
     public void getSymbolOccurrences() {
-        String[] atoms = formula.split("(?=[A-Z])");
+        String[] atoms = formula.split(LETTERS_FROM_A_TO_Z);
         ArrayList<String> symbolList = new ArrayList<>();
         String[] info;
         int occur = 0;
         int hydrogens = 0;
         String symbol;
         for (String atom : atoms) {
-            info = atom.split("(?=[0-9])", 2);
+            info = atom.split(NUMBERS_FROM_0_TO_9, 2);
             symbol = info[0];
             if (!symbol.equals("H")) {
                 occur = atomOccurrence(info);
@@ -478,14 +480,14 @@ public class MAYGEN {
      */
     public boolean canBuildIsomer(String formula) {
         boolean canBuildIsomer = true;
-        String[] atoms = normalizeFormula(formula).split("(?=[A-Z])");
+        String[] atoms = normalizeFormula(formula).split(LETTERS_FROM_A_TO_Z);
         String[] info;
         String symbol;
         int occur, valence;
         int size = 0;
         int sum = 0;
         for (String atom : atoms) {
-            info = atom.split("(?=[0-9])", 2);
+            info = atom.split(NUMBERS_FROM_0_TO_9, 2);
             symbol = info[0];
             valence = valences.get(symbol);
             occur = atomOccurrence(info);
@@ -1888,7 +1890,7 @@ public class MAYGEN {
     public boolean checkLengthTwoFormula(String[] atoms) {
         boolean check = true;
         if (atoms.length == 1) {
-            String[] info = atoms[0].split("(?=[0-9])", 2);
+            String[] info = atoms[0].split(NUMBERS_FROM_0_TO_9, 2);
             if (info[1].equals("2")) {
                 if (valences.get(info[0]) > 3) {
                     check = false;
@@ -1921,7 +1923,7 @@ public class MAYGEN {
                 new File(filedir).mkdirs();
                 outFile = new FileWriter(filedir + "/" + normalizeFormula(formula) + ".smi");
             }
-            String[] atoms = formula.split("(?=[A-Z])");
+            String[] atoms = formula.split(LETTERS_FROM_A_TO_Z);
             if (checkLengthTwoFormula(atoms)) {
                 singleAtomCheck(atoms);
                 if (singleAtom) {
