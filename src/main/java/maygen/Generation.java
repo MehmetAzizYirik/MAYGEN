@@ -49,8 +49,7 @@ public class Generation {
         boolean[] learningFromCanonicalTest = new boolean[] {false};
         boolean[] learningFromConnectivity = new boolean[] {false};
         int[] nonCanonicalIndices = new int[2];
-        ArrayList<ArrayList<Permutation>> formerPermutations =
-                new ArrayList<>();
+        ArrayList<ArrayList<Permutation>> formerPermutations = new ArrayList<>();
         int[] hydrogens = maygen.setHydrogens(degree);
         int[] newPartition = maygen.getPartition(degree);
         if (maygen.writeSDF)

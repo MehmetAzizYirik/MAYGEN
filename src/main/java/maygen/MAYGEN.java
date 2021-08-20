@@ -35,7 +35,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +49,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -257,15 +255,16 @@ public class MAYGEN {
         int index = 0;
         int value = 0;
         ArrayList<Entry<String, Integer>> list = new ArrayList<>(set);
-        list.sort((value1, value2) -> {
-            int comparison = (value2.getValue()).compareTo(value1.getValue());
-            if (comparison == 0) {
-                return valences.get(value1.getKey())
-                        .compareTo(valences.get(value2.getKey()));
-            } else {
-                return value1.getValue().compareTo(value2.getValue());
-            }
-        });
+        list.sort(
+                (value1, value2) -> {
+                    int comparison = (value2.getValue()).compareTo(value1.getValue());
+                    if (comparison == 0) {
+                        return valences.get(value1.getKey())
+                                .compareTo(valences.get(value2.getKey()));
+                    } else {
+                        return value1.getValue().compareTo(value2.getValue());
+                    }
+                });
 
         for (Entry<String, Integer> entry : list) {
             value = entry.getValue();
@@ -1927,7 +1926,7 @@ public class MAYGEN {
                 singleAtomCheck(atoms);
                 if (singleAtom) {
                     getSingleAtomVariables();
-                    singleAtom(new int[] {});
+                    writeSingleAtom(new int[] {});
                     displayStatistic(startTime);
                 } else {
                     checkOxygenSulfur(atoms);
@@ -2069,7 +2068,7 @@ public class MAYGEN {
         return (sum(initialPartition, r) - 1);
     }
 
-    public void singleAtom(int[] hydrogens) throws IOException {
+    public void writeSingleAtom(int[] hydrogens) throws IOException {
         int[][] A = new int[matrixSize][matrixSize];
         count.incrementAndGet();
         if (writeSDF) {
