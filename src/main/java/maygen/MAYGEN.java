@@ -48,6 +48,9 @@ import java.util.StringJoiner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -2114,8 +2117,10 @@ public class MAYGEN {
                                                 .parallelStream()
                                                 .forEach(new Generation(this)::run))
                         .get();
-            } catch (InterruptedException | ExecutionException e) {
-                if (verbose) e.printStackTrace();
+            } catch (InterruptedException | ExecutionException ex) {
+                if (verbose) {
+                    Logger.getLogger(MAYGEN.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 Thread.currentThread().interrupt();
             }
         } else {
@@ -3328,8 +3333,10 @@ public class MAYGEN {
         try {
             String smilesString = smilesGenerator.create(atomContainer);
             outFile.write(smilesString + " " + indexSmiles.incrementAndGet() + "\n");
-        } catch (CDKException e) {
-            e.printStackTrace();
+        } catch (CDKException ex) {
+            if (verbose) {
+                Logger.getLogger(MAYGEN.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -3633,8 +3640,10 @@ public class MAYGEN {
         try {
             gen.parseArgs(args);
             gen.run();
-        } catch (Exception e) {
-            if (gen.verbose) e.printStackTrace();
+        } catch (Exception ex) {
+            if (gen.verbose) {
+                Logger.getLogger(MAYGEN.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 }
