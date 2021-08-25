@@ -1,8 +1,10 @@
 language: java
-dist: trusty
+dist: xenial
 
-jdk:
-  - openjdk11
-
+addons:
+  sonarcloud:
+    organization: "mehmetazizyirik"
+    token:
+      secure: $SONAR_TOKEN
 script:
-  - mvn -B test jacoco:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.organization=mehmetazizyirik -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=MehmetAzizYirik_MAYGEN -Dsonar.login=$SONAR_TOKEN
+  - mvn -B test jacoco:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.organization=mehmetazizyirik -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=MehmetAzizYirik_MAYGEN
