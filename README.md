@@ -112,6 +112,7 @@ This project relies on the Chemistry Development Project (CDK), hosted under [CD
 2- Kerber, A., Laue, R., Meringer, M., Rücker, C. and Schymanski, E., 2013. Mathematical chemistry and chemoinformatics: structure generation, elucidation and quantitative structure-property relationships. Walter de Gruyter.
 
 3- Jaghoori MM, Jongmans SS, De Boer F, Peironcely J, Faulon JL, Reijmers T, Hankemeier T. PMG: multi-core metabolite identification. Electronic Notes in Theoretical Computer Science. 2013 Dec 25;299:53-60.
+
   
   
 
