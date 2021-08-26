@@ -23,23 +23,16 @@
             <artifactId>commons-cli</artifactId>
             <version>[1.4,)</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-group -->
-        <dependency>
-            <groupId>org.openscience.cdk</groupId>
-            <artifactId>cdk-group</artifactId>
-            <version>[2.5,)</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.openscience.cdk/cdk-extra -->
-        <dependency>
-            <groupId>org.openscience.cdk</groupId>
-            <artifactId>cdk-extra</artifactId>
-            <version>[2.5,)</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>[3.12.0,)</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.openscience.cdk</groupId>
+            <artifactId>cdk-bundle</artifactId>
+            <version>2.5</version>
         </dependency>
     </dependencies>
     <build>
