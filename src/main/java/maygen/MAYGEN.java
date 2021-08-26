@@ -483,7 +483,6 @@ public class MAYGEN {
         int valence;
         int localSize = 0;
         int sum = 0;
-        
         for (String atom : atoms) {
             info = atom.split(NUMBERS_FROM_0_TO_9, 2);
             symbol = info[0];
