@@ -473,6 +473,8 @@ public class MAYGEN {
      * @param formula String molecular formula
      * @return boolean
      */
+    
+    
     public boolean canBuildIsomer(String formula) {
         String[] atoms = normalizeFormula(formula).split(LETTERS_FROM_A_TO_Z);
         String[] info;
@@ -3579,7 +3581,7 @@ public class MAYGEN {
     }
 
     public static void main(String[] args) {
-        MAYGEN gen = new MAYGEN();
+    	MAYGEN gen = new MAYGEN();
         try {
             gen.parseArgs(args);
             gen.run();
