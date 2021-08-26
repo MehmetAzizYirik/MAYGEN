@@ -37,12 +37,12 @@ import java.util.stream.IntStream;
 
 public class HydrogenDistributor {
     public static final Map<Integer, Integer> capacities;
-    public static int isotopes;
-    public static int[] capacity;
-    public static int[] valences;
-    public static int totalHydrogen; // Total number of hydrogens.
-    public static int[] totalAtom; // Total number of atoms.
-    public static int hydrogens2distribute;
+    public int isotopes;
+    public int[] capacity;
+    public int[] valences;
+    public int totalHydrogen; // Total number of hydrogens.
+    public int[] totalAtom; // Total number of atoms.
+    public int hydrogens2distribute;
 
     static {
         // The atom capacities from MOLGEN book. Capacity of an atom equals to
@@ -66,13 +66,13 @@ public class HydrogenDistributor {
      * @param e the e
      * @return the new array
      */
-    public static int[] addElement(int[] a, int e) {
+    public int[] addElement(int[] a, int e) {
         a = Arrays.copyOf(a, a.length + 1);
         a[a.length - 1] = e;
         return a;
     }
 
-    public static int sum(int[] list, int index) {
+    public int sum(int[] list, int index) {
         int sum = 0;
         for (int i = 0; i <= index; i++) {
             sum = sum + list[i];
@@ -80,7 +80,7 @@ public class HydrogenDistributor {
         return sum;
     }
 
-    public static int[] setValues(int[] partition, int[] degrees) {
+    public int[] setValues(int[] partition, int[] degrees) {
         int partitionSize = partition.length;
         int[] capacity = new int[partitionSize];
         int[] valences = new int[partitionSize];
@@ -95,13 +95,13 @@ public class HydrogenDistributor {
             i++;
         }
 
-        HydrogenDistributor.capacity = capacity;
-        HydrogenDistributor.valences = valences;
-        HydrogenDistributor.totalAtom = totalAtom;
+        this.capacity = capacity;
+        this.valences = valences;
+        this.totalAtom = totalAtom;
         return capacity;
     }
 
-    public static int sum(int[] array) {
+    public int sum(int[] array) {
         int sum = 0;
         for (int i = 0; i < array.length; i++) {
             sum = sum + array[i];
@@ -109,7 +109,7 @@ public class HydrogenDistributor {
         return sum;
     }
 
-    public static int[] mergeArrays(List<int[]> arrays) {
+    public int[] mergeArrays(List<int[]> arrays) {
         int size = 0;
         for (int[] array : arrays) {
             size += array.length;
@@ -124,14 +124,14 @@ public class HydrogenDistributor {
         return mergedArray;
     }
 
-    public static int[] arraySum(int[] a, int[] b) {
+    public int[] arraySum(int[] a, int[] b) {
         List<int[]> arrays = new ArrayList<>();
         arrays.add(a);
         arrays.add(b);
         return mergeArrays(arrays);
     }
 
-    public static List<int[]> combineArrays(LinkedList<List<int[]>> lists) {
+    public List<int[]> combineArrays(LinkedList<List<int[]>> lists) {
         List<int[]> comb = new ArrayList<>(lists.removeFirst());
         while (!lists.isEmpty()) {
             List<int[]> list = lists.removeFirst();
@@ -153,17 +153,17 @@ public class HydrogenDistributor {
      * @param degrees the degrees
      * @return the list of int arrays
      */
-    public static List<int[]> run(int[] partition, int[] degrees) {
+    public List<int[]> run(int[] partition, int[] degrees) {
         int partitionSize = partition.length;
         int hydrogen = partition[partitionSize - 1];
-        HydrogenDistributor.isotopes = partitionSize - 1;
+        isotopes = partitionSize - 1;
         setValues(partition, degrees);
-        HydrogenDistributor.totalHydrogen = hydrogen;
+        totalHydrogen = hydrogen;
         List<int[]> result;
         if (isotopes == 1) {
             List<int[]> iarrays = new ArrayList<>();
             int[] array = new int[0];
-            HydrogenDistributor.hydrogens2distribute = totalHydrogen;
+            hydrogens2distribute = totalHydrogen;
             distribute(iarrays, totalHydrogen, array, valences[0], totalAtom[0]);
             result = iarrays;
         } else {
@@ -171,7 +171,7 @@ public class HydrogenDistributor {
             for (int[] dene : partition(totalHydrogen, isotopes, 0)) {
                 LinkedList<List<int[]>> lists = new LinkedList<>();
                 for (int i = 0; i < dene.length; i++) {
-                    HydrogenDistributor.hydrogens2distribute = dene[i];
+                    hydrogens2distribute = dene[i];
                     List<int[]> iarrays = new ArrayList<>();
                     int[] array = new int[0];
                     distribute(iarrays, dene[i], array, valences[i], totalAtom[i]);
@@ -193,7 +193,7 @@ public class HydrogenDistributor {
      * @param depth the depth
      * @return the list of int arrays
      */
-    public static List<int[]> partition(int n, int d, int depth) {
+    public List<int[]> partition(int n, int d, int depth) {
         if (d == depth) {
             List<int[]> array = new ArrayList<>();
             int[] take = new int[0];
@@ -203,7 +203,7 @@ public class HydrogenDistributor {
         return buildArray(n, d, depth);
     }
 
-    public static List<int[]> buildArray(int n, int d, int depth) {
+    public List<int[]> buildArray(int n, int d, int depth) {
         List<int[]> array = new ArrayList<>();
         IntStream range = IntStream.rangeClosed(0, n);
         for (int i : range.toArray()) {
@@ -223,19 +223,18 @@ public class HydrogenDistributor {
         return array;
     }
 
-    public static int[] addZeros(int[] array, int zeros) {
+    public int[] addZeros(int[] array, int zeros) {
         for (int i = 0; i < zeros; i++) {
             array = addElement(array, 0);
         }
         return array;
     }
 
-    public static int[] descendingOrderArray(int[] arr) {
+    public int[] descendingOrderArray(int[] arr) {
         return Arrays.stream(arr).boxed().sorted().mapToInt(Integer::intValue).toArray();
     }
 
-    public static void distribute(
-            List<int[]> arrays, int hydrogen, int[] arr, int valence, int numAtom) {
+    public void distribute(List<int[]> arrays, int hydrogen, int[] arr, int valence, int numAtom) {
         if (hydrogen == 0 && sum(arr) == hydrogens2distribute) {
             if (arr.length != numAtom) {
                 arr = addZeros(arr, (numAtom - arr.length));

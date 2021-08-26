@@ -1983,7 +1983,8 @@ public class MAYGEN {
         if (!callHydrogenDistributor) {
             degreeList.add(firstDegrees);
         } else {
-            List<int[]> distributions = HydrogenDistributor.run(firstOccurrences, firstDegrees);
+            List<int[]> distributions =
+                    new HydrogenDistributor().run(firstOccurrences, firstDegrees);
             if (hIndex == 2) {
                 for (int[] dist : distributions) {
                     int[] newDegree = new int[size];
