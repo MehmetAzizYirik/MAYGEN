@@ -1965,6 +1965,7 @@ public class MAYGEN {
             System.out.println("The number of structures is: " + count);
             System.out.println("Time: " + d.format(seconds) + " seconds");
         }
+        
         if (tsvoutput) {
             System.out.println(
                     formula
