@@ -52,10 +52,10 @@ public class Generation {
         ArrayList<ArrayList<Permutation>> formerPermutations = new ArrayList<>();
         int[] hydrogens = maygen.setHydrogens(degree);
         int[] newPartition = maygen.getPartition(degree);
-        if (maygen.writeSDF)
+        if (maygen.writeSDF || maygen.printSDF)
             maygen.symbolArrayCopy = Arrays.copyOf(maygen.symbolArray, maygen.symbolArray.length);
         final int[] initialPartition;
-        if (maygen.writeSDF) {
+        if (maygen.writeSDF || maygen.printSDF) {
             initialPartition =
                     maygen.sortWithPartition(
                             newPartition, degree, maygen.symbolArrayCopy, hydrogens);

@@ -66,19 +66,21 @@ If user wants an output file, the directory is needed to be specified.
 It is also possible to generate SMILES instead of an SDF file, but it will
 slow down the generation time. For this, use the '--smiles' option.
 
- -f,--formula <arg>   formula (required)
+ -f,--formula <arg>    formula (required)
 
- -v,--verbose         print message
+ -v,--verbose          print message
 
- -t,--tsvoutput       Output formula, number of structures and execution
-                      time in CSV format.In multithread, the 4th column in
-                      the output is the number of threads.
+ -t,--tsvoutput        Output formula, number of structures and execution
+                       time in CSV format.In multithread, the 4th column in
+                       the output is the number of threads.
 
- -d,--filedir <arg>   Store output in given file
+ -o,--outputFile <arg> Store output file   
 
- -m,--multithread     Use multi thread
+ -m,--multithread      Use multi thread
 
- -smi,--smiles        Store output in SMILES format in given file
+ -smi,--SMILES         Output in SMILES format
+ 
+ -sdf,--SDF            Output in SDF format
 
 Please report issues at https://github.com/MehmetAzizYirik/MAYGEN
 ```
