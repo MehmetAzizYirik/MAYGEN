@@ -1961,7 +1961,8 @@ public class MAYGEN {
         DecimalFormat d = new DecimalFormat(".###");
         d.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         if (verbose) {
-            System.out.println("The number of structures is: " + count);
+        	if(printSMILES||printSDF) System.out.println();
+        	System.out.println("The number of structures is: " + count);
             System.out.println("Time: " + d.format(seconds) + " seconds");
         }
         if (tsvoutput) {
@@ -2975,7 +2976,7 @@ public class MAYGEN {
         try {
             CommandLine cmd = parser.parse(options, args);
             this.formula = cmd.getOptionValue("formula");
-            if (cmd.hasOption("filedir")) {
+            if (cmd.hasOption("outputFile")) {
                 String filedir = cmd.getOptionValue("filedir");
                 this.filedir = Objects.isNull(filedir) ? "." : filedir;
                 if (cmd.hasOption("smi")) {
