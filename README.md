@@ -2,7 +2,6 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=MehmetAzizYirik_MAYGEN) 
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=MehmetAzizYirik_MAYGEN) 
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=security_rating)](https://sonarcloud.io/dashboard?id=MehmetAzizYirik_MAYGEN) 
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=coverage)](https://sonarcloud.io/dashboard?id=MehmetAzizYirik_MAYGEN)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=ncloc)](https://sonarcloud.io/dashboard?id=MehmetAzizYirik_MAYGEN)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=bugs)](https://sonarcloud.io/dashboard?id=MehmetAzizYirik_MAYGEN)
 # MAYGEN - A chemical structure generator for constitutional isomers based on the orderly generation principle
