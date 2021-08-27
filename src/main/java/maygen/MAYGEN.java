@@ -1961,16 +1961,11 @@ public class MAYGEN {
         DecimalFormat d = new DecimalFormat(".###");
         d.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         if (verbose) {
-<<<<<<< HEAD
             if (printSMILES || printSDF) System.out.println();
             System.out.println("The number of structures is: " + count);
-=======
-        	if(printSMILES||printSDF) System.out.println();
-        	System.out.println("The number of structures is: " + count);
->>>>>>> 1ef0837ae52cfdb0d757f82ee506a683eda87268
             System.out.println("Time: " + d.format(seconds) + " seconds");
         }
-        
+
         if (tsvoutput) {
             System.out.println(
                     formula
