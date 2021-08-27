@@ -2978,7 +2978,7 @@ public class MAYGEN {
             CommandLine cmd = parser.parse(options, args);
             this.formula = cmd.getOptionValue("formula");
             if (cmd.hasOption("outputFile")) {
-                String filedir = cmd.getOptionValue("filedir");
+                String filedir = cmd.getOptionValue("outputFile");
                 this.filedir = Objects.isNull(filedir) ? "." : filedir;
                 if (cmd.hasOption("smi")) {
                     this.writeSMILES = true;
