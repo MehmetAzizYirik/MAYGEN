@@ -243,7 +243,6 @@ public class HydrogenDistributor {
             arrays.add(arr);
         } else if ((numAtom - arr.length) == 1) {
             int add = Math.min(hydrogen, valence);
-            hydrogen = hydrogen - add;
             if (arr.length == 0) {
                 distribute(arrays, 0, addElement(arr, add), valence, numAtom);
             }

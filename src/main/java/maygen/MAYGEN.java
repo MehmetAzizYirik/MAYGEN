@@ -1171,7 +1171,7 @@ public class MAYGEN {
                 } else {
                     if (di != dj) {
                         max[0][i][j] = Math.min(di, dj);
-                    } else if (di == dj && i != j) {
+                    } else {
                         if (justH) {
                             max[0][i][j] = (di);
                         } else {
@@ -1229,14 +1229,13 @@ public class MAYGEN {
             boolean[] learningFromCanonicalTest)
             throws IOException {
         int[][] A = new int[matrixSize][matrixSize];
-        int[] degrees = degreeList;
         boolean[] flag = new boolean[] {true};
         int[][][] max = new int[][][] {new int[0][0]};
         int[][][] L = new int[][][] {new int[0][0]};
         int[][][] C = new int[][][] {new int[0][0]};
-        maximalMatrix(degrees, max);
-        upperTriangularL(degrees, max, L);
-        upperTriangularC(degrees, max, C);
+        maximalMatrix(degreeList, max);
+        upperTriangularL(degreeList, max, L);
+        upperTriangularC(degreeList, max, C);
         int[] indices = new int[2];
         indices[0] = 0;
         indices[1] = 1;
@@ -1248,7 +1247,7 @@ public class MAYGEN {
             nextStep(
                     A,
                     indices,
-                    degrees,
+                    degreeList,
                     initialPartition,
                     partitionList,
                     callForward,
@@ -1419,9 +1418,8 @@ public class MAYGEN {
      */
     public int[][] addHydrogens(int[][] A, int index, int[] hydrogens) {
         if (singleAtom) {
-            int hIndex = index;
             int hydrogen = valences.get(symbolArray[0]);
-            for (int j = hIndex; j < hydrogen + hIndex; j++) {
+            for (int j = index; j < hydrogen + index; j++) {
                 A[0][j] = 1;
                 A[j][0] = 1;
             }
@@ -2512,7 +2510,7 @@ public class MAYGEN {
                 cycles = cycleTranspositions(index, partition);
             }
             candidatePermutations(index, cycles, formerPermutations);
-            check = check(index, y[0], size, A, newPartition, formerPermutations);
+            check = check(index, size, A, newPartition, formerPermutations);
             if (!check) {
                 if (cycles.size() != 1) {
                     getLernenIndices(
@@ -2749,7 +2747,6 @@ public class MAYGEN {
 
     public boolean check(
             int index,
-            int y,
             int total,
             int[][] A,
             int[] newPartition,
@@ -3097,7 +3094,7 @@ public class MAYGEN {
         return sourceDepiction;
     }
 
-    public void write2SDF(int[] ar) throws IOException {
+    public StringJoiner generateSdfStringJoiner(int[] ar) {
         int numberOfBonds = ar.length;
         StringJoiner stringJoiner = new StringJoiner("");
         stringJoiner.add("\nMolecule " + indexSdf.incrementAndGet() + "\n    MAYGEN 20210615\n");
@@ -3138,51 +3135,15 @@ public class MAYGEN {
         buildOnSm(ar, stringJoiner);
         stringJoiner.add("M  END\n");
         stringJoiner.add("\n$$$$\n");
-        outFile.write(stringJoiner.toString());
+        return stringJoiner;
     }
 
-    public void printSDF(int[] ar) throws IOException {
-        int numberOfBonds = ar.length;
-        StringJoiner stringJoiner = new StringJoiner("");
-        stringJoiner.add("\nMolecule " + indexSdf.incrementAndGet() + "\n    MAYGEN 20210615\n");
-        String allAtoms = "";
-        String allBonds = "";
-        if (String.valueOf(matrixSize).length() == 1) {
-            allAtoms += "  " + matrixSize;
-        } else if (String.valueOf(matrixSize).length() == 2) {
-            allAtoms += " " + matrixSize;
-        } else {
-            allAtoms += String.valueOf(matrixSize);
-        }
+    public void write2SDF(int[] ar) throws IOException {
+        outFile.write(generateSdfStringJoiner(ar).toString());
+    }
 
-        if (String.valueOf(numberOfBonds).length() == 1) {
-            allBonds += "  " + numberOfBonds;
-        } else if (String.valueOf(numberOfBonds).length() == 2) {
-            allBonds += " " + numberOfBonds;
-        } else {
-            allBonds += String.valueOf(numberOfBonds);
-        }
-
-        stringJoiner.add(allAtoms + allBonds + "  0     0  0  0  0  0  0999 V2000\n");
-        for (int i = 0; i < matrixSize / 2; i++) {
-            stringJoiner.add(
-                    "    0.0000    0.0000    0.0000 "
-                            + "O"
-                            + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
-        }
-
-        for (int i = 0; i < matrixSize / 2; i++) {
-
-            stringJoiner.add(
-                    "    0.0000    0.0000    0.0000 "
-                            + "S"
-                            + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
-        }
-
-        buildOnSm(ar, stringJoiner);
-        stringJoiner.add("M  END\n");
-        stringJoiner.add("\n$$$$\n");
-        System.out.println(stringJoiner.toString());
+    public void printSDF(int[] ar) {
+        System.out.println(generateSdfStringJoiner(ar).toString());
     }
 
     public void buildOnSm(int[] ar, StringJoiner stringJoiner) {
@@ -3226,80 +3187,14 @@ public class MAYGEN {
     }
 
     public void write2SDF(int[][] mat) throws IOException {
-        int[] indices = sortMatrix(symbolArrayCopy);
-        int numberOfBonds = numberOfBonds(mat);
-        StringJoiner stringJoiner = new StringJoiner("");
-        stringJoiner.add("\nMolecule " + indexSdf.incrementAndGet() + "\n    MAYGEN 20210615\n");
-        String allAtoms = "";
-        String allBonds = "";
-        if (String.valueOf(matrixSize).length() == 1) {
-            allAtoms += "  " + matrixSize;
-        } else if (String.valueOf(matrixSize).length() == 2) {
-            allAtoms += " " + matrixSize;
-        } else {
-            allAtoms += String.valueOf(matrixSize);
-        }
-
-        if (String.valueOf(numberOfBonds).length() == 1) {
-            allBonds += "  " + numberOfBonds;
-        } else if (String.valueOf(numberOfBonds).length() == 2) {
-            allBonds += " " + numberOfBonds;
-        } else {
-            allBonds += String.valueOf(numberOfBonds);
-        }
-
-        stringJoiner.add(allAtoms + allBonds + "  0     0  0  0  0  0  0999 V2000\n");
-        for (int i = 0; i < matrixSize; i++) {
-            stringJoiner.add(
-                    "    0.0000    0.0000    0.0000 "
-                            + symbolArrayCopy[indices[i]]
-                            + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
-        }
-        int index = 0;
-        for (int i = 0; i < matrixSize; i++) {
-            index = indices[i];
-            for (int j = index + 1; j < matrixSize; j++) {
-                if (mat[index][j] != 0) {
-                    String sourceDepiction;
-                    String targetDepiction;
-                    if (String.valueOf(i + 1).length() == 1) {
-                        sourceDepiction = "  " + (i + 1);
-                    } else if (String.valueOf(i + 1).length() == 2) {
-                        sourceDepiction = " " + (i + 1);
-                    } else {
-                        sourceDepiction = String.valueOf(i + 1);
-                    }
-                    int jj = 0;
-                    for (int k = 0; k < indices.length; k++) {
-                        if (indices[k] == j) {
-                            jj = k;
-                            break;
-                        }
-                    }
-                    if (String.valueOf(jj + 1).length() == 1) {
-                        targetDepiction = "  " + (jj + 1);
-                    } else if (String.valueOf(jj + 1).length() == 2) {
-                        targetDepiction = " " + (jj + 1);
-                    } else {
-                        targetDepiction = String.valueOf(jj + 1);
-                    }
-                    stringJoiner.add(
-                            sourceDepiction
-                                    + targetDepiction
-                                    + "  "
-                                    + mat[index][j]
-                                    + "   0  0  0  0\n");
-                }
-            }
-        }
-
-        stringJoiner.add("M  END\n");
-
-        stringJoiner.add("\n$$$$\n");
-        outFile.write(stringJoiner.toString());
+        outFile.write(generateSdfStringJoiner(mat).toString());
     }
 
-    public void printSDF(int[][] mat) throws IOException {
+    public void printSDF(int[][] mat) {
+        System.out.println(generateSdfStringJoiner(mat).toString());
+    }
+
+    public StringJoiner generateSdfStringJoiner(int[][] mat) {
         int[] indices = sortMatrix(symbolArrayCopy);
         int numberOfBonds = numberOfBonds(mat);
         StringJoiner stringJoiner = new StringJoiner("");
@@ -3370,143 +3265,83 @@ public class MAYGEN {
         stringJoiner.add("M  END\n");
 
         stringJoiner.add("\n$$$$\n");
-        System.out.println(stringJoiner.toString());
+        return stringJoiner;
+    }
+
+    public StringJoiner generateSdfStringJoiner(int[][] mat, String symbol) {
+        int numberOfBonds = numberOfBonds(mat);
+        StringJoiner stringJoiner = new StringJoiner("");
+        stringJoiner.add("\nMolecule " + indexSdf.incrementAndGet() + "\n    MAYGEN 20210615\n");
+        String allAtoms = "";
+        String allBonds = "";
+        if (String.valueOf(matrixSize).length() == 1) {
+            allAtoms += "  " + matrixSize;
+        } else if (String.valueOf(matrixSize).length() == 2) {
+            allAtoms += " " + matrixSize;
+        } else {
+            allAtoms += String.valueOf(matrixSize);
+        }
+
+        if (String.valueOf(numberOfBonds).length() == 1) {
+            allBonds += "  " + numberOfBonds;
+        } else if (String.valueOf(numberOfBonds).length() == 2) {
+            allBonds += " " + numberOfBonds;
+        } else {
+            allBonds += String.valueOf(numberOfBonds);
+        }
+
+        stringJoiner.add(allAtoms + allBonds + "  0     0  0  0  0  0  0999 V2000\n");
+
+        for (int i = 0; i < matrixSize; i++) {
+            stringJoiner.add(
+                    "    0.0000    0.0000    0.0000 "
+                            + symbol
+                            + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
+        }
+
+        for (int i = 0; i < matrixSize; i++) {
+            for (int j = i + 1; j < matrixSize; j++) {
+                if (mat[i][j] != 0) {
+                    String sourceDepiction = "";
+                    String targetDepiction = "";
+                    if (String.valueOf(i + 1).length() == 1) {
+                        sourceDepiction = "  " + (i + 1);
+                    } else if (String.valueOf(i + 1).length() == 2) {
+                        sourceDepiction = " " + (i + 1);
+                    } else {
+                        sourceDepiction = String.valueOf(i + 1);
+                    }
+
+                    if (String.valueOf(j + 1).length() == 1) {
+                        targetDepiction = "  " + (j + 1);
+                    } else if (String.valueOf(j + 1).length() == 2) {
+                        targetDepiction = " " + (j + 1);
+                    } else {
+                        targetDepiction = String.valueOf(j + 1);
+                    }
+
+                    stringJoiner.add(
+                            sourceDepiction
+                                    + targetDepiction
+                                    + "  "
+                                    + mat[i][j]
+                                    + "   0  0  0  0\n");
+                }
+            }
+        }
+
+        stringJoiner.add("M  END\n");
+
+        stringJoiner.add("\n$$$$\n");
+        return stringJoiner;
     }
 
     public void write2SDF(int[][] mat, String symbol) throws IOException {
-        int numberOfBonds = numberOfBonds(mat);
-        StringJoiner stringJoiner = new StringJoiner("");
-        stringJoiner.add("\nMolecule " + indexSdf.incrementAndGet() + "\n    MAYGEN 20210615\n");
-        String allAtoms = "";
-        String allBonds = "";
-        if (String.valueOf(matrixSize).length() == 1) {
-            allAtoms += "  " + matrixSize;
-        } else if (String.valueOf(matrixSize).length() == 2) {
-            allAtoms += " " + matrixSize;
-        } else {
-            allAtoms += String.valueOf(matrixSize);
-        }
-
-        if (String.valueOf(numberOfBonds).length() == 1) {
-            allBonds += "  " + numberOfBonds;
-        } else if (String.valueOf(numberOfBonds).length() == 2) {
-            allBonds += " " + numberOfBonds;
-        } else {
-            allBonds += String.valueOf(numberOfBonds);
-        }
-
-        stringJoiner.add(allAtoms + allBonds + "  0     0  0  0  0  0  0999 V2000\n");
-
-        for (int i = 0; i < matrixSize; i++) {
-            stringJoiner.add(
-                    "    0.0000    0.0000    0.0000 "
-                            + symbol
-                            + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
-        }
-
-        for (int i = 0; i < matrixSize; i++) {
-            for (int j = i + 1; j < matrixSize; j++) {
-                if (mat[i][j] != 0) {
-                    String sourceDepiction = "";
-                    String targetDepiction = "";
-                    if (String.valueOf(i + 1).length() == 1) {
-                        sourceDepiction = "  " + (i + 1);
-                    } else if (String.valueOf(i + 1).length() == 2) {
-                        sourceDepiction = " " + (i + 1);
-                    } else {
-                        sourceDepiction = String.valueOf(i + 1);
-                    }
-
-                    if (String.valueOf(j + 1).length() == 1) {
-                        targetDepiction = "  " + (j + 1);
-                    } else if (String.valueOf(j + 1).length() == 2) {
-                        targetDepiction = " " + (j + 1);
-                    } else {
-                        targetDepiction = String.valueOf(j + 1);
-                    }
-
-                    stringJoiner.add(
-                            sourceDepiction
-                                    + targetDepiction
-                                    + "  "
-                                    + mat[i][j]
-                                    + "   0  0  0  0\n");
-                }
-            }
-        }
-
-        stringJoiner.add("M  END\n");
-
-        stringJoiner.add("\n$$$$\n");
-        outFile.write(stringJoiner.toString());
+        outFile.write(generateSdfStringJoiner(mat, symbol).toString());
     }
 
-    public void printSDF(int[][] mat, String symbol) throws IOException {
-        int numberOfBonds = numberOfBonds(mat);
-        StringJoiner stringJoiner = new StringJoiner("");
-        stringJoiner.add("\nMolecule " + indexSdf.incrementAndGet() + "\n    MAYGEN 20210615\n");
-        String allAtoms = "";
-        String allBonds = "";
-        if (String.valueOf(matrixSize).length() == 1) {
-            allAtoms += "  " + matrixSize;
-        } else if (String.valueOf(matrixSize).length() == 2) {
-            allAtoms += " " + matrixSize;
-        } else {
-            allAtoms += String.valueOf(matrixSize);
-        }
-
-        if (String.valueOf(numberOfBonds).length() == 1) {
-            allBonds += "  " + numberOfBonds;
-        } else if (String.valueOf(numberOfBonds).length() == 2) {
-            allBonds += " " + numberOfBonds;
-        } else {
-            allBonds += String.valueOf(numberOfBonds);
-        }
-
-        stringJoiner.add(allAtoms + allBonds + "  0     0  0  0  0  0  0999 V2000\n");
-
-        for (int i = 0; i < matrixSize; i++) {
-            stringJoiner.add(
-                    "    0.0000    0.0000    0.0000 "
-                            + symbol
-                            + "   0  0  0  0  0  0  0  0  0  0  0  0\n");
-        }
-
-        for (int i = 0; i < matrixSize; i++) {
-            for (int j = i + 1; j < matrixSize; j++) {
-                if (mat[i][j] != 0) {
-                    String sourceDepiction = "";
-                    String targetDepiction = "";
-                    if (String.valueOf(i + 1).length() == 1) {
-                        sourceDepiction = "  " + (i + 1);
-                    } else if (String.valueOf(i + 1).length() == 2) {
-                        sourceDepiction = " " + (i + 1);
-                    } else {
-                        sourceDepiction = String.valueOf(i + 1);
-                    }
-
-                    if (String.valueOf(j + 1).length() == 1) {
-                        targetDepiction = "  " + (j + 1);
-                    } else if (String.valueOf(j + 1).length() == 2) {
-                        targetDepiction = " " + (j + 1);
-                    } else {
-                        targetDepiction = String.valueOf(j + 1);
-                    }
-
-                    stringJoiner.add(
-                            sourceDepiction
-                                    + targetDepiction
-                                    + "  "
-                                    + mat[i][j]
-                                    + "   0  0  0  0\n");
-                }
-            }
-        }
-
-        stringJoiner.add("M  END\n");
-
-        stringJoiner.add("\n$$$$\n");
-        System.out.println(stringJoiner.toString());
+    public void printSDF(int[][] mat, String symbol) {
+        System.out.println(generateSdfStringJoiner(mat, symbol).toString());
     }
 
     public void write2smiles(int[][] mat) throws IOException {
@@ -3522,7 +3357,7 @@ public class MAYGEN {
         }
     }
 
-    public void printSmiles(int[][] mat) throws IOException {
+    public void printSmiles(int[][] mat) {
 
         IAtomContainer atomContainer = buildAtomContainer(mat);
         try {
@@ -3646,9 +3481,7 @@ public class MAYGEN {
 
     public int[] build() {
         int[] arr = new int[graphSize];
-        if (graphSize + 1 - 1 >= 0) {
-            System.arraycopy(nodeLabels, 1, arr, 0, graphSize + 1 - 1);
-        }
+        System.arraycopy(nodeLabels, 1, arr, 0, graphSize + 1 - 1);
         return arr;
     }
 
