@@ -1668,9 +1668,9 @@ public class MAYGEN {
                         } else if (writeSMILES) {
                             write2smiles(addHydrogens(A, hIndex, hydrogens));
                         } else if (printSDF) {
-                            printSDF(addHydrogens(A, hIndex, hydrogens));
+                            print2SDF(addHydrogens(A, hIndex, hydrogens));
                         } else if (printSMILES) {
-                            printSmiles(addHydrogens(A, hIndex, hydrogens));
+                            print2Smiles(addHydrogens(A, hIndex, hydrogens));
                         }
                         callForward[0] = false;
                     } else {
@@ -2069,9 +2069,9 @@ public class MAYGEN {
         } else if (writeSMILES) {
             write2smiles(addHydrogens(A, hIndex, hydrogens));
         } else if (printSDF) {
-            printSDF(addHydrogens(A, hIndex, hydrogens));
+            print2SDF(addHydrogens(A, hIndex, hydrogens));
         } else if (printSMILES) {
-            printSmiles(addHydrogens(A, hIndex, hydrogens));
+            print2Smiles(addHydrogens(A, hIndex, hydrogens));
         }
     }
 
@@ -3138,11 +3138,11 @@ public class MAYGEN {
         return stringJoiner;
     }
 
-    public void write2SDF(int[] ar) throws IOException {
+    public void writeSdfArray(int[] ar) throws IOException {
         outFile.write(generateSdfStringJoiner(ar).toString());
     }
 
-    public void printSDF(int[] ar) {
+    public void printSdfArray(int[] ar) {
         System.out.println(generateSdfStringJoiner(ar).toString());
     }
 
@@ -3190,7 +3190,7 @@ public class MAYGEN {
         outFile.write(generateSdfStringJoiner(mat).toString());
     }
 
-    public void printSDF(int[][] mat) {
+    public void print2SDF(int[][] mat) {
         System.out.println(generateSdfStringJoiner(mat).toString());
     }
 
@@ -3228,37 +3228,7 @@ public class MAYGEN {
         for (int i = 0; i < matrixSize; i++) {
             index = indices[i];
             for (int j = index + 1; j < matrixSize; j++) {
-                if (mat[index][j] != 0) {
-                    String sourceDepiction;
-                    String targetDepiction;
-                    if (String.valueOf(i + 1).length() == 1) {
-                        sourceDepiction = "  " + (i + 1);
-                    } else if (String.valueOf(i + 1).length() == 2) {
-                        sourceDepiction = " " + (i + 1);
-                    } else {
-                        sourceDepiction = String.valueOf(i + 1);
-                    }
-                    int jj = 0;
-                    for (int k = 0; k < indices.length; k++) {
-                        if (indices[k] == j) {
-                            jj = k;
-                            break;
-                        }
-                    }
-                    if (String.valueOf(jj + 1).length() == 1) {
-                        targetDepiction = "  " + (jj + 1);
-                    } else if (String.valueOf(jj + 1).length() == 2) {
-                        targetDepiction = " " + (jj + 1);
-                    } else {
-                        targetDepiction = String.valueOf(jj + 1);
-                    }
-                    stringJoiner.add(
-                            sourceDepiction
-                                    + targetDepiction
-                                    + "  "
-                                    + mat[index][j]
-                                    + "   0  0  0  0\n");
-                }
+                generateSdfLine(indices, stringJoiner, i, j);
             }
         }
 
@@ -3266,6 +3236,40 @@ public class MAYGEN {
 
         stringJoiner.add("\n$$$$\n");
         return stringJoiner;
+    }
+
+    public void generateSdfLine(int[] indices, StringJoiner stringJoiner, int i2, int j) {
+        if (i2 != 0) {
+            String sourceDepiction;
+            String targetDepiction;
+            if (String.valueOf(i2 + 1).length() == 1) {
+                sourceDepiction = "  " + (i2 + 1);
+            } else if (String.valueOf(i2 + 1).length() == 2) {
+                sourceDepiction = " " + (i2 + 1);
+            } else {
+                sourceDepiction = String.valueOf(i2 + 1);
+            }
+            int jj = 0;
+            for (int k = 0; k < indices.length; k++) {
+                if (indices[k] == j) {
+                    jj = k;
+                    break;
+                }
+            }
+            if (String.valueOf(jj + 1).length() == 1) {
+                targetDepiction = "  " + (jj + 1);
+            } else if (String.valueOf(jj + 1).length() == 2) {
+                targetDepiction = " " + (jj + 1);
+            } else {
+                targetDepiction = String.valueOf(jj + 1);
+            }
+            stringJoiner.add(
+                    sourceDepiction
+                            + targetDepiction
+                            + "  "
+                            + i2
+                            + "   0  0  0  0\n");
+        }
     }
 
     public StringJoiner generateSdfStringJoiner(int[][] mat, String symbol) {
@@ -3301,32 +3305,7 @@ public class MAYGEN {
 
         for (int i = 0; i < matrixSize; i++) {
             for (int j = i + 1; j < matrixSize; j++) {
-                if (mat[i][j] != 0) {
-                    String sourceDepiction = "";
-                    String targetDepiction = "";
-                    if (String.valueOf(i + 1).length() == 1) {
-                        sourceDepiction = "  " + (i + 1);
-                    } else if (String.valueOf(i + 1).length() == 2) {
-                        sourceDepiction = " " + (i + 1);
-                    } else {
-                        sourceDepiction = String.valueOf(i + 1);
-                    }
-
-                    if (String.valueOf(j + 1).length() == 1) {
-                        targetDepiction = "  " + (j + 1);
-                    } else if (String.valueOf(j + 1).length() == 2) {
-                        targetDepiction = " " + (j + 1);
-                    } else {
-                        targetDepiction = String.valueOf(j + 1);
-                    }
-
-                    stringJoiner.add(
-                            sourceDepiction
-                                    + targetDepiction
-                                    + "  "
-                                    + mat[i][j]
-                                    + "   0  0  0  0\n");
-                }
+                generateSdfLine(stringJoiner, i, j);
             }
         }
 
@@ -3336,11 +3315,40 @@ public class MAYGEN {
         return stringJoiner;
     }
 
+    public void generateSdfLine(StringJoiner stringJoiner, int i2, int j) {
+        if (i2 != 0) {
+            String sourceDepiction = "";
+            String targetDepiction = "";
+            if (String.valueOf(i2 + 1).length() == 1) {
+                sourceDepiction = "  " + (i2 + 1);
+            } else if (String.valueOf(i2 + 1).length() == 2) {
+                sourceDepiction = " " + (i2 + 1);
+            } else {
+                sourceDepiction = String.valueOf(i2 + 1);
+            }
+
+            if (String.valueOf(j + 1).length() == 1) {
+                targetDepiction = "  " + (j + 1);
+            } else if (String.valueOf(j + 1).length() == 2) {
+                targetDepiction = " " + (j + 1);
+            } else {
+                targetDepiction = String.valueOf(j + 1);
+            }
+
+            stringJoiner.add(
+                    sourceDepiction
+                            + targetDepiction
+                            + "  "
+                            + i2
+                            + "   0  0  0  0\n");
+        }
+    }
+
     public void write2SDF(int[][] mat, String symbol) throws IOException {
         outFile.write(generateSdfStringJoiner(mat, symbol).toString());
     }
 
-    public void printSDF(int[][] mat, String symbol) {
+    public void print2SDF(int[][] mat, String symbol) {
         System.out.println(generateSdfStringJoiner(mat, symbol).toString());
     }
 
@@ -3357,7 +3365,7 @@ public class MAYGEN {
         }
     }
 
-    public void printSmiles(int[][] mat) {
+    public void print2Smiles(int[][] mat) {
 
         IAtomContainer atomContainer = buildAtomContainer(mat);
         try {
@@ -3433,7 +3441,7 @@ public class MAYGEN {
         } else if (writeSMILES) {
             outFile.write("Sn formula is not supported " + indexSmiles.incrementAndGet() + "\n");
         } else if (printSDF) {
-            printSDF(mat, symbol);
+            print2SDF(mat, symbol);
         } else if (printSMILES) {
             System.out.println(
                     "Sn formula is not supported " + indexSmiles.incrementAndGet() + "\n");
@@ -3523,9 +3531,9 @@ public class MAYGEN {
             if (!reversalIsSmaller && (graphSize % currentSize) == 0) {
                 count.incrementAndGet();
                 if (writeSDF) {
-                    write2SDF(build());
+                    writeSdfArray(build());
                 } else if (printSDF) {
-                    printSDF(build());
+                    printSdfArray(build());
                 }
             }
         } else {
