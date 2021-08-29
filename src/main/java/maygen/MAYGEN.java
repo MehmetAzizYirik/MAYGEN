@@ -3000,8 +3000,8 @@ public class MAYGEN {
                             + "\nThe input is a molecular formula string."
                             + "\n\nFor example 'C2OH4'."
                             + "\n\nIf user wants to store output file in a specific directory, that is needed to be specified."
-                            + "\nIt is also possible to generate SMILES instead of an SDF file, but it slows down"
-                            + "the generation time. For this, use the '-smi' option."
+                            + " It is also possible to generate SMILES instead of an SDF file, but it slows down"
+                            + " the generation time. For this, use the '-smi' option."
                             + "\n\n";
             String footer = "\nPlease report issues at https://github.com/MehmetAzizYirik/MAYGEN";
             formatter.printHelp("java -jar MAYGEN.jar", header, options, footer, true);
@@ -3263,12 +3263,7 @@ public class MAYGEN {
             } else {
                 targetDepiction = String.valueOf(jj + 1);
             }
-            stringJoiner.add(
-                    sourceDepiction
-                            + targetDepiction
-                            + "  "
-                            + i2
-                            + "   0  0  0  0\n");
+            stringJoiner.add(sourceDepiction + targetDepiction + "  " + i2 + "   0  0  0  0\n");
         }
     }
 
@@ -3335,12 +3330,7 @@ public class MAYGEN {
                 targetDepiction = String.valueOf(j + 1);
             }
 
-            stringJoiner.add(
-                    sourceDepiction
-                            + targetDepiction
-                            + "  "
-                            + i2
-                            + "   0  0  0  0\n");
+            stringJoiner.add(sourceDepiction + targetDepiction + "  " + i2 + "   0  0  0  0\n");
         }
     }
 
