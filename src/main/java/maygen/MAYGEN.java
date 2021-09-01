@@ -3514,7 +3514,7 @@ public class MAYGEN {
         IAtomContainer atomContainer = buildAtomContainer(mat);
         try {
             String smilesString = smilesGenerator.create(atomContainer);
-            outFile.write(smilesString + " " + indexSmiles.incrementAndGet() + "\n");
+            outFile.write(smilesString + "\n");
         } catch (CDKException ex) {
             if (verbose) {
                 Logger.getLogger(MAYGEN.class.getName()).log(Level.SEVERE, null, ex);
@@ -3527,7 +3527,7 @@ public class MAYGEN {
         IAtomContainer atomContainer = buildAtomContainer(mat);
         try {
             String smilesString = smilesGenerator.create(atomContainer);
-            System.out.print(smilesString + " " + indexSmiles.incrementAndGet() + "\n");
+            System.out.print(smilesString + "\n");
         } catch (CDKException ex) {
             if (verbose) {
                 Logger.getLogger(MAYGEN.class.getName()).log(Level.SEVERE, null, ex);
