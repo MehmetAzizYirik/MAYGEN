@@ -54,7 +54,7 @@ MAYGEN.jar can be run from command line with the specified arguments. An example
 The definitions of the arguments are given below:
 
 ```
-usage: java -jar MAYGEN.jar -f <arg> [-v] [-t] [-d <arg>] [-m] [-smi]
+usage: java -jar MAYGEN.jar -f <arg> [-v] [-t] [-o <arg>] [-m] [-smi] [-sdf] [-sdfCoord]
 
 Generates molecular structures for a given molecular formula.
 The input is a molecular formula string.
@@ -65,21 +65,23 @@ If user wants an output file, the directory is needed to be specified.
 It is also possible to generate SMILES instead of an SDF file, but it will
 slow down the generation time. For this, use the '--smiles' option.
 
- -f,--formula <arg>    formula (required)
+ -f,--formula <arg>    		formula (required)
 
- -v,--verbose          print message
+ -v,--verbose          		print message
 
- -t,--tsvoutput        Output formula, number of structures and execution
-                       time in CSV format.In multithread, the 4th column in
-                       the output is the number of threads.
+ -t,--tsvoutput        		Output formula, number of structures and execution
+                       		time in CSV format.In multithread, the 4th column in
+                       		the output is the number of threads.
 
- -o,--outputFile <arg> Store output file   
+ -o,--outputFile <arg> 		Store output file   
 
- -m,--multithread      Use multi thread
+ -m,--multithread      		Use multi thread
 
- -smi,--SMILES         Output in SMILES format
+ -smi,--SMILES         		Output in SMILES format
  
- -sdf,--SDF            Output in SDF format
+ -sdf,--SDF             	Output in SDF format
+ 
+ -sdfCoord,--coordinates   Output in SDF format with atom coordinates
 
 Please report issues at https://github.com/MehmetAzizYirik/MAYGEN
 ```

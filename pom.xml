@@ -37,6 +37,16 @@
 		</dependency>
 		<dependency>
   			<groupId>org.openscience.cdk</groupId>
+  			<artifactId>cdk-pdb</artifactId>
+  			<version>2.5</version>
+		</dependency>
+		<dependency>
+  			<groupId>org.openscience.cdk</groupId>
+  			<artifactId>cdk-sdg</artifactId>
+  			<version>2.5</version>
+		</dependency>
+		<dependency>
+  			<groupId>org.openscience.cdk</groupId>
   			<artifactId>cdk-data</artifactId>
   			<version>[2.5,)</version>
 		</dependency>
