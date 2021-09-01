@@ -30,7 +30,6 @@ package maygen;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
 
@@ -65,7 +64,7 @@ public class Generation {
             initialPartition =
                     maygen.sortWithPartition(newPartition, degree, maygen.symbolArray, hydrogens);
         }
-        if(maygen.writeSDF || maygen.printSDF) maygen.initAC();
+        if (maygen.writeSDF || maygen.printSDF) maygen.initAC();
         int[] connectivityIndices = new int[2];
         int[][] partitionList = new int[maygen.size + 1][1];
         try {
