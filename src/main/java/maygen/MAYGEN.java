@@ -1676,13 +1676,13 @@ public class MAYGEN {
                         if (writeSDF || printSDF) {
                             IAtomContainer ac =
                                     buildContainer4SDF(addHydrogens(A, hIndex, hydrogens));
-                            if (coordinates) {
-                                try {
+                            try {
+                                if (coordinates) {
                                     structureDiagramGenerator.generateCoordinates(ac);
-                                    sdfOut.write(ac);
-                                } catch (CDKException ex) {
-                                    throw new UnsupportedOperationException(ex);
                                 }
+                                sdfOut.write(ac);
+                            } catch (CDKException ex) {
+                                throw new UnsupportedOperationException(ex);
                             }
                         } else if (writeSMILES) {
                             write2smiles(addHydrogens(A, hIndex, hydrogens));
@@ -2121,13 +2121,13 @@ public class MAYGEN {
         count.incrementAndGet();
         if (writeSDF || printSDF) {
             IAtomContainer ac = buildContainer4SDF(addHydrogens(A, hIndex, hydrogens));
-            if (coordinates) {
-                try {
+            try {
+                if (coordinates) {
                     structureDiagramGenerator.generateCoordinates(ac);
-                    sdfOut.write(ac);
-                } catch (CDKException ex) {
-                    throw new UnsupportedOperationException(ex);
                 }
+                sdfOut.write(ac);
+            } catch (CDKException ex) {
+                throw new UnsupportedOperationException(ex);
             }
         } else if (writeSMILES) {
             write2smiles(addHydrogens(A, hIndex, hydrogens));
@@ -3431,13 +3431,13 @@ public class MAYGEN {
         initAC(symbol);
         if (writeSDF || printSDF) {
             IAtomContainer ac = buildContainer4SDF(mat);
-            if (coordinates) {
-                try {
+            try {
+                if (coordinates) {
                     structureDiagramGenerator.generateCoordinates(ac);
-                    sdfOut.write(ac);
-                } catch (CDKException ex) {
-                    throw new UnsupportedOperationException(ex);
                 }
+                sdfOut.write(ac);
+            } catch (CDKException ex) {
+                throw new UnsupportedOperationException(ex);
             }
         } else if (writeSMILES) {
             smilesOut.write("Formula is not supported" + "\n");
@@ -3530,13 +3530,13 @@ public class MAYGEN {
                 count.incrementAndGet();
                 if (writeSDF || printSDF) {
                     IAtomContainer ac = buildContainer4SDF(buildOnSm(build()));
-                    if (coordinates) {
-                        try {
+                    try {
+                        if (coordinates) {
                             structureDiagramGenerator.generateCoordinates(ac);
-                            sdfOut.write(ac);
-                        } catch (CDKException ex) {
-                            throw new UnsupportedOperationException(ex);
                         }
+                        sdfOut.write(ac);
+                    } catch (CDKException ex) {
+                        throw new UnsupportedOperationException(ex);
                     }
                 }
             }
