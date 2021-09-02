@@ -1224,6 +1224,7 @@ public class MAYGEN {
      * @throws CloneNotSupportedException
      */
     public void generate(
+    		IAtomContainer ac,
             int[] degreeList,
             int[] initialPartition,
             int[][] partitionList,
@@ -1258,6 +1259,7 @@ public class MAYGEN {
         z[0] = zs[0][r[0]];
         while (flag[0]) {
             nextStep(
+            		ac,
                     A,
                     indices,
                     degrees,
@@ -1372,6 +1374,7 @@ public class MAYGEN {
      * @throws CloneNotSupportedException
      */
     public void nextStep(
+    		IAtomContainer ac,
             int[][] A,
             int[] indices,
             int[] degrees,
@@ -1397,6 +1400,7 @@ public class MAYGEN {
             throws IOException, CloneNotSupportedException, CDKException {
         if (callForward[0]) {
             forward(
+            		ac,
                     A,
                     indices,
                     degrees,
@@ -1578,6 +1582,7 @@ public class MAYGEN {
      * @throws CloneNotSupportedException
      */
     public int[][] forward(
+    		IAtomContainer ac,
             int[][] A,
             int[] indices,
             int[] degrees,
@@ -1608,6 +1613,7 @@ public class MAYGEN {
         int maximumValue = maximalEntry(minimumValue, lInverse, L[0][i][j], cInverse, C[0][i][j]);
         callForward[0] = true;
         return forward(
+        		ac,
                 lInverse,
                 cInverse,
                 maximumValue,
@@ -1636,6 +1642,7 @@ public class MAYGEN {
     }
 
     public int[][] forward(
+    		IAtomContainer ac,
             int lInverse,
             int cInverse,
             int maximalX,
@@ -1682,10 +1689,9 @@ public class MAYGEN {
                     if (connectivityTest(A, connectivityIndices, learningFromConnectivity)) {
                         count.incrementAndGet();
                         if (writeSDF || printSDF) {
-                            IAtomContainer ac =
-                                    buildContainer4SDF(addHydrogens(A, hIndex, hydrogens));
-                            if (coordinates) sd.generateCoordinates(ac);
-                            sdfOut.write(ac);
+                            IAtomContainer ac2 = buildContainer4SDF(ac,addHydrogens(A, hIndex, hydrogens));
+                            if (coordinates) sd.generateCoordinates(ac2);
+                            sdfOut.write(ac2);
                         } else if (writeSMILES) {
                             write2smiles(addHydrogens(A, hIndex, hydrogens));
                         } else if (printSMILES) {
@@ -1928,10 +1934,10 @@ public class MAYGEN {
             if (writeSDF || printSDF) {
                 if (writeSDF) {
                     new File(filedir).mkdirs();
-                    sdfOut =
+                    sdfOut = 
                             new SDFWriter(
                                     new FileWriter(
-                                            filedir + "/" + normalizeFormula(formula) + ".sdf"));
+                                            filedir + "/" + normalizeFormula(formula) + ".sdf",true));
                 } else {
                     String userDirectory =
                             FileSystems.getDefault().getPath("").toAbsolutePath().toString();
@@ -1941,7 +1947,7 @@ public class MAYGEN {
                                             userDirectory
                                                     + File.separator
                                                     + normalizeFormula(formula)
-                                                    + ".sdf"));
+                                                    + ".sdf",true));
                 }
             } else if (writeSMILES) {
                 new File(filedir).mkdirs();
@@ -1987,7 +1993,7 @@ public class MAYGEN {
             }
         }
     }
-
+    
     public void printSDF() throws IOException {
         String userDirectory = FileSystems.getDefault().getPath("").toAbsolutePath().toString();
         File file = new File(userDirectory + File.separator + normalizeFormula(formula) + ".sdf");
@@ -3306,13 +3312,12 @@ public class MAYGEN {
      * @throws CloneNotSupportedException
      * @throws CDKException
      */
-    public void initAC() {
-        atomContainer = builder.newInstance(IAtomContainer.class);
+    public void initAC(IAtomContainer ac) {
         for (int i = 0; i < symbolArrayCopy.length; i++) {
-            atomContainer.addAtom(new Atom(symbolArrayCopy[i]));
+            ac.addAtom(new Atom(symbolArrayCopy[i]));
         }
 
-        for (IAtom atom : atomContainer.atoms()) {
+        for (IAtom atom : ac.atoms()) {
             atom.setImplicitHydrogenCount(0);
         }
     }
@@ -3375,6 +3380,31 @@ public class MAYGEN {
      * @return IAtomContainer
      * @throws CloneNotSupportedException
      */
+    public IAtomContainer buildContainer4SDF(IAtomContainer ac, int[][] mat) throws CloneNotSupportedException {
+        IAtomContainer ac2 = ac.clone();
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = i + 1; j < mat.length; j++) {
+                if (mat[i][j] == 1) {
+                    ac2.addBond(i, j, Order.SINGLE);
+                } else if (mat[i][j] == 2) {
+                    ac2.addBond(i, j, Order.DOUBLE);
+                } else if (mat[i][j] == 3) {
+                    ac2.addBond(i, j, Order.TRIPLE);
+                }
+            }
+        }
+
+        ac2 = AtomContainerManipulator.removeHydrogens(ac2);
+        return ac2;
+    }
+
+    /**
+     * Building an atom container for an adjacency matrix.
+     *
+     * @param mat int[][] adjacency matrix
+     * @return IAtomContainer
+     * @throws CloneNotSupportedException
+     */
     public IAtomContainer buildContainer4SDF(int[][] mat) throws CloneNotSupportedException {
         IAtomContainer ac2 = atomContainer.clone();
         for (int i = 0; i < mat.length; i++) {
@@ -3392,7 +3422,7 @@ public class MAYGEN {
         ac2 = AtomContainerManipulator.removeHydrogens(ac2);
         return ac2;
     }
-
+    
     /**
      * Building an atom container from a string of atom-implicit hydrogen information.
      *
