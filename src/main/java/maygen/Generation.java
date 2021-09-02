@@ -30,7 +30,6 @@ package maygen;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
 
 public class Generation {
@@ -40,7 +39,7 @@ public class Generation {
         this.maygen = maygen;
     }
 
-    public void run(int[] degree) throws CloneNotSupportedException, CDKException {
+    public void run(int[] degree) {
         int[] partSize = new int[] {0};
         int[] r = new int[] {0};
         int[] y = new int[] {0};
