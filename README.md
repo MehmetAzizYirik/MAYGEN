@@ -87,7 +87,7 @@ Please report issues at https://github.com/MehmetAzizYirik/MAYGEN
 ```
 
 ```
-java -jar MAYGEN.jar -f C2OH4 -v -t -d C:\Users\UserName\Desktop\
+java -jar MAYGEN.jar -f C2OH4 -v -t -o C:\Users\UserName\Desktop\
 ```
 
 ## License
