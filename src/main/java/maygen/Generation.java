@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.openscience.cdk.group.Permutation;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
 public class Generation {
     private final MAYGEN maygen;
@@ -40,6 +41,7 @@ public class Generation {
     }
 
     public void run(int[] degree) {
+        IAtomContainer atomContainer = maygen.builder.newInstance(IAtomContainer.class);
         int[] partSize = new int[] {0};
         int[] r = new int[] {0};
         int[] y = new int[] {0};
@@ -63,7 +65,7 @@ public class Generation {
             initialPartition =
                     maygen.sortWithPartition(newPartition, degree, maygen.symbolArray, hydrogens);
         }
-        if (maygen.writeSDF || maygen.printSDF) maygen.initAC();
+        if (maygen.writeSDF || maygen.printSDF) maygen.initAC(atomContainer);
         int[] connectivityIndices = new int[2];
         int[][] partitionList = new int[maygen.size + 1][1];
         try {
@@ -71,6 +73,7 @@ public class Generation {
             maygen.setYZValues(initialPartition, ys, zs);
             partitionList[0] = initialPartition;
             maygen.generate(
+                    atomContainer,
                     degree,
                     initialPartition,
                     partitionList,
