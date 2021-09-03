@@ -69,7 +69,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
-import org.openscience.cdk.io.SDFWriter;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
 import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
@@ -1681,14 +1680,14 @@ public class MAYGEN {
                     if (connectivityTest(A, connectivityIndices, learningFromConnectivity)) {
                         count.incrementAndGet();
                         if (writeSDF || printSDF) {
-                            IAtomContainer ac2 =
+                            IAtomContainer ac =
                                     buildAtomContainerFromMatrix(
                                             addHydrogens(A, hIndex, hydrogens), atomContainer);
                             try {
                                 if (coordinates) {
-                                    structureDiagramGenerator.generateCoordinates(ac2);
+                                    structureDiagramGenerator.generateCoordinates(ac);
                                 }
-                                sdfOut.write(ac2);
+                                sdfOut.write(ac);
                             } catch (CDKException ex) {
                                 throw new UnsupportedOperationException(ex);
                             }
@@ -3379,18 +3378,23 @@ public class MAYGEN {
      * @return IAtomContainer
      */
     public IAtomContainer buildAtomContainerFromMatrix(int[][] mat, IAtomContainer atomContainer) {
-        for (int i = 0; i < mat.length; i++) {
-            for (int j = i + 1; j < mat.length; j++) {
-                if (mat[i][j] == 1) {
-                    atomContainer.addBond(i, j, IBond.Order.SINGLE);
-                } else if (mat[i][j] == 2) {
-                    atomContainer.addBond(i, j, IBond.Order.DOUBLE);
-                } else if (mat[i][j] == 3) {
-                    atomContainer.addBond(i, j, IBond.Order.TRIPLE);
+        try {
+            IAtomContainer localAtomContainer = atomContainer.clone();
+            for (int i = 0; i < mat.length; i++) {
+                for (int j = i + 1; j < mat.length; j++) {
+                    if (mat[i][j] == 1) {
+                        localAtomContainer.addBond(i, j, IBond.Order.SINGLE);
+                    } else if (mat[i][j] == 2) {
+                        localAtomContainer.addBond(i, j, IBond.Order.DOUBLE);
+                    } else if (mat[i][j] == 3) {
+                        localAtomContainer.addBond(i, j, IBond.Order.TRIPLE);
+                    }
                 }
             }
+            return AtomContainerManipulator.removeHydrogens(localAtomContainer);
+        } catch (CloneNotSupportedException ex) {
+            throw new UnsupportedOperationException(ex);
         }
-        return AtomContainerManipulator.removeHydrogens(atomContainer);
     }
 
     public void degree2graph() throws IOException {
