@@ -29,7 +29,6 @@ package maygen;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import org.openscience.cdk.group.Permutation;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -40,7 +39,7 @@ public class Generation {
         this.maygen = maygen;
     }
 
-    public void run(int[] degree) {
+    public void run(int[] degree, String[] symbolArray) {
         IAtomContainer atomContainer = maygen.builder.newInstance(IAtomContainer.class);
         int[] partSize = new int[] {0};
         int[] r = new int[] {0};
@@ -54,18 +53,9 @@ public class Generation {
         ArrayList<ArrayList<Permutation>> formerPermutations = new ArrayList<>();
         int[] hydrogens = maygen.setHydrogens(degree);
         int[] newPartition = maygen.getPartition(degree);
-        if (maygen.writeSDF || maygen.printSDF)
-            maygen.symbolArrayCopy = Arrays.copyOf(maygen.symbolArray, maygen.symbolArray.length);
-        final int[] initialPartition;
-        if (maygen.writeSDF || maygen.printSDF) {
-            initialPartition =
-                    maygen.sortWithPartition(
-                            newPartition, degree, maygen.symbolArrayCopy, hydrogens);
-        } else {
-            initialPartition =
-                    maygen.sortWithPartition(newPartition, degree, maygen.symbolArray, hydrogens);
-        }
-        if (maygen.writeSDF || maygen.printSDF) maygen.initAC(atomContainer);
+        final int[] initialPartition =
+                maygen.sortWithPartition(newPartition, degree, symbolArray, hydrogens);
+        if (maygen.writeSDF || maygen.printSDF) maygen.initAC(atomContainer, symbolArray);
         int[] connectivityIndices = new int[2];
         int[][] partitionList = new int[maygen.size + 1][1];
         try {
@@ -88,8 +78,10 @@ public class Generation {
                     z,
                     ys,
                     zs,
-                    learningFromCanonicalTest);
-        } catch (IOException ignored) {
+                    learningFromCanonicalTest,
+                    symbolArray);
+        } catch (IOException ex) {
+            throw new UnsupportedOperationException(ex);
         }
     }
 }

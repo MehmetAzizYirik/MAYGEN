@@ -99,7 +99,6 @@ public class MAYGEN {
     public ArrayList<String> symbols = new ArrayList<>();
     public int[] occurrences;
     public Map<String, Integer> valences;
-    public String[] symbolArrayCopy;
     public int[] nodeLabels;
     public int graphSize;
     public List<int[]> oxygenSulfur = new ArrayList<>();
@@ -116,7 +115,6 @@ public class MAYGEN {
     public boolean OnSm = true;
     public int oxygen = 0;
     public int sulfur = 0;
-    public String[] symbolArray;
     public IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
     public SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
     public IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
@@ -332,7 +330,7 @@ public class MAYGEN {
         }
     }
 
-    public void getSingleAtomVariables() {
+    public String[] getSingleAtomVariables() {
         String[] atoms = formula.split(LETTERS_FROM_A_TO_Z);
         ArrayList<String> symbolList = new ArrayList<>();
         String[] info;
@@ -352,10 +350,10 @@ public class MAYGEN {
         for (int i = 0; i < hydrogens; i++) {
             symbolList.add("H");
         }
-        setSymbols(symbolList);
+        return setSymbols(symbolList);
     }
 
-    public void getSymbolOccurrences() {
+    public String[] getSymbolOccurrences() {
         String[] atoms = formula.split(LETTERS_FROM_A_TO_Z);
         ArrayList<String> symbolList = new ArrayList<>();
         String[] info;
@@ -382,7 +380,7 @@ public class MAYGEN {
         }
         firstOccurrences = getPartition(symbolList);
         matrixSize = sum(firstOccurrences);
-        setSymbols(symbolList);
+        String[] symbolArray = setSymbols(symbolList);
         occurrences = getPartition(symbolList);
         if (hydrogens != 0) {
             totalHydrogen += hydrogens;
@@ -400,6 +398,7 @@ public class MAYGEN {
             callHydrogenDistributor = false;
             noHydrogen = true;
         }
+        return symbolArray;
     }
 
     public int[] nextCount(int index, int i, int size, ArrayList<String> symbols, int[] partition) {
@@ -449,9 +448,10 @@ public class MAYGEN {
      * Setting the firstSymbols and symbols global variables for the initial sorted list of symbols.
      *
      * @param symbolList sorted list of atom symbols
+     * @return the symbolArray
      */
-    public void setSymbols(ArrayList<String> symbolList) {
-        symbolArray = new String[matrixSize];
+    public String[] setSymbols(ArrayList<String> symbolList) {
+        String[] symbolArray = new String[matrixSize];
         int index = 0;
         for (String symbol : symbolList) {
             symbolArray[index] = symbol;
@@ -460,6 +460,7 @@ public class MAYGEN {
                 firstSymbols.add(symbol);
             }
         }
+        return symbolArray;
     }
 
     public String normalizeFormula(String formula) {
@@ -1203,6 +1204,7 @@ public class MAYGEN {
     /**
      * Initialization of global variables for the generate of structures for given degree list.
      *
+     * @param atomContainer the atomContainer
      * @param degreeList int[] valences
      * @param initialPartition the initial partition
      * @param partitionList the partitionList
@@ -1218,6 +1220,7 @@ public class MAYGEN {
      * @param ys the ys
      * @param zs the zs
      * @param learningFromCanonicalTest the learningFromCanonicalTest
+     * @param symbolArray the symbolArray
      * @throws IOException in case of IOException
      */
     public void generate(
@@ -1236,7 +1239,8 @@ public class MAYGEN {
             int[] z,
             int[][] ys,
             int[][] zs,
-            boolean[] learningFromCanonicalTest)
+            boolean[] learningFromCanonicalTest,
+            String[] symbolArray)
             throws IOException {
         int[][] A = new int[matrixSize][matrixSize];
         boolean[] flag = new boolean[] {true};
@@ -1277,7 +1281,8 @@ public class MAYGEN {
                     ys,
                     zs,
                     learningFromCanonicalTest,
-                    flag);
+                    flag,
+                    symbolArray);
             if (!flag[0]) {
                 break;
             }
@@ -1343,6 +1348,7 @@ public class MAYGEN {
     /**
      * Calling
      *
+     * @param atomContainer the atomContainer
      * @param A the A matrix
      * @param indices the indices
      * @param degrees the degrees
@@ -1365,6 +1371,7 @@ public class MAYGEN {
      * @param zs the zs
      * @param learningFromCanonicalTest the learningFromCanonicalTest
      * @param flag the flag
+     * @param symbolArray the symbolArray
      * @throws IOException in case of IOException
      */
     public void nextStep(
@@ -1390,7 +1397,8 @@ public class MAYGEN {
             int[][] ys,
             int[][] zs,
             boolean[] learningFromCanonicalTest,
-            boolean[] flag)
+            boolean[] flag,
+            String[] symbolArray)
             throws IOException {
         if (callForward[0]) {
             forward(
@@ -1415,7 +1423,8 @@ public class MAYGEN {
                     C,
                     ys,
                     zs,
-                    learningFromCanonicalTest);
+                    learningFromCanonicalTest,
+                    symbolArray);
         } else {
             backward(A, indices, degrees, initialPartition, callForward, r, max, L, C, flag);
         }
@@ -1427,9 +1436,10 @@ public class MAYGEN {
      * @param A the adjacency matrix
      * @param index int beginning index for the hydrogen setting
      * @param hydrogens the hydrogens
+     * @param symbolArray the symbolArray
      * @return the adjacency matrix
      */
-    public int[][] addHydrogens(int[][] A, int index, int[] hydrogens) {
+    public int[][] addHydrogens(int[][] A, int index, int[] hydrogens, String[] symbolArray) {
         if (singleAtom) {
             int hydrogen = valences.get(symbolArray[0]);
             for (int j = index; j < hydrogen + index; j++) {
@@ -1548,6 +1558,7 @@ public class MAYGEN {
     /**
      * Setting successor indices entry if there is a possible filling.
      *
+     * @param atomContainer the atomContainer
      * @param A the adjacency matrix
      * @param indices the entry indices
      * @param degrees the degrees
@@ -1569,6 +1580,7 @@ public class MAYGEN {
      * @param ys the ys
      * @param zs the zs
      * @param learningFromCanonicalTest the learningFromCanonicalTest
+     * @param symbolArray the symbolArray
      * @return int[][]
      * @throws IOException in case of IOException
      */
@@ -1594,7 +1606,8 @@ public class MAYGEN {
             int[][][] C,
             int[][] ys,
             int[][] zs,
-            boolean[] learningFromCanonicalTest)
+            boolean[] learningFromCanonicalTest,
+            String[] symbolArray)
             throws IOException {
         int i = indices[0];
         int j = indices[1];
@@ -1629,7 +1642,8 @@ public class MAYGEN {
                 C,
                 ys,
                 zs,
-                learningFromCanonicalTest);
+                learningFromCanonicalTest,
+                symbolArray);
     }
 
     public int[][] forward(
@@ -1658,7 +1672,8 @@ public class MAYGEN {
             int[][][] C,
             int[][] ys,
             int[][] zs,
-            boolean[] learningFromCanonicalTest)
+            boolean[] learningFromCanonicalTest,
+            String[] symbolArray)
             throws IOException {
         if (((lInverse - maximalX) <= L[0][i][j]) && ((cInverse - maximalX) <= C[0][i][j])) {
             A[i][j] = maximalX;
@@ -1682,7 +1697,8 @@ public class MAYGEN {
                         if (writeSDF || printSDF) {
                             IAtomContainer ac =
                                     buildAtomContainerFromMatrix(
-                                            addHydrogens(A, hIndex, hydrogens), atomContainer);
+                                            addHydrogens(A, hIndex, hydrogens, symbolArray),
+                                            atomContainer);
                             try {
                                 if (coordinates) {
                                     structureDiagramGenerator.generateCoordinates(ac);
@@ -1692,9 +1708,11 @@ public class MAYGEN {
                                 throw new UnsupportedOperationException(ex);
                             }
                         } else if (writeSMILES) {
-                            write2smiles(addHydrogens(A, hIndex, hydrogens));
+                            write2smiles(
+                                    addHydrogens(A, hIndex, hydrogens, symbolArray), symbolArray);
                         } else if (printSMILES) {
-                            print4Smiles(addHydrogens(A, hIndex, hydrogens));
+                            print4Smiles(
+                                    addHydrogens(A, hIndex, hydrogens, symbolArray), symbolArray);
                         }
                         callForward[0] = false;
                     } else {
@@ -1955,9 +1973,9 @@ public class MAYGEN {
             if (checkLengthTwoFormula(atoms)) {
                 singleAtomCheck(atoms);
                 if (singleAtom) {
-                    getSingleAtomVariables();
-                    initSingleAC();
-                    writeSingleAtom(new int[] {});
+                    String[] symbolArray = getSingleAtomVariables();
+                    initSingleAC(symbolArray);
+                    writeSingleAtom(new int[] {}, symbolArray);
                     displayStatistic(startTime);
                 } else {
                     checkOxygenSulfur(atoms);
@@ -1971,9 +1989,9 @@ public class MAYGEN {
                         displayStatistic(startTime);
                     } else {
                         if (canBuildIsomer(formula)) {
-                            getSymbolOccurrences();
+                            String[] symbolArray = getSymbolOccurrences();
                             initialDegrees();
-                            structureGenerator();
+                            structureGenerator(symbolArray);
                             displayStatistic(startTime);
                         } else {
                             if (verbose)
@@ -2124,12 +2142,13 @@ public class MAYGEN {
         return (sum(initialPartition, r) - 1);
     }
 
-    public void writeSingleAtom(int[] hydrogens) throws IOException {
+    public void writeSingleAtom(int[] hydrogens, String[] symbolArray) throws IOException {
         int[][] A = new int[matrixSize][matrixSize];
         count.incrementAndGet();
         if (writeSDF || printSDF) {
             IAtomContainer ac =
-                    buildAtomContainerFromMatrix(addHydrogens(A, hIndex, hydrogens), atomContainer);
+                    buildAtomContainerFromMatrix(
+                            addHydrogens(A, hIndex, hydrogens, symbolArray), atomContainer);
             try {
                 if (coordinates) {
                     structureDiagramGenerator.generateCoordinates(ac);
@@ -2139,9 +2158,9 @@ public class MAYGEN {
                 throw new UnsupportedOperationException(ex);
             }
         } else if (writeSMILES) {
-            write2smiles(addHydrogens(A, hIndex, hydrogens));
+            write2smiles(addHydrogens(A, hIndex, hydrogens, symbolArray), symbolArray);
         } else if (printSMILES) {
-            print4Smiles(addHydrogens(A, hIndex, hydrogens));
+            print4Smiles(addHydrogens(A, hIndex, hydrogens, symbolArray), symbolArray);
         }
     }
 
@@ -2159,7 +2178,7 @@ public class MAYGEN {
         return hydrogens;
     }
 
-    public void structureGenerator() {
+    public void structureGenerator(String[] symbolArray) {
         if (noHydrogen) {
             size = sum(firstOccurrences, firstOccurrences.length - 1);
         } else if (justH) {
@@ -2176,7 +2195,10 @@ public class MAYGEN {
                                 () ->
                                         newDegrees
                                                 .parallelStream()
-                                                .forEach(new Generation(this)::run))
+                                                .forEach(
+                                                        degree ->
+                                                                new Generation(this)
+                                                                        .run(degree, symbolArray)))
                         .get();
             } catch (InterruptedException | ExecutionException ex) {
                 if (verbose) {
@@ -2185,7 +2207,7 @@ public class MAYGEN {
                 Thread.currentThread().interrupt();
             }
         } else {
-            newDegrees.forEach(new Generation(this)::run);
+            newDegrees.forEach(degree -> new Generation(this).run(degree, symbolArray));
         }
     }
 
@@ -2213,7 +2235,6 @@ public class MAYGEN {
         oxygenSulfur = new ArrayList<>();
         symbols = new ArrayList<>();
         occurrences = null;
-        symbolArray = null;
         firstSymbols = new ArrayList<>();
         symbols = new ArrayList<>();
         firstOccurrences = null;
@@ -3263,9 +3284,9 @@ public class MAYGEN {
         return mat;
     }
 
-    public void write2smiles(int[][] mat) throws IOException {
+    public void write2smiles(int[][] mat, String[] symbolArray) throws IOException {
 
-        IAtomContainer atomContainer = buildAtomContainer(mat);
+        IAtomContainer atomContainer = buildAtomContainer(mat, symbolArray);
         try {
             String smilesString = smilesGenerator.create(atomContainer);
             smilesOut.write((smilesString + "\n").getBytes(StandardCharsets.UTF_8));
@@ -3276,9 +3297,9 @@ public class MAYGEN {
         }
     }
 
-    public void print4Smiles(int[][] mat) {
+    public void print4Smiles(int[][] mat, String[] symbolArray) {
 
-        IAtomContainer atomContainer = buildAtomContainer(mat);
+        IAtomContainer atomContainer = buildAtomContainer(mat, symbolArray);
         try {
             String smilesString = smilesGenerator.create(atomContainer);
             System.out.print(smilesString + "\n");
@@ -3289,10 +3310,15 @@ public class MAYGEN {
         }
     }
 
-    /** Building an atom container from a string of atom-implicit hydrogen information. */
-    public void initAC(IAtomContainer atomContainer) {
-        for (int i = 0; i < symbolArrayCopy.length; i++) {
-            atomContainer.addAtom(new Atom(symbolArrayCopy[i]));
+    /**
+     * Building an atom container from a string of atom-implicit hydrogen information.
+     *
+     * @param atomContainer the atomContainer
+     * @param symbolArray the symbolArray
+     */
+    public void initAC(IAtomContainer atomContainer, String[] symbolArray) {
+        for (int i = 0; i < symbolArray.length; i++) {
+            atomContainer.addAtom(new Atom(symbolArray[i]));
         }
 
         for (IAtom atom : atomContainer.atoms()) {
@@ -3300,7 +3326,7 @@ public class MAYGEN {
         }
     }
 
-    public void initSingleAC() {
+    public void initSingleAC(String[] symbolArray) {
         atomContainer = builder.newInstance(IAtomContainer.class);
         for (int i = 0; i < symbolArray.length; i++) {
             atomContainer.addAtom(new Atom(symbolArray[i]));
@@ -3353,11 +3379,12 @@ public class MAYGEN {
      * Building an atom container from a string of atom-implicit hydrogen information.
      *
      * @param mat the mat
+     * @param symbolArray the symbolArray
      * @return the IAtomContainer
      */
-    public IAtomContainer buildAtomContainer(int[][] mat) {
+    public IAtomContainer buildAtomContainer(int[][] mat, String[] symbolArray) {
         IAtomContainer atomContainer = this.builder.newAtomContainer();
-        for (String s : this.symbolArray) {
+        for (String s : symbolArray) {
             atomContainer.addAtom(new Atom(s));
         }
 

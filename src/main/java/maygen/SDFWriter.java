@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -59,13 +58,7 @@ import org.openscience.cdk.tools.LoggingToolFactory;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 
 /**
- * Writes MDL SD files ({@cdk.cite DAL92}). A MDL SD file contains one or more molecules,
- * complemented by properties.
- *
- * @cdk.module io
- * @cdk.githash
- * @cdk.iooptions
- * @cdk.keyword file format, MDL SD file
+ * Writes MDL SD files. A MDL SD file contains one or more molecules, complemented by properties.
  */
 public class SDFWriter extends DefaultChemObjectWriter {
 
@@ -112,33 +105,16 @@ public class SDFWriter extends DefaultChemObjectWriter {
         this(new OutputStreamWriter(output, StandardCharsets.UTF_8));
     }
 
-    public SDFWriter() {
-        this(new StringWriter());
-    }
-
     /**
      * Constructs a new SDFWriter that writes to the given {@link Writer}.
      *
      * @param out The {@link Writer} to write to
+     * @param propertiesToWrite the propertiesToWrite
      */
     public SDFWriter(Writer out, Set<String> propertiesToWrite) {
         this(out);
         initIOSettings();
         this.propertiesToWrite = propertiesToWrite;
-    }
-
-    /**
-     * Constructs a new SdfWriter that can write to a given {@link OutputStream}.
-     *
-     * @param output The {@link OutputStream} to write to
-     */
-    public SDFWriter(OutputStream output, Set<String> propertiesToWrite) {
-        this(new OutputStreamWriter(output), propertiesToWrite);
-    }
-
-    /** Writes SD-File to a String including the given properties */
-    public SDFWriter(Set<String> propertiesToWrite) {
-        this(new StringWriter(), propertiesToWrite);
     }
 
     /**
@@ -292,7 +268,8 @@ public class SDFWriter extends DefaultChemObjectWriter {
                                         if (truncateData.isSet()) {
                                             for (String line : valStr.split("\n")) {
                                                 if (line.length() > maxDataLen)
-                                                    stringWriter.append(line.substring(0, maxDataLen));
+                                                    stringWriter.append(
+                                                            line.substring(0, maxDataLen));
                                                 else stringWriter.append(valStr);
                                             }
                                         } else {
