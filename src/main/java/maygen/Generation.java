@@ -41,12 +41,31 @@ public class Generation {
         this.maygen = maygen;
     }
 
+    public int[] sortWithPartition(
+            int[] partitionList, int[] degrees, String[] symbols, int[] hydrogens) {
+        int[] partition = maygen.buildArray(partitionList);
+        int size = partition.length;
+        for (int n = 0; n < size; n++) {
+            for (int m = 0; m < (size - 1) - n; m++) {
+                if ((partition[m] > partition[m + 1])) {
+                    maygen.swap(partition, m, (m + 1));
+                    maygen.swap(degrees, m, (m + 1));
+                    maygen.swap(hydrogens, m, (m + 1));
+                    maygen.swap(symbols, m, (m + 1));
+                }
+            }
+        }
+        maygen.reOrder(partition, degrees, symbols, hydrogens);
+        return maygen.initialPartition(partition);
+    }
+    
     public void run(int[] degree) throws CloneNotSupportedException, CDKException {
     	IAtomContainer atomContainer= maygen.builder.newInstance(IAtomContainer.class);
         int[] partSize = new int[] {0};
         int[] r = new int[] {0};
         int[] y = new int[] {0};
         int[] z = new int[] {0};
+        String[] symbolArrayCopy= new String[maygen.symbolArray.length];
         int[][] ys = new int[][] {new int[0]};
         int[][] zs = new int[][] {new int[0]};
         boolean[] learningFromCanonicalTest = new boolean[] {false};
@@ -55,18 +74,17 @@ public class Generation {
         ArrayList<ArrayList<Permutation>> formerPermutations = new ArrayList<>();
         int[] hydrogens = maygen.setHydrogens(degree);
         int[] newPartition = maygen.getPartition(degree);
-        if (maygen.writeSDF || maygen.printSDF)
-            maygen.symbolArrayCopy = Arrays.copyOf(maygen.symbolArray, maygen.symbolArray.length);
+        if (maygen.writeSDF || maygen.printSDF) symbolArrayCopy = Arrays.copyOf(maygen.symbolArray, maygen.symbolArray.length);
         final int[] initialPartition;
         if (maygen.writeSDF || maygen.printSDF) {
             initialPartition =
-                    maygen.sortWithPartition(
-                            newPartition, degree, maygen.symbolArrayCopy, hydrogens);
+                    sortWithPartition(
+                            newPartition, degree, symbolArrayCopy, hydrogens);
         } else {
             initialPartition =
-                    maygen.sortWithPartition(newPartition, degree, maygen.symbolArray, hydrogens);
+                    sortWithPartition(newPartition, degree, maygen.symbolArray, hydrogens);
         }
-        if (maygen.writeSDF || maygen.printSDF) maygen.initAC(atomContainer);
+        if (maygen.writeSDF || maygen.printSDF) atomContainer = maygen.initAC(atomContainer,symbolArrayCopy);
         int[] connectivityIndices = new int[2];
         int[][] partitionList = new int[maygen.size + 1][1];
         try {

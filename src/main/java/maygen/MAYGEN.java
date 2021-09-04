@@ -1693,9 +1693,9 @@ public class MAYGEN {
                             if (coordinates) sd.generateCoordinates(ac2);
                             sdfOut.write(ac2);
                         } else if (writeSMILES) {
-                            write2smiles(addHydrogens(A, hIndex, hydrogens));
+                            write2smiles(addHydrogens(A, hIndex, hydrogens),ac);
                         } else if (printSMILES) {
-                            printSmiles(addHydrogens(A, hIndex, hydrogens));
+                            printSmiles(addHydrogens(A, hIndex, hydrogens),ac);
                         }
                         callForward[0] = false;
                     } else {
@@ -2136,9 +2136,9 @@ public class MAYGEN {
             if (coordinates) sd.generateCoordinates(ac);
             sdfOut.write(ac);
         } else if (writeSMILES) {
-            write2smiles(addHydrogens(A, hIndex, hydrogens));
+            write2smiles(addHydrogens(A, hIndex, hydrogens),atomContainer);
         } else if (printSMILES) {
-            printSmiles(addHydrogens(A, hIndex, hydrogens));
+            printSmiles(addHydrogens(A, hIndex, hydrogens),atomContainer);
         }
     }
 
@@ -3279,9 +3279,9 @@ public class MAYGEN {
         return mat;
     }
 
-    public void write2smiles(int[][] mat) throws IOException {
+    public void write2smiles(int[][] mat, IAtomContainer ac) throws IOException, CloneNotSupportedException {
 
-        IAtomContainer atomContainer = buildAtomContainer(mat);
+        IAtomContainer atomContainer = ac.clone();
         try {
             String smilesString = smilesGenerator.create(atomContainer);
             smilesOut.write(smilesString + "\n");
@@ -3292,9 +3292,9 @@ public class MAYGEN {
         }
     }
 
-    public void printSmiles(int[][] mat) throws IOException {
+    public void printSmiles(int[][] mat, IAtomContainer ac) throws IOException, CloneNotSupportedException {
 
-        IAtomContainer atomContainer = buildAtomContainer(mat);
+        IAtomContainer atomContainer = ac.clone();
         try {
             String smilesString = smilesGenerator.create(atomContainer);
             System.out.print(smilesString + "\n");
@@ -3312,7 +3312,7 @@ public class MAYGEN {
      * @throws CloneNotSupportedException
      * @throws CDKException
      */
-    public void initAC(IAtomContainer ac) {
+    public IAtomContainer initAC(IAtomContainer ac,String[]symbolArrayCopy) {
         for (int i = 0; i < symbolArrayCopy.length; i++) {
             ac.addAtom(new Atom(symbolArrayCopy[i]));
         }
@@ -3320,6 +3320,7 @@ public class MAYGEN {
         for (IAtom atom : ac.atoms()) {
             atom.setImplicitHydrogenCount(0);
         }
+        return ac;
     }
 
     public void initSingleAC() {
@@ -3431,7 +3432,7 @@ public class MAYGEN {
      */
     public IAtomContainer buildAtomContainer(int[][] mat) {
         IAtomContainer atomContainer = this.builder.newAtomContainer();
-        for (String s : this.symbolArray) {
+        for (String s : this.symbolArrayCopy) {
             atomContainer.addAtom(new Atom(s));
         }
 
@@ -3534,8 +3535,8 @@ public class MAYGEN {
 
     public int[] build() {
         int[] arr = new int[graphSize];
-        if (graphSize + 1 - 1 >= 0) {
-            System.arraycopy(nodeLabels, 1, arr, 0, graphSize + 1 - 1);
+        if (graphSize>= 0) {
+            System.arraycopy(nodeLabels, 1, arr, 0, graphSize );
         }
         return arr;
     }
