@@ -88,6 +88,7 @@ public class Generation {
         int[] connectivityIndices = new int[2];
         int[][] partitionList = new int[maygen.size + 1][1];
         try {
+        	
             partSize[0] = partSize[0] + (maygen.findZeros(initialPartition) - 1);
             maygen.setYZValues(initialPartition, ys, zs);
             partitionList[0] = initialPartition;

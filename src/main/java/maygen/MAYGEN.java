@@ -1902,6 +1902,7 @@ public class MAYGEN {
 
     public boolean checkLengthTwoFormula(String[] atoms) {
         boolean check = true;
+        
         if (atoms.length == 1) {
             String[] info = atoms[0].split(NUMBERS_FROM_0_TO_9, 2);
             if (info[1].equals("2")) {
