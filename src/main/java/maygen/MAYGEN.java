@@ -3031,7 +3031,7 @@ public class MAYGEN {
                     this.coordinates = true;
                 }
             } else {
-                if (cmd.hasOption("smi")) {
+                if (cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
                     this.printSMILES = true;
                 }
                 if (cmd.hasOption("sdf")) {
