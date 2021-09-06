@@ -2154,7 +2154,8 @@ public class MAYGEN {
                         .get();
             } catch (InterruptedException | ExecutionException ex) {
                 if (verbose) {
-                    Logger.getLogger(MAYGEN.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(MAYGEN.class.getName())
+                            .log(Level.SEVERE, ex, () -> "Formula " + formula);
                 }
                 Thread.currentThread().interrupt();
             }
@@ -3175,17 +3176,12 @@ public class MAYGEN {
         return mat;
     }
 
-    public void write2smiles(int[][] mat) throws IOException, CloneNotSupportedException {
+    public void write2smiles(int[][] mat)
+            throws IOException, CloneNotSupportedException, CDKException {
 
         IAtomContainer atomContainer = buildAtomContainer(mat);
-        try {
-            String smilesString = smilesGenerator.create(atomContainer);
-            smilesOut.write(smilesString + "\n");
-        } catch (CDKException ex) {
-            if (verbose) {
-                Logger.getLogger(MAYGEN.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+        String smilesString = smilesGenerator.create(atomContainer);
+        smilesOut.write(smilesString + "\n");
     }
 
     /**
@@ -3553,7 +3549,8 @@ public class MAYGEN {
             gen.run();
         } catch (Exception ex) {
             if (gen.verbose) {
-                Logger.getLogger(MAYGEN.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(MAYGEN.class.getName())
+                        .log(Level.SEVERE, ex, () -> "Formula " + gen.formula);
             }
         }
     }
