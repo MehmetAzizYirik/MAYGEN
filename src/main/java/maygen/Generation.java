@@ -56,17 +56,17 @@ public class Generation {
         ArrayList<ArrayList<Permutation>> formerPermutations = new ArrayList<>();
         int[] hydrogens = maygen.setHydrogens(degree);
         int[] newPartition = maygen.getPartition(degree);
-        if (maygen.writeSDF || maygen.printSDF)
+        if (maygen.writeSDF || maygen.printSDF || maygen.writeSMILES || maygen.printSMILES)
             symbolArrayCopy = Arrays.copyOf(maygen.symbolArray, maygen.symbolArray.length);
         final int[] initialPartition;
-        if (maygen.writeSDF || maygen.printSDF) {
+        if (maygen.writeSDF || maygen.printSDF || maygen.writeSMILES || maygen.printSMILES) {
             initialPartition =
                     maygen.sortWithPartition(newPartition, degree, symbolArrayCopy, hydrogens);
         } else {
             initialPartition =
                     maygen.sortWithPartition(newPartition, degree, maygen.symbolArray, hydrogens);
         }
-        if (maygen.writeSDF || maygen.printSDF)
+        if (maygen.writeSDF || maygen.printSDF || maygen.writeSMILES || maygen.printSMILES)
             atomContainer = maygen.initAC(atomContainer, symbolArrayCopy);
         int[] connectivityIndices = new int[2];
         int[][] partitionList = new int[maygen.size + 1][1];
