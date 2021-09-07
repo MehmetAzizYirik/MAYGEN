@@ -27,11 +27,12 @@
 */
 package maygen;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
+import java.nio.file.FileSystems;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -64,8 +66,10 @@ import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IBond.Order;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.io.SDFWriter;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
 import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
@@ -80,7 +84,7 @@ public class MAYGEN {
     public boolean writeSDF = false;
     public boolean coordinates = false;
     public SDFWriter sdfOut;
-    public Writer smilesOut;
+    public FileWriter smilesOut;
     public boolean writeSMILES = false;
     public boolean printSDF = false;
     public boolean printSMILES = false;
@@ -96,6 +100,7 @@ public class MAYGEN {
     public ArrayList<String> symbols = new ArrayList<>();
     public int[] occurrences;
     public Map<String, Integer> valences;
+    public String[] symbolArrayCopy;
     public int[] nodeLabels;
     public int graphSize;
     public List<int[]> oxygenSulfur = new ArrayList<>();
@@ -116,6 +121,7 @@ public class MAYGEN {
     public IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
     public SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
     public IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
+    public StructureDiagramGenerator sd = new StructureDiagramGenerator();
 
     {
         // The atom valences from CDK.
@@ -1198,7 +1204,6 @@ public class MAYGEN {
     /**
      * Initialization of global variables for the generate of structures for given degree list.
      *
-     * @param ac the IAtomContainer
      * @param degreeList int[] valences
      * @param initialPartition the initial partition
      * @param partitionList the partitionList
@@ -1215,8 +1220,8 @@ public class MAYGEN {
      * @param zs the zs
      * @param learningFromCanonicalTest the learningFromCanonicalTest
      * @throws IOException in case of IOException
-     * @throws CDKException in case of CDKException
-     * @throws CloneNotSupportedException in case of CloneNotSupportedException
+     * @throws CDKException
+     * @throws CloneNotSupportedException
      */
     public void generate(
             IAtomContainer ac,
@@ -1342,7 +1347,6 @@ public class MAYGEN {
     /**
      * Calling
      *
-     * @param ac the IAtomContainer
      * @param A the A matrix
      * @param indices the indices
      * @param degrees the degrees
@@ -1366,8 +1370,8 @@ public class MAYGEN {
      * @param learningFromCanonicalTest the learningFromCanonicalTest
      * @param flag the flag
      * @throws IOException in case of IOException
-     * @throws CDKException in case of CDKException
-     * @throws CloneNotSupportedException in case of CloneNotSupportedException
+     * @throws CDKException
+     * @throws CloneNotSupportedException
      */
     public void nextStep(
             IAtomContainer ac,
@@ -1524,7 +1528,7 @@ public class MAYGEN {
             flag[0] = false;
         } else {
             indices = predecessor(indices, max[0].length);
-            // UPDATE
+            // UPODAE
             findR(indices, initialPartition, r);
             i = indices[0];
             j = indices[1];
@@ -1551,7 +1555,6 @@ public class MAYGEN {
     /**
      * Setting successor indices entry if there is a possible filling.
      *
-     * @param ac the IAtomContainer
      * @param A the adjacency matrix
      * @param indices the entry indices
      * @param degrees the degrees
@@ -1575,8 +1578,8 @@ public class MAYGEN {
      * @param learningFromCanonicalTest the learningFromCanonicalTest
      * @return int[][]
      * @throws IOException in case of IOException
-     * @throws CDKException in case of CDKException
-     * @throws CloneNotSupportedException in case of CloneNotSupportedException
+     * @throws CDKException
+     * @throws CloneNotSupportedException
      */
     public int[][] forward(
             IAtomContainer ac,
@@ -1688,12 +1691,12 @@ public class MAYGEN {
                         if (writeSDF || printSDF) {
                             IAtomContainer ac2 =
                                     buildContainer4SDF(ac, addHydrogens(A, hIndex, hydrogens));
-                            if (coordinates)
-                                new StructureDiagramGenerator().generateCoordinates(ac2);
+                            if (coordinates) sd.generateCoordinates(ac2);
                             sdfOut.write(ac2);
-                        }
-                        if (writeSMILES || printSMILES) {
-                            write2smiles(addHydrogens(A, hIndex, hydrogens));
+                        } else if (writeSMILES) {
+                            write2smiles(addHydrogens(A, hIndex, hydrogens), ac);
+                        } else if (printSMILES) {
+                            printSmiles(addHydrogens(A, hIndex, hydrogens), ac);
                         }
                         callForward[0] = false;
                     } else {
@@ -1915,8 +1918,8 @@ public class MAYGEN {
      * Main function to initialize the global variables and calling the generate function.
      *
      * @throws IOException in case of IOException
-     * @throws CloneNotSupportedException in case of CloneNotSupportedException
-     * @throws CDKException in case of CDKException
+     * @throws CloneNotSupportedException
+     * @throws CDKException
      */
     public void run() throws IOException, CDKException, CloneNotSupportedException {
         clearGlobals();
@@ -1938,16 +1941,19 @@ public class MAYGEN {
                                     new FileWriter(
                                             filedir + "/" + normalizeFormula(formula) + ".sdf"));
                 } else {
-                    sdfOut = new SDFWriter(new PrintWriter(System.out));
+                    String userDirectory =
+                            FileSystems.getDefault().getPath("").toAbsolutePath().toString();
+                    sdfOut =
+                            new SDFWriter(
+                                    new FileWriter(
+                                            userDirectory
+                                                    + File.separator
+                                                    + normalizeFormula(formula)
+                                                    + ".sdf"));
                 }
-            }
-            if (writeSMILES || printSMILES) {
-                if (writeSMILES) {
-                    new File(filedir).mkdirs();
-                    smilesOut = new FileWriter(filedir + "/" + normalizeFormula(formula) + ".smi");
-                } else {
-                    smilesOut = new PrintWriter(System.out);
-                }
+            } else if (writeSMILES) {
+                new File(filedir).mkdirs();
+                smilesOut = new FileWriter(filedir + "/" + normalizeFormula(formula) + ".smi");
             }
             String[] atoms = formula.split(LETTERS_FROM_A_TO_Z);
             if (checkLengthTwoFormula(atoms)) {
@@ -1962,11 +1968,14 @@ public class MAYGEN {
                     if (onlyDegree2) {
                         if (oxygen == 0 || sulfur == 0) {
                             degree2graph();
+                            displayStatistic(startTime);
                         } else {
                             if (printSMILES) System.out.println("Formula is not supported");
+                            if (writeSMILES) smilesOut.write("Formula is not supported" + "\n");
+                            generateOnSmMat();
                             distributeSulfurOxygen();
+                            displayStatistic(startTime);
                         }
-                        displayStatistic(startTime);
                     } else {
                         if (canBuildIsomer(formula)) {
                             getSymbolOccurrences();
@@ -1990,17 +1999,35 @@ public class MAYGEN {
         }
     }
 
-    public void displayStatistic(long startTime) throws IOException {
-        if (writeSDF || printSDF) {
-            sdfOut.close();
+    public void printSDF() throws IOException {
+        String userDirectory = FileSystems.getDefault().getPath("").toAbsolutePath().toString();
+        File file = new File(userDirectory + File.separator + normalizeFormula(formula) + ".sdf");
+        FileReader fr = new FileReader(file);
+        BufferedReader br = new BufferedReader(fr);
+        String line;
+        while ((line = br.readLine()) != null) {
+            System.out.println(line);
         }
-        if (writeSMILES || printSMILES) {
+        fr.close();
+        br.close();
+    }
+
+    public void displayStatistic(long startTime) throws IOException {
+        if (writeSDF) {
+            sdfOut.close();
+        } else if (writeSMILES) {
             smilesOut.close();
         }
         long endTime = System.nanoTime() - startTime;
         double seconds = (double) endTime / 1000000000.0;
         DecimalFormat d = new DecimalFormat(".###");
         d.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        if (verbose) {
+            if (printSDF) {
+                sdfOut.close();
+                printSDF();
+            }
+        }
 
         if (verbose) {
             if (printSMILES || printSDF) System.out.println();
@@ -2091,7 +2118,7 @@ public class MAYGEN {
      * @return int
      */
     public int findY(int r, int[] initialPartition) {
-        return sum(initialPartition, r - 1);
+        return (sum(initialPartition, (r - 1)));
     }
 
     /**
@@ -2111,11 +2138,12 @@ public class MAYGEN {
         count.incrementAndGet();
         if (writeSDF || printSDF) {
             IAtomContainer ac = buildContainer4SDF(addHydrogens(A, hIndex, hydrogens));
-            if (coordinates) new StructureDiagramGenerator().generateCoordinates(ac);
+            if (coordinates) sd.generateCoordinates(ac);
             sdfOut.write(ac);
-        }
-        if (writeSMILES || printSMILES) {
-            write2smiles(addHydrogens(A, hIndex, hydrogens));
+        } else if (writeSMILES) {
+            write2smiles(addHydrogens(A, hIndex, hydrogens), atomContainer);
+        } else if (printSMILES) {
+            printSmiles(addHydrogens(A, hIndex, hydrogens), atomContainer);
         }
     }
 
@@ -2150,17 +2178,33 @@ public class MAYGEN {
                                 () ->
                                         newDegrees
                                                 .parallelStream()
-                                                .forEach(new Generation(this)::run))
+                                                .forEach(
+                                                        t -> {
+                                                            try {
+                                                                new Generation(this).run(t);
+                                                            } catch (CloneNotSupportedException
+                                                                    | CDKException e) {
+                                                                // TODO Auto-generated catch block
+                                                                e.printStackTrace();
+                                                            }
+                                                        }))
                         .get();
             } catch (InterruptedException | ExecutionException ex) {
                 if (verbose) {
-                    Logger.getLogger(MAYGEN.class.getName())
-                            .log(Level.SEVERE, ex, () -> "Formula " + formula);
+                    Logger.getLogger(MAYGEN.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 Thread.currentThread().interrupt();
             }
         } else {
-            newDegrees.forEach(new Generation(this)::run);
+            newDegrees.forEach(
+                    t -> {
+                        try {
+                            new Generation(this).run(t);
+                        } catch (CloneNotSupportedException | CDKException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    });
         }
     }
 
@@ -3024,18 +3068,16 @@ public class MAYGEN {
                 this.filedir = Objects.isNull(filedir) ? "." : filedir;
                 if (cmd.hasOption("smi")) {
                     this.writeSMILES = true;
-                }
-                if (cmd.hasOption("sdf")) {
+                } else if (cmd.hasOption("sdf")) {
                     this.writeSDF = true;
                 } else if (cmd.hasOption("sdfCoord")) {
                     this.writeSDF = true;
                     this.coordinates = true;
                 }
             } else {
-                if (cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
+                if (cmd.hasOption("smi")) {
                     this.printSMILES = true;
-                }
-                if (cmd.hasOption("sdf")) {
+                } else if (cmd.hasOption("sdf")) {
                     this.printSDF = true;
                 } else if (cmd.hasOption("sdfCoord")) {
                     this.printSDF = true;
@@ -3128,6 +3170,72 @@ public class MAYGEN {
         return options;
     }
 
+    public int numberOfBonds(int[][] mat) {
+        int length = mat.length;
+        // if(!justH) length =hIndex;
+        int count = 0;
+        for (int i = 0; i < length; i++) {
+            for (int j = i + 1; j < length; j++) {
+                if (mat[i][j] != 0) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    public String indexWithSpace(int i) {
+        String sourceDepiction;
+        if (String.valueOf(i + 1).length() == 1) {
+            sourceDepiction = "  " + (i + 1);
+        } else if (String.valueOf(i + 1).length() == 2) {
+            sourceDepiction = " " + (i + 1);
+        } else {
+            sourceDepiction = String.valueOf(i + 1);
+        }
+        return sourceDepiction;
+    }
+
+    public void buildOnSm(int[] ar, StringJoiner stringJoiner) {
+        int oxygen = 0;
+        int sulfur = graphSize / 2;
+        int x = 0;
+        int y = 0;
+
+        if (ar[graphSize - 1] == 0) {
+            x = sulfur - 1;
+        } else {
+            x = graphSize - 1;
+        }
+
+        if (ar[0] == 0) {
+            y = 0;
+        } else {
+            y = sulfur;
+        }
+        String sourceDepiction = indexWithSpace(x);
+        String targetDepiction = indexWithSpace(y);
+        stringJoiner.add(sourceDepiction + targetDepiction + "  " + 1 + "   0  0  0  0\n");
+        for (int i = 0; i < graphSize - 1; i++) {
+            if (ar[i] == 0) {
+                x = oxygen;
+                oxygen++;
+            } else {
+                x = sulfur;
+                sulfur++;
+            }
+            if (ar[i + 1] == 0) {
+                y = oxygen;
+            } else {
+                y = sulfur;
+            }
+            sourceDepiction = indexWithSpace(x);
+            targetDepiction = indexWithSpace(y);
+
+            stringJoiner.add(sourceDepiction + targetDepiction + "  " + 1 + "   0  0  0  0\n");
+        }
+    }
+
     public int[][] buildOnSm(int[] ar) {
         int[][] mat = new int[graphSize][graphSize];
         int oxygen = 0;
@@ -3176,20 +3284,52 @@ public class MAYGEN {
         return mat;
     }
 
-    public void write2smiles(int[][] mat)
-            throws IOException, CloneNotSupportedException, CDKException {
+    public int[][] ring;
 
-        IAtomContainer atomContainer = buildAtomContainer(mat);
-        String smilesString = smilesGenerator.create(atomContainer);
-        smilesOut.write(smilesString + "\n");
+    public void generateOnSmMat() {
+        ring = new int[matrixSize][matrixSize];
+        ring[0][1] = 1;
+        ring[0][matrixSize - 1] = 1;
+        for (int i = 1; i < matrixSize - 1; i++) {
+            ring[i][i + 1] = 1;
+        }
+    }
+
+    public void write2smiles(int[][] mat, IAtomContainer ac)
+            throws IOException, CloneNotSupportedException {
+
+        IAtomContainer atomContainer = ac.clone();
+        atomContainer = buildAtomContainerFromMatrix(mat, atomContainer);
+        try {
+            String smilesString = smilesGenerator.create(atomContainer);
+            smilesOut.write(smilesString + "\n");
+        } catch (CDKException ex) {
+            if (verbose) {
+                Logger.getLogger(MAYGEN.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public void printSmiles(int[][] mat, IAtomContainer ac)
+            throws IOException, CloneNotSupportedException {
+        IAtomContainer atomContainer = ac.clone();
+        atomContainer = buildAtomContainerFromMatrix(mat, atomContainer);
+        try {
+            String smilesString = smilesGenerator.create(atomContainer);
+            System.out.print(smilesString + "\n");
+        } catch (CDKException ex) {
+            if (verbose) {
+                Logger.getLogger(MAYGEN.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     /**
      * Building an atom container from a string of atom-implicit hydrogen information.
      *
-     * @param ac the IAtomContainer
-     * @param symbolArrayCopy the symbolArrayCopy
-     * @return the IAtomContainer
+     * @throws IOException
+     * @throws CloneNotSupportedException
+     * @throws CDKException
      */
     public IAtomContainer initAC(IAtomContainer ac, String[] symbolArrayCopy) {
         for (int i = 0; i < symbolArrayCopy.length; i++) {
@@ -3238,7 +3378,9 @@ public class MAYGEN {
     /**
      * Building an atom container from a string of atom-implicit hydrogen information.
      *
-     * @param symbol the symbol
+     * @throws IOException
+     * @throws CloneNotSupportedException
+     * @throws CDKException
      */
     public void initAC(String symbol) {
         atomContainer = builder.newInstance(IAtomContainer.class);
@@ -3254,10 +3396,9 @@ public class MAYGEN {
     /**
      * Building an atom container for an adjacency matrix.
      *
-     * @param ac the IAtomContainer
      * @param mat int[][] adjacency matrix
      * @return IAtomContainer
-     * @throws CloneNotSupportedException in case of CloneNotSupportedException
+     * @throws CloneNotSupportedException
      */
     public IAtomContainer buildContainer4SDF(IAtomContainer ac, int[][] mat)
             throws CloneNotSupportedException {
@@ -3283,7 +3424,7 @@ public class MAYGEN {
      *
      * @param mat int[][] adjacency matrix
      * @return IAtomContainer
-     * @throws CloneNotSupportedException in case of CloneNotSupportedException
+     * @throws CloneNotSupportedException
      */
     public IAtomContainer buildContainer4SDF(int[][] mat) throws CloneNotSupportedException {
         IAtomContainer ac2 = atomContainer.clone();
@@ -3298,19 +3439,34 @@ public class MAYGEN {
                 }
             }
         }
-        return AtomContainerManipulator.removeHydrogens(ac2);
+
+        ac2 = AtomContainerManipulator.removeHydrogens(ac2);
+        return ac2;
+    }
+
+    public IAtomContainer buildContainer4SDF(String[] symbols)
+            throws CloneNotSupportedException, CDKException, IOException {
+        IAtomContainer atomContainer = this.builder.newAtomContainer();
+        for (String s : symbols) {
+            atomContainer.addAtom(new Atom(s));
+        }
+        for (IAtom atom : atomContainer.atoms()) {
+            atom.setImplicitHydrogenCount(0);
+        }
+
+        atomContainer = buildAtomContainerFromMatrix(ring, atomContainer);
+        return atomContainer;
     }
 
     /**
      * Building an atom container from a string of atom-implicit hydrogen information.
      *
      * @param mat the mat
-     * @throws CloneNotSupportedException in case of CloneNotSupportedException
      * @return the IAtomContainer
      */
-    public IAtomContainer buildAtomContainer(int[][] mat) throws CloneNotSupportedException {
+    public IAtomContainer buildAtomContainer(int[][] mat) {
         IAtomContainer atomContainer = this.builder.newAtomContainer();
-        for (String s : this.symbolArray) {
+        for (String s : this.symbolArrayCopy) {
             atomContainer.addAtom(new Atom(s));
         }
 
@@ -3318,9 +3474,31 @@ public class MAYGEN {
             atom.setImplicitHydrogenCount(0);
         }
 
-        atomContainer = buildContainer4SDF(atomContainer, mat);
+        atomContainer = buildAtomContainerFromMatrix(mat, atomContainer);
 
         return atomContainer;
+    }
+
+    /**
+     * Building an atom container for an adjacency matrix.
+     *
+     * @param mat the adjacency matrix
+     * @param atomContainer the atomContainer
+     * @return IAtomContainer
+     */
+    public IAtomContainer buildAtomContainerFromMatrix(int[][] mat, IAtomContainer atomContainer) {
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = i + 1; j < mat.length; j++) {
+                if (mat[i][j] == 1) {
+                    atomContainer.addBond(i, j, IBond.Order.SINGLE);
+                } else if (mat[i][j] == 2) {
+                    atomContainer.addBond(i, j, IBond.Order.DOUBLE);
+                } else if (mat[i][j] == 3) {
+                    atomContainer.addBond(i, j, IBond.Order.TRIPLE);
+                }
+            }
+        }
+        return AtomContainerManipulator.removeHydrogens(atomContainer);
     }
 
     public void degree2graph() throws IOException, CDKException, CloneNotSupportedException {
@@ -3341,11 +3519,12 @@ public class MAYGEN {
         initAC(symbol);
         if (writeSDF || printSDF) {
             IAtomContainer ac = buildContainer4SDF(mat);
-            if (coordinates) new StructureDiagramGenerator().generateCoordinates(ac);
+            if (coordinates) sd.generateCoordinates(ac);
             sdfOut.write(ac);
-        }
-        if (writeSMILES || printSMILES) {
+        } else if (writeSMILES) {
             smilesOut.write("Formula is not supported" + "\n");
+        } else if (printSMILES) {
+            System.out.println("Formula is not supported");
         }
     }
 
@@ -3389,9 +3568,21 @@ public class MAYGEN {
     }
 
     public int[] build() {
-        int[] arr = new int[graphSize];
+        int[] arr = new int[graphSize + 1];
         if (graphSize >= 0) {
             System.arraycopy(nodeLabels, 1, arr, 0, graphSize);
+        }
+        return arr;
+    }
+
+    public String[] buildSymbolArray() {
+        String[] arr = new String[graphSize];
+        for (int i = 1; i < graphSize + 1; i++) {
+            if (nodeLabels[i] == 0) {
+                arr[i - 1] = "O";
+            } else {
+                arr[i - 1] = "S";
+            }
         }
         return arr;
     }
@@ -3410,9 +3601,9 @@ public class MAYGEN {
      *     the array
      * @param reversalIsSmaller boolean from the reversal comparison, using the boolean variable to
      *     know reveral is smaller than the bode labelling or not.
-     * @throws CloneNotSupportedException in case of CloneNotSupportedException
-     * @throws CDKException in case of CDKException
      * @throws IOException in case of IOException
+     * @throws CloneNotSupportedException
+     * @throws CDKException
      */
     public void distributeSymbols(
             int oxy,
@@ -3423,7 +3614,7 @@ public class MAYGEN {
             int leftEquivalents,
             int rightEquivalents,
             boolean reversalIsSmaller)
-            throws CDKException, CloneNotSupportedException, IOException {
+            throws IOException, CDKException, CloneNotSupportedException {
 
         if (2 * (nextSize - 1) > (graphSize + reversedLength)) {
             if (nodeLabels[nextSize - 1] > nodeLabels[graphSize - nextSize + 2 + reversedLength])
@@ -3436,12 +3627,9 @@ public class MAYGEN {
             if (!reversalIsSmaller && (graphSize % currentSize) == 0) {
                 count.incrementAndGet();
                 if (writeSDF || printSDF) {
-                    IAtomContainer ac = buildContainer4SDF(buildOnSm(build()));
-                    if (coordinates) new StructureDiagramGenerator().generateCoordinates(ac);
+                    IAtomContainer ac = buildContainer4SDF(buildSymbolArray());
+                    if (coordinates) sd.generateCoordinates(ac);
                     sdfOut.write(ac);
-                }
-                if (writeSMILES || printSMILES) {
-                    write2smiles(buildOnSm(build()));
                 }
             }
         } else {
@@ -3466,8 +3654,8 @@ public class MAYGEN {
                 leftEquivalents++;
             }
 
-            if (oxy2 >= 0
-                    && sul2 >= 0
+            if ((oxy2 >= 0)
+                    && (sul2 >= 0)
                     && !(nextSize == graphSize
                             && leftEquivalents != graphSize
                             && nodeLabels[graphSize] == nodeLabels[1])) {
@@ -3534,12 +3722,33 @@ public class MAYGEN {
     }
 
     public void distributeSulfurOxygen()
-            throws CDKException, CloneNotSupportedException, IOException {
+            throws IOException, CDKException, CloneNotSupportedException {
         graphSize = oxygen + sulfur;
         nodeLabels = new int[graphSize + 1];
         nodeLabels[0] = 0;
-        intAC(formula);
         distributeSymbols(oxygen, sulfur, 1, 1, 0, 0, 0, false);
+    }
+
+    public int[] sortMatrix(String[] arr) {
+        int size = arr.length;
+        String[] copy = Arrays.copyOf(arr, arr.length);
+        int[] indices = new int[size];
+        for (int i = 0; i < size; i++) {
+            indices[i] = i;
+        }
+        for (int i = 0; i < hIndex - 1; i++) {
+            for (int j = i + 1; j < hIndex; j++) {
+                if (copy[i].compareTo(copy[j]) > 0) {
+                    String key = copy[i];
+                    copy[i] = copy[j];
+                    copy[j] = key;
+                    int temp = indices[i];
+                    indices[i] = indices[j];
+                    indices[j] = temp;
+                }
+            }
+        }
+        return indices;
     }
 
     public static void main(String[] args) {
@@ -3549,8 +3758,7 @@ public class MAYGEN {
             gen.run();
         } catch (Exception ex) {
             if (gen.verbose) {
-                Logger.getLogger(MAYGEN.class.getName())
-                        .log(Level.SEVERE, ex, () -> "Formula " + gen.formula);
+                Logger.getLogger(MAYGEN.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
