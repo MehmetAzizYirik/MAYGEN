@@ -3128,59 +3128,18 @@ public class MAYGEN {
         return options;
     }
 
-    public int[][] buildOnSm(int[] ar) {
-        int[][] mat = new int[graphSize][graphSize];
-        int oxygen = 0;
-        int sulfur = graphSize / 2;
-        int x = 0;
-        int y = 0;
-
-        if (ar[graphSize - 1] == 0) {
-            x = sulfur - 1;
-        } else {
-            x = graphSize - 1;
-        }
-
-        if (ar[0] == 0) {
-            y = 0;
-        } else {
-            y = sulfur;
-        }
-        int temp = 0;
-        if (x > y) {
-            temp = x;
-            x = y;
-            y = temp;
-        }
-        mat[x][y] = 1;
-        for (int i = 0; i < graphSize - 1; i++) {
-            if (ar[i] == 0) {
-                x = oxygen;
-                oxygen++;
-            } else {
-                x = sulfur;
-                sulfur++;
-            }
-            if (ar[i + 1] == 0) {
-                y = oxygen;
-            } else {
-                y = sulfur;
-            }
-            if (x > y) {
-                temp = x;
-                x = y;
-                y = temp;
-            }
-            mat[x][y] = 1;
-        }
-        return mat;
-    }
-
     public void write2smiles(int[][] mat)
             throws IOException, CloneNotSupportedException, CDKException {
 
         IAtomContainer atomContainer = buildAtomContainer(mat);
         String smilesString = smilesGenerator.create(atomContainer);
+        smilesOut.write(smilesString + "\n");
+    }
+
+    public void write2smiles(String[] symbols)
+            throws IOException, CloneNotSupportedException, CDKException {
+        IAtomContainer ac = buildContainer4SDF(symbols);
+        String smilesString = smilesGenerator.create(ac);
         smilesOut.write(smilesString + "\n");
     }
 
@@ -3301,6 +3260,27 @@ public class MAYGEN {
         return AtomContainerManipulator.removeHydrogens(ac2);
     }
 
+    public IAtomContainer buildContainer4SDF(String[] symbols) throws CloneNotSupportedException {
+        IAtomContainer ac = this.builder.newAtomContainer();
+        for (String s : symbols) {
+            ac.addAtom(new Atom(s));
+        }
+        for (IAtom atom : ac.atoms()) {
+            atom.setImplicitHydrogenCount(0);
+        }
+        return buildContainer4SDF(ac, generateOnSmMat());
+    }
+
+    public int[][] generateOnSmMat() {
+        int[][] ring = new int[matrixSize][matrixSize];
+        ring[0][1] = 1;
+        ring[0][matrixSize - 1] = 1;
+        for (int i = 1; i < matrixSize - 1; i++) {
+            ring[i][i + 1] = 1;
+        }
+        return ring;
+    }
+
     /**
      * Building an atom container from a string of atom-implicit hydrogen information.
      *
@@ -3388,10 +3368,14 @@ public class MAYGEN {
         return 1;
     }
 
-    public int[] build() {
-        int[] arr = new int[graphSize];
-        if (graphSize >= 0) {
-            System.arraycopy(nodeLabels, 1, arr, 0, graphSize);
+    public String[] buildSymbolArray() {
+        String[] arr = new String[graphSize];
+        for (int i = 1; i < graphSize + 1; i++) {
+            if (nodeLabels[i] == 0) {
+                arr[i - 1] = "O";
+            } else {
+                arr[i - 1] = "S";
+            }
         }
         return arr;
     }
@@ -3436,12 +3420,12 @@ public class MAYGEN {
             if (!reversalIsSmaller && (graphSize % currentSize) == 0) {
                 count.incrementAndGet();
                 if (writeSDF || printSDF) {
-                    IAtomContainer ac = buildContainer4SDF(buildOnSm(build()));
+                    IAtomContainer ac = buildContainer4SDF(buildSymbolArray());
                     if (coordinates) new StructureDiagramGenerator().generateCoordinates(ac);
                     sdfOut.write(ac);
                 }
                 if (writeSMILES || printSMILES) {
-                    write2smiles(buildOnSm(build()));
+                    write2smiles(buildSymbolArray());
                 }
             }
         } else {
