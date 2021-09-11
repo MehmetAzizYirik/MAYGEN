@@ -74,48 +74,46 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 public class MAYGEN {
     public static final String NUMBERS_FROM_0_TO_9 = "(?=[0-9])";
     public static final String LETTERS_FROM_A_TO_Z = "(?=[A-Z])";
-    public int size = 0;
-    public int total = 0;
-    public boolean tsvoutput = false;
-    public boolean writeSDF = false;
-    public boolean coordinates = false;
-    public SDFWriter sdfOut;
-    public Writer smilesOut;
-    public boolean writeSMILES = false;
-    public boolean printSDF = false;
-    public boolean printSMILES = false;
-    public boolean multiThread = false;
-    public int hIndex = 0;
-    public AtomicInteger count = new AtomicInteger();
-    public AtomicInteger indexSmiles = new AtomicInteger();
-    public AtomicInteger indexSdf = new AtomicInteger();
-    public int matrixSize = 0;
-    public boolean verbose = false;
-    public String formula;
-    public String filedir;
-    public ArrayList<String> symbols = new ArrayList<>();
-    public int[] occurrences;
-    public Map<String, Integer> valences;
-    public int[] nodeLabels;
-    public int graphSize;
-    public List<int[]> oxygenSulfur = new ArrayList<>();
-    public int[] firstDegrees;
-    public int totalHydrogen = 0;
-    public ArrayList<String> firstSymbols = new ArrayList<>();
-    public int[] firstOccurrences;
-    public boolean callHydrogenDistributor = false;
-    public boolean justH = false;
-    public boolean noHydrogen = false;
-    public int sizePart = 0;
-    public boolean singleAtom = true;
-    public boolean onlyDegree2 = true;
-    public boolean OnSm = true;
-    public int oxygen = 0;
-    public int sulfur = 0;
-    public String[] symbolArray;
-    public IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
-    public SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
-    public IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
+    private int size = 0;
+    private int total = 0;
+    private boolean tsvoutput = false;
+    private boolean writeSDF = false;
+    private boolean coordinates = false;
+    private SDFWriter sdfOut;
+    private Writer smilesOut;
+    private boolean writeSMILES = false;
+    private boolean printSDF = false;
+    private boolean printSMILES = false;
+    private boolean multiThread = false;
+    private int hIndex = 0;
+    private AtomicInteger count = new AtomicInteger();
+    private int matrixSize = 0;
+    private boolean verbose = false;
+    private String formula;
+    private String filedir = ".";
+    private List<String> symbols = new ArrayList<>();
+    private int[] occurrences;
+    private Map<String, Integer> valences;
+    private int[] nodeLabels;
+    private int graphSize;
+    private List<int[]> oxygenSulfur = new ArrayList<>();
+    private int[] firstDegrees;
+    private int totalHydrogen = 0;
+    private List<String> firstSymbols = new ArrayList<>();
+    private int[] firstOccurrences;
+    private boolean callHydrogenDistributor = false;
+    private boolean justH = false;
+    private boolean noHydrogen = false;
+    private int sizePart = 0;
+    private boolean singleAtom = true;
+    private boolean onlyDegree2 = true;
+    private boolean onSm = true;
+    private int oxygen = 0;
+    private int sulfur = 0;
+    private String[] symbolArray;
+    private IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+    private SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
+    private IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
 
     {
         // The atom valences from CDK.
@@ -133,6 +131,93 @@ public class MAYGEN {
         valences.put("H", 1);
     }
 
+    public int getSize() {
+        return size;
+    }
+
+    public boolean isWriteSDF() {
+        return writeSDF;
+    }
+
+    public void setWriteSDF(boolean writeSDF) {
+        this.writeSDF = writeSDF;
+    }
+
+    public boolean isWriteSMILES() {
+        return writeSMILES;
+    }
+
+    public void setWriteSMILES(boolean writeSMILES) {
+        this.writeSMILES = writeSMILES;
+    }
+
+    public boolean isPrintSDF() {
+        return printSDF;
+    }
+
+    public void setPrintSDF(boolean printSDF) {
+        this.printSDF = printSDF;
+    }
+
+    public boolean isPrintSMILES() {
+        return printSMILES;
+    }
+
+    public void setPrintSMILES(boolean printSMILES) {
+        this.printSMILES = printSMILES;
+    }
+
+    public String[] getSymbolArray() {
+        return symbolArray;
+    }
+
+    public IChemObjectBuilder getBuilder() {
+        return builder;
+    }
+
+    public boolean isMultiThread() {
+        return multiThread;
+    }
+
+    public void setMultiThread(boolean multiThread) {
+        this.multiThread = multiThread;
+    }
+
+    public int getCount() {
+        return count.get();
+    }
+
+    public String getFormula() {
+        return formula;
+    }
+
+    public void setFormula(String formula) {
+        this.formula = formula;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public List<String> getSymbols() {
+        return symbols;
+    }
+
+    public int[] getOccurrences() {
+        return occurrences;
+    }
+
+    public List<int[]> getOxygenSulfur() {
+        return oxygenSulfur;
+    }
+
+    public int getTotalHydrogen() {
+        return totalHydrogen;
+    }
+
+    public boolean isOnSm() {
+        return onSm;
+    }
     /* Basic functions */
 
     /**
@@ -311,7 +396,7 @@ public class MAYGEN {
             symbol = info[0];
             if (valences.get(symbol) != 2) {
                 onlyDegree2 = false;
-                OnSm = false;
+                onSm = false;
                 break;
             } else {
                 if (symbol.equals("S")) {
@@ -2168,7 +2253,7 @@ public class MAYGEN {
     public void clearGlobals() {
         singleAtom = true;
         onlyDegree2 = true;
-        OnSm = true;
+        onSm = true;
         oxygen = 0;
         sulfur = 0;
         graphSize = 0;
@@ -2179,8 +2264,6 @@ public class MAYGEN {
         sizePart = 0;
         hIndex = 0;
         count.set(0);
-        indexSmiles.set(0);
-        indexSdf.set(0);
         matrixSize = 0;
         noHydrogen = false;
         justH = false;

@@ -1,17 +1,13 @@
 /*
  MIT License
-
  Copyright (c) 2021 Mehmet Aziz Yirik
-
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  and associated documentation files (the "Software"), to deal in the Software without restriction,
  including without limitation the rights to use, copy, modify, merge, publish, distribute,
  sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
-
  The above copyright notice and this permission notice shall be included in all copies or
  substantial portions of the Software.
-
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
  BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
@@ -22,7 +18,6 @@
 /*
  This is the main cass of MAYGEN project for molecular structure generation for a given input
  molecular formula.
-
  @author Mehmet Aziz Yirik
 */
 package maygen;
@@ -42,12 +37,12 @@ public class Generation {
     }
 
     public void run(int[] degree) {
-        IAtomContainer atomContainer = maygen.builder.newInstance(IAtomContainer.class);
+        IAtomContainer atomContainer = maygen.getBuilder().newInstance(IAtomContainer.class);
         int[] partSize = new int[] {0};
         int[] r = new int[] {0};
         int[] y = new int[] {0};
         int[] z = new int[] {0};
-        String[] symbolArrayCopy = new String[maygen.symbolArray.length];
+        String[] symbolArrayCopy;
         int[][] ys = new int[][] {new int[0]};
         int[][] zs = new int[][] {new int[0]};
         boolean[] learningFromCanonicalTest = new boolean[] {false};
@@ -56,20 +51,23 @@ public class Generation {
         ArrayList<ArrayList<Permutation>> formerPermutations = new ArrayList<>();
         int[] hydrogens = maygen.setHydrogens(degree);
         int[] newPartition = maygen.getPartition(degree);
-        if (maygen.writeSDF || maygen.printSDF || maygen.writeSMILES || maygen.printSMILES)
-            symbolArrayCopy = Arrays.copyOf(maygen.symbolArray, maygen.symbolArray.length);
         final int[] initialPartition;
-        if (maygen.writeSDF || maygen.printSDF || maygen.writeSMILES || maygen.printSMILES) {
+        if (maygen.isWriteSDF()
+                || maygen.isPrintSDF()
+                || maygen.isWriteSMILES()
+                || maygen.isPrintSMILES()) {
+            symbolArrayCopy =
+                    Arrays.copyOf(maygen.getSymbolArray(), maygen.getSymbolArray().length);
             initialPartition =
                     maygen.sortWithPartition(newPartition, degree, symbolArrayCopy, hydrogens);
+            atomContainer = maygen.initAC(atomContainer, symbolArrayCopy);
         } else {
             initialPartition =
-                    maygen.sortWithPartition(newPartition, degree, maygen.symbolArray, hydrogens);
+                    maygen.sortWithPartition(
+                            newPartition, degree, maygen.getSymbolArray(), hydrogens);
         }
-        if (maygen.writeSDF || maygen.printSDF || maygen.writeSMILES || maygen.printSMILES)
-            atomContainer = maygen.initAC(atomContainer, symbolArrayCopy);
         int[] connectivityIndices = new int[2];
-        int[][] partitionList = new int[maygen.size + 1][1];
+        int[][] partitionList = new int[maygen.getSize() + 1][1];
         try {
 
             partSize[0] = partSize[0] + (maygen.findZeros(initialPartition) - 1);
