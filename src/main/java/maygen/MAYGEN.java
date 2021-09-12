@@ -2050,7 +2050,6 @@ public class MAYGEN {
                         if (oxygen == 0 || sulfur == 0) {
                             degree2graph();
                         } else {
-                            if (printSMILES) System.out.println("Formula is not supported");
                             distributeSulfurOxygen();
                         }
                         displayStatistic(startTime);
