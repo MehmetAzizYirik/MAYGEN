@@ -3151,7 +3151,7 @@ public class MAYGEN {
                         + "\n\nFor example 'C2OH4'."
                         + "\n\nIf user wants to store output file in a specific directory, that is needed to be specified."
                         + " It is also possible to generate SMILES instead of an SDF file, but it slows down"
-                        + "the generation time. For this, use the '-smi' option."
+                        + " the generation time. For this, use the '-smi' option."
                         + "\n\n";
         String footer = "\nPlease report issues at https://github.com/MehmetAzizYirik/MAYGEN";
         formatter.printHelp("java -jar MAYGEN-" + VERSION + ".jar", header, options, footer, true);
