@@ -11,9 +11,9 @@ authors:
   given-names: "Christoph"
   orcid: "https://orcid.org/0000-0001-6966-0814"
 title: "MAYGEN"
-version: 1.6
+version: 1.8
 doi: 10.5281/zenodo.5243905
-date-released: 2021-08-24
+date-released: 2021-09-12
 url: "https://github.com/MehmetAzizYirik/MAYGEN"
 license: MIT
 
