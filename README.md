@@ -64,7 +64,7 @@ For example 'C2OH4'.
 
 If user wants to store output file in a specific directory, that is needed
 to be specified. It is also possible to generate SMILES instead of an SDF
-file, but it slows downthe generation time. For this, use the '-smi'
+file, but it slows down the generation time. For this, use the '-smi'
 option.
 
  -f,--formula <arg>        formula (required)
