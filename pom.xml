@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>MAYGEN</groupId>
     <artifactId>MAYGEN</artifactId>
-    <version>1.7</version>
+    <version>1.8</version>
     <packaging>jar</packaging>
     <name>MAYGEN</name>
     <url>https://github.com/MehmetAzizYirik/MAYGEN</url>
