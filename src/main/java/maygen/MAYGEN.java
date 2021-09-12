@@ -73,7 +73,7 @@ import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public class MAYGEN {
-    public static final String VERSION = "1.7";
+    public static final String VERSION = "1.8";
     public static final String NUMBERS_FROM_0_TO_9 = "(?=[0-9])";
     public static final String LETTERS_FROM_A_TO_Z = "(?=[A-Z])";
     private int size = 0;
