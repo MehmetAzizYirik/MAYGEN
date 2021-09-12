@@ -42,12 +42,11 @@ public class Generation {
     }
 
     public void run(int[] degree) {
-        IAtomContainer atomContainer = maygen.builder.newInstance(IAtomContainer.class);
+        IAtomContainer atomContainer = maygen.getBuilder().newInstance(IAtomContainer.class);
         int[] partSize = new int[] {0};
         int[] r = new int[] {0};
         int[] y = new int[] {0};
         int[] z = new int[] {0};
-        String[] symbolArrayCopy = new String[maygen.symbolArray.length];
         int[][] ys = new int[][] {new int[0]};
         int[][] zs = new int[][] {new int[0]};
         boolean[] learningFromCanonicalTest = new boolean[] {false};
@@ -56,20 +55,23 @@ public class Generation {
         ArrayList<ArrayList<Permutation>> formerPermutations = new ArrayList<>();
         int[] hydrogens = maygen.setHydrogens(degree);
         int[] newPartition = maygen.getPartition(degree);
-        if (maygen.writeSDF || maygen.printSDF || maygen.writeSMILES || maygen.printSMILES)
-            symbolArrayCopy = Arrays.copyOf(maygen.symbolArray, maygen.symbolArray.length);
         final int[] initialPartition;
-        if (maygen.writeSDF || maygen.printSDF || maygen.writeSMILES || maygen.printSMILES) {
+        if (maygen.isWriteSDF()
+                || maygen.isPrintSDF()
+                || maygen.isWriteSMILES()
+                || maygen.isPrintSMILES()) {
+            String[] symbolArrayCopy =
+                    Arrays.copyOf(maygen.getSymbolArray(), maygen.getSymbolArray().length);
             initialPartition =
                     maygen.sortWithPartition(newPartition, degree, symbolArrayCopy, hydrogens);
+            atomContainer = maygen.initAC(atomContainer, symbolArrayCopy);
         } else {
             initialPartition =
-                    maygen.sortWithPartition(newPartition, degree, maygen.symbolArray, hydrogens);
+                    maygen.sortWithPartition(
+                            newPartition, degree, maygen.getSymbolArray(), hydrogens);
         }
-        if (maygen.writeSDF || maygen.printSDF || maygen.writeSMILES || maygen.printSMILES)
-            atomContainer = maygen.initAC(atomContainer, symbolArrayCopy);
         int[] connectivityIndices = new int[2];
-        int[][] partitionList = new int[maygen.size + 1][1];
+        int[][] partitionList = new int[maygen.getSize() + 1][1];
         try {
 
             partSize[0] = partSize[0] + (maygen.findZeros(initialPartition) - 1);

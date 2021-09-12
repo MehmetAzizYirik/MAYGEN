@@ -64,6 +64,7 @@ import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IBond.Order;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
@@ -72,50 +73,49 @@ import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public class MAYGEN {
+    public static final String VERSION = "1.7";
     public static final String NUMBERS_FROM_0_TO_9 = "(?=[0-9])";
     public static final String LETTERS_FROM_A_TO_Z = "(?=[A-Z])";
-    public int size = 0;
-    public int total = 0;
-    public boolean tsvoutput = false;
-    public boolean writeSDF = false;
-    public boolean coordinates = false;
-    public SDFWriter sdfOut;
-    public Writer smilesOut;
-    public boolean writeSMILES = false;
-    public boolean printSDF = false;
-    public boolean printSMILES = false;
-    public boolean multiThread = false;
-    public int hIndex = 0;
-    public AtomicInteger count = new AtomicInteger();
-    public AtomicInteger indexSmiles = new AtomicInteger();
-    public AtomicInteger indexSdf = new AtomicInteger();
-    public int matrixSize = 0;
-    public boolean verbose = false;
-    public String formula;
-    public String filedir;
-    public ArrayList<String> symbols = new ArrayList<>();
-    public int[] occurrences;
-    public Map<String, Integer> valences;
-    public int[] nodeLabels;
-    public int graphSize;
-    public List<int[]> oxygenSulfur = new ArrayList<>();
-    public int[] firstDegrees;
-    public int totalHydrogen = 0;
-    public ArrayList<String> firstSymbols = new ArrayList<>();
-    public int[] firstOccurrences;
-    public boolean callHydrogenDistributor = false;
-    public boolean justH = false;
-    public boolean noHydrogen = false;
-    public int sizePart = 0;
-    public boolean singleAtom = true;
-    public boolean onlyDegree2 = true;
-    public boolean OnSm = true;
-    public int oxygen = 0;
-    public int sulfur = 0;
-    public String[] symbolArray;
-    public IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
-    public SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
-    public IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
+    private int size = 0;
+    private int total = 0;
+    private boolean tsvoutput = false;
+    private boolean writeSDF = false;
+    private boolean coordinates = false;
+    private SDFWriter sdfOut;
+    private Writer smilesOut;
+    private boolean writeSMILES = false;
+    private boolean printSDF = false;
+    private boolean printSMILES = false;
+    private boolean multiThread = false;
+    private int hIndex = 0;
+    private AtomicInteger count = new AtomicInteger();
+    private int matrixSize = 0;
+    private boolean verbose = false;
+    private String formula;
+    private String filedir = ".";
+    private List<String> symbols = new ArrayList<>();
+    private int[] occurrences;
+    private Map<String, Integer> valences;
+    private int[] nodeLabels;
+    private int graphSize;
+    private List<int[]> oxygenSulfur = new ArrayList<>();
+    private int[] firstDegrees;
+    private int totalHydrogen = 0;
+    private List<String> firstSymbols = new ArrayList<>();
+    private int[] firstOccurrences;
+    private boolean callHydrogenDistributor = false;
+    private boolean justH = false;
+    private boolean noHydrogen = false;
+    private int sizePart = 0;
+    private boolean singleAtom = true;
+    private boolean onlyDegree2 = true;
+    private boolean onSm = true;
+    private int oxygen = 0;
+    private int sulfur = 0;
+    private String[] symbolArray;
+    private IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+    private SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
+    private IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
 
     {
         // The atom valences from CDK.
@@ -133,6 +133,93 @@ public class MAYGEN {
         valences.put("H", 1);
     }
 
+    public int getSize() {
+        return size;
+    }
+
+    public boolean isWriteSDF() {
+        return writeSDF;
+    }
+
+    public void setWriteSDF(boolean writeSDF) {
+        this.writeSDF = writeSDF;
+    }
+
+    public boolean isWriteSMILES() {
+        return writeSMILES;
+    }
+
+    public void setWriteSMILES(boolean writeSMILES) {
+        this.writeSMILES = writeSMILES;
+    }
+
+    public boolean isPrintSDF() {
+        return printSDF;
+    }
+
+    public void setPrintSDF(boolean printSDF) {
+        this.printSDF = printSDF;
+    }
+
+    public boolean isPrintSMILES() {
+        return printSMILES;
+    }
+
+    public void setPrintSMILES(boolean printSMILES) {
+        this.printSMILES = printSMILES;
+    }
+
+    public String[] getSymbolArray() {
+        return symbolArray;
+    }
+
+    public IChemObjectBuilder getBuilder() {
+        return builder;
+    }
+
+    public boolean isMultiThread() {
+        return multiThread;
+    }
+
+    public void setMultiThread(boolean multiThread) {
+        this.multiThread = multiThread;
+    }
+
+    public int getCount() {
+        return count.get();
+    }
+
+    public String getFormula() {
+        return formula;
+    }
+
+    public void setFormula(String formula) {
+        this.formula = formula;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public List<String> getSymbols() {
+        return symbols;
+    }
+
+    public int[] getOccurrences() {
+        return occurrences;
+    }
+
+    public List<int[]> getOxygenSulfur() {
+        return oxygenSulfur;
+    }
+
+    public int getTotalHydrogen() {
+        return totalHydrogen;
+    }
+
+    public boolean isOnSm() {
+        return onSm;
+    }
     /* Basic functions */
 
     /**
@@ -311,7 +398,7 @@ public class MAYGEN {
             symbol = info[0];
             if (valences.get(symbol) != 2) {
                 onlyDegree2 = false;
-                OnSm = false;
+                onSm = false;
                 break;
             } else {
                 if (symbol.equals("S")) {
@@ -1693,7 +1780,7 @@ public class MAYGEN {
                             sdfOut.write(ac2);
                         }
                         if (writeSMILES || printSMILES) {
-                            write2smiles(addHydrogens(A, hIndex, hydrogens));
+                            write2smiles(addHydrogens(A, hIndex, hydrogens), ac);
                         }
                         callForward[0] = false;
                     } else {
@@ -2115,7 +2202,7 @@ public class MAYGEN {
             sdfOut.write(ac);
         }
         if (writeSMILES || printSMILES) {
-            write2smiles(addHydrogens(A, hIndex, hydrogens));
+            write2smiles(addHydrogens(A, hIndex, hydrogens), atomContainer);
         }
     }
 
@@ -2168,7 +2255,7 @@ public class MAYGEN {
     public void clearGlobals() {
         singleAtom = true;
         onlyDegree2 = true;
-        OnSm = true;
+        onSm = true;
         oxygen = 0;
         sulfur = 0;
         graphSize = 0;
@@ -2179,8 +2266,6 @@ public class MAYGEN {
         sizePart = 0;
         hIndex = 0;
         count.set(0);
-        indexSmiles.set(0);
-        indexSdf.set(0);
         matrixSize = 0;
         noHydrogen = false;
         justH = false;
@@ -3013,53 +3098,64 @@ public class MAYGEN {
         }
     }
 
-    public void parseArgs(String[] args) throws ParseException {
+    public boolean parseArgs(String[] args) throws ParseException {
         Options options = setupOptions();
         CommandLineParser parser = new DefaultParser();
+        boolean helpIsPresent = false;
         try {
             CommandLine cmd = parser.parse(options, args);
             this.formula = cmd.getOptionValue("formula");
-            if (cmd.hasOption("outputFile")) {
-                String filedir = cmd.getOptionValue("outputFile");
-                this.filedir = Objects.isNull(filedir) ? "." : filedir;
-                if (cmd.hasOption("smi")) {
-                    this.writeSMILES = true;
-                }
-                if (cmd.hasOption("sdf")) {
-                    this.writeSDF = true;
-                } else if (cmd.hasOption("sdfCoord")) {
-                    this.writeSDF = true;
-                    this.coordinates = true;
-                }
+            if (cmd.hasOption("help")) {
+                displayHelpMessage(options);
+                helpIsPresent = true;
             } else {
-                if (cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
-                    this.printSMILES = true;
+                if (cmd.hasOption("outputFile")) {
+                    String filedir = cmd.getOptionValue("outputFile");
+                    this.filedir = Objects.isNull(filedir) ? "." : filedir;
+                    if (cmd.hasOption("smi")) {
+                        this.writeSMILES = true;
+                    }
+                    if (cmd.hasOption("sdf")) {
+                        this.writeSDF = true;
+                    } else if (cmd.hasOption("sdfCoord")) {
+                        this.writeSDF = true;
+                        this.coordinates = true;
+                    }
+                } else {
+                    if (cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
+                        this.printSMILES = true;
+                    }
+                    if (cmd.hasOption("sdf")) {
+                        this.printSDF = true;
+                    } else if (cmd.hasOption("sdfCoord")) {
+                        this.printSDF = true;
+                        this.coordinates = true;
+                    }
                 }
-                if (cmd.hasOption("sdf")) {
-                    this.printSDF = true;
-                } else if (cmd.hasOption("sdfCoord")) {
-                    this.printSDF = true;
-                    this.coordinates = true;
-                }
+                if (cmd.hasOption("verbose")) this.verbose = true;
+                if (cmd.hasOption("tsvoutput")) this.tsvoutput = true;
+                if (cmd.hasOption("multithread")) this.multiThread = true;
             }
-            if (cmd.hasOption("verbose")) this.verbose = true;
-            if (cmd.hasOption("tsvoutput")) this.tsvoutput = true;
-            if (cmd.hasOption("multithread")) this.multiThread = true;
         } catch (ParseException e) {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.setOptionComparator(null);
-            String header =
-                    "\nGenerates molecular structures for a given molecular formula."
-                            + "\nThe input is a molecular formula string."
-                            + "\n\nFor example 'C2OH4'."
-                            + "\n\nIf user wants to store output file in a specific directory, that is needed to be specified."
-                            + "\nIt is also possible to generate SMILES instead of an SDF file, but it slows down"
-                            + "the generation time. For this, use the '-smi' option."
-                            + "\n\n";
-            String footer = "\nPlease report issues at https://github.com/MehmetAzizYirik/MAYGEN";
-            formatter.printHelp("java -jar MAYGEN.jar", header, options, footer, true);
+            displayHelpMessage(options);
             throw new ParseException("Problem parsing command line");
         }
+        return helpIsPresent;
+    }
+
+    public void displayHelpMessage(Options options) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.setOptionComparator(null);
+        String header =
+                "\nGenerates molecular structures for a given molecular formula."
+                        + "\nThe input is a molecular formula string."
+                        + "\n\nFor example 'C2OH4'."
+                        + "\n\nIf user wants to store output file in a specific directory, that is needed to be specified."
+                        + " It is also possible to generate SMILES instead of an SDF file, but it slows down"
+                        + "the generation time. For this, use the '-smi' option."
+                        + "\n\n";
+        String footer = "\nPlease report issues at https://github.com/MehmetAzizYirik/MAYGEN";
+        formatter.printHelp("java -jar MAYGEN-" + VERSION + ".jar", header, options, footer, true);
     }
 
     public Options setupOptions() {
@@ -3085,7 +3181,7 @@ public class MAYGEN {
                         .longOpt("tsvoutput")
                         .desc(
                                 "Output formula, number of structures and execution time in CSV format."
-                                        + "In multithread, the 4th column in the output is the number of threads.")
+                                        + " In multithread, the 4th column in the output is the number of threads.")
                         .build();
         options.addOption(tvsoutput);
         Option filedir =
@@ -3125,14 +3221,21 @@ public class MAYGEN {
                         .desc("Output in SDF format with atom coordinates")
                         .build();
         options.addOption(coordinates);
+        Option help =
+                Option.builder("h")
+                        .required(false)
+                        .longOpt("help")
+                        .desc("Displays help message")
+                        .build();
+        options.addOption(help);
         return options;
     }
 
-    public void write2smiles(int[][] mat)
+    public void write2smiles(int[][] mat, IAtomContainer ac)
             throws IOException, CloneNotSupportedException, CDKException {
-
-        IAtomContainer atomContainer = buildAtomContainer(mat);
-        String smilesString = smilesGenerator.create(atomContainer);
+        IAtomContainer ac2 = ac.clone();
+        ac2 = buildAtomContainerFromMatrix(mat, ac2);
+        String smilesString = smilesGenerator.create(ac2);
         smilesOut.write(smilesString + "\n");
     }
 
@@ -3213,6 +3316,28 @@ public class MAYGEN {
     /**
      * Building an atom container for an adjacency matrix.
      *
+     * @param mat the adjacency matrix
+     * @param atomContainer the atomContainer
+     * @return IAtomContainer
+     */
+    public IAtomContainer buildAtomContainerFromMatrix(int[][] mat, IAtomContainer atomContainer) {
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = i + 1; j < mat.length; j++) {
+                if (mat[i][j] == 1) {
+                    atomContainer.addBond(i, j, IBond.Order.SINGLE);
+                } else if (mat[i][j] == 2) {
+                    atomContainer.addBond(i, j, IBond.Order.DOUBLE);
+                } else if (mat[i][j] == 3) {
+                    atomContainer.addBond(i, j, IBond.Order.TRIPLE);
+                }
+            }
+        }
+        return AtomContainerManipulator.removeHydrogens(atomContainer);
+    }
+
+    /**
+     * Building an atom container for an adjacency matrix.
+     *
      * @param ac the IAtomContainer
      * @param mat int[][] adjacency matrix
      * @return IAtomContainer
@@ -3232,9 +3357,7 @@ public class MAYGEN {
                 }
             }
         }
-
-        ac2 = AtomContainerManipulator.removeHydrogens(ac2);
-        return ac2;
+        return AtomContainerManipulator.removeHydrogens(ac2);
     }
 
     /**
@@ -3529,8 +3652,9 @@ public class MAYGEN {
     public static void main(String[] args) {
         MAYGEN gen = new MAYGEN();
         try {
-            gen.parseArgs(args);
-            gen.run();
+            if (!gen.parseArgs(args)) {
+                gen.run();
+            }
         } catch (Exception ex) {
             if (gen.verbose) {
                 Logger.getLogger(MAYGEN.class.getName())
