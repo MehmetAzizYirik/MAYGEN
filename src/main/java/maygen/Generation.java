@@ -47,7 +47,6 @@ public class Generation {
         int[] r = new int[] {0};
         int[] y = new int[] {0};
         int[] z = new int[] {0};
-        String[] symbolArrayCopy;
         int[][] ys = new int[][] {new int[0]};
         int[][] zs = new int[][] {new int[0]};
         boolean[] learningFromCanonicalTest = new boolean[] {false};
@@ -61,7 +60,7 @@ public class Generation {
                 || maygen.isPrintSDF()
                 || maygen.isWriteSMILES()
                 || maygen.isPrintSMILES()) {
-            symbolArrayCopy =
+            String[] symbolArrayCopy =
                     Arrays.copyOf(maygen.getSymbolArray(), maygen.getSymbolArray().length);
             initialPartition =
                     maygen.sortWithPartition(newPartition, degree, symbolArrayCopy, hydrogens);

@@ -64,6 +64,7 @@ import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IBond.Order;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
@@ -1779,7 +1780,7 @@ public class MAYGEN {
                             sdfOut.write(ac2);
                         }
                         if (writeSMILES || printSMILES) {
-                            write2smiles(addHydrogens(A, hIndex, hydrogens));
+                            write2smiles(addHydrogens(A, hIndex, hydrogens), ac);
                         }
                         callForward[0] = false;
                     } else {
@@ -2201,7 +2202,7 @@ public class MAYGEN {
             sdfOut.write(ac);
         }
         if (writeSMILES || printSMILES) {
-            write2smiles(addHydrogens(A, hIndex, hydrogens));
+            write2smiles(addHydrogens(A, hIndex, hydrogens), atomContainer);
         }
     }
 
@@ -3226,11 +3227,11 @@ public class MAYGEN {
         return options;
     }
 
-    public void write2smiles(int[][] mat)
+    public void write2smiles(int[][] mat, IAtomContainer ac)
             throws IOException, CloneNotSupportedException, CDKException {
-
-        IAtomContainer atomContainer = buildAtomContainer(mat);
-        String smilesString = smilesGenerator.create(atomContainer);
+        IAtomContainer ac2 = ac.clone();
+        ac2 = buildAtomContainerFromMatrix(mat, ac2);
+        String smilesString = smilesGenerator.create(ac2);
         smilesOut.write(smilesString + "\n");
     }
 
@@ -3311,6 +3312,28 @@ public class MAYGEN {
     /**
      * Building an atom container for an adjacency matrix.
      *
+     * @param mat the adjacency matrix
+     * @param atomContainer the atomContainer
+     * @return IAtomContainer
+     */
+    public IAtomContainer buildAtomContainerFromMatrix(int[][] mat, IAtomContainer atomContainer) {
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = i + 1; j < mat.length; j++) {
+                if (mat[i][j] == 1) {
+                    atomContainer.addBond(i, j, IBond.Order.SINGLE);
+                } else if (mat[i][j] == 2) {
+                    atomContainer.addBond(i, j, IBond.Order.DOUBLE);
+                } else if (mat[i][j] == 3) {
+                    atomContainer.addBond(i, j, IBond.Order.TRIPLE);
+                }
+            }
+        }
+        return AtomContainerManipulator.removeHydrogens(atomContainer);
+    }
+
+    /**
+     * Building an atom container for an adjacency matrix.
+     *
      * @param ac the IAtomContainer
      * @param mat int[][] adjacency matrix
      * @return IAtomContainer
@@ -3330,9 +3353,7 @@ public class MAYGEN {
                 }
             }
         }
-
-        ac2 = AtomContainerManipulator.removeHydrogens(ac2);
-        return ac2;
+        return AtomContainerManipulator.removeHydrogens(ac2);
     }
 
     /**
