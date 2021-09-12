@@ -72,6 +72,7 @@ import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public class MAYGEN {
+    public static final String VERSION = "1.7";
     public static final String NUMBERS_FROM_0_TO_9 = "(?=[0-9])";
     public static final String LETTERS_FROM_A_TO_Z = "(?=[A-Z])";
     private int size = 0;
@@ -3128,21 +3129,28 @@ public class MAYGEN {
             if (cmd.hasOption("verbose")) this.verbose = true;
             if (cmd.hasOption("tsvoutput")) this.tsvoutput = true;
             if (cmd.hasOption("multithread")) this.multiThread = true;
+            if (cmd.hasOption("help")) {
+                displayHelpMessage(options);
+            }
         } catch (ParseException e) {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.setOptionComparator(null);
-            String header =
-                    "\nGenerates molecular structures for a given molecular formula."
-                            + "\nThe input is a molecular formula string."
-                            + "\n\nFor example 'C2OH4'."
-                            + "\n\nIf user wants to store output file in a specific directory, that is needed to be specified."
-                            + "\nIt is also possible to generate SMILES instead of an SDF file, but it slows down"
-                            + "the generation time. For this, use the '-smi' option."
-                            + "\n\n";
-            String footer = "\nPlease report issues at https://github.com/MehmetAzizYirik/MAYGEN";
-            formatter.printHelp("java -jar MAYGEN.jar", header, options, footer, true);
+            displayHelpMessage(options);
             throw new ParseException("Problem parsing command line");
         }
+    }
+
+    public void displayHelpMessage(Options options) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.setOptionComparator(null);
+        String header =
+                "\nGenerates molecular structures for a given molecular formula."
+                        + "\nThe input is a molecular formula string."
+                        + "\n\nFor example 'C2OH4'."
+                        + "\n\nIf user wants to store output file in a specific directory, that is needed to be specified."
+                        + " It is also possible to generate SMILES instead of an SDF file, but it slows down"
+                        + "the generation time. For this, use the '-smi' option."
+                        + "\n\n";
+        String footer = "\nPlease report issues at https://github.com/MehmetAzizYirik/MAYGEN";
+        formatter.printHelp("java -jar MAYGEN-" + VERSION + ".jar", header, options, footer, true);
     }
 
     public Options setupOptions() {
@@ -3168,7 +3176,7 @@ public class MAYGEN {
                         .longOpt("tsvoutput")
                         .desc(
                                 "Output formula, number of structures and execution time in CSV format."
-                                        + "In multithread, the 4th column in the output is the number of threads.")
+                                        + " In multithread, the 4th column in the output is the number of threads.")
                         .build();
         options.addOption(tvsoutput);
         Option filedir =
@@ -3208,6 +3216,13 @@ public class MAYGEN {
                         .desc("Output in SDF format with atom coordinates")
                         .build();
         options.addOption(coordinates);
+        Option help =
+                Option.builder("h")
+                        .required(false)
+                        .longOpt("help")
+                        .desc("Displays help message")
+                        .build();
+        options.addOption(help);
         return options;
     }
 
