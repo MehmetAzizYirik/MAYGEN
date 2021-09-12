@@ -3098,45 +3098,49 @@ public class MAYGEN {
         }
     }
 
-    public void parseArgs(String[] args) throws ParseException {
+    public boolean parseArgs(String[] args) throws ParseException {
         Options options = setupOptions();
         CommandLineParser parser = new DefaultParser();
+        boolean helpIsPresent = false;
         try {
             CommandLine cmd = parser.parse(options, args);
             this.formula = cmd.getOptionValue("formula");
-            if (cmd.hasOption("outputFile")) {
-                String filedir = cmd.getOptionValue("outputFile");
-                this.filedir = Objects.isNull(filedir) ? "." : filedir;
-                if (cmd.hasOption("smi")) {
-                    this.writeSMILES = true;
-                }
-                if (cmd.hasOption("sdf")) {
-                    this.writeSDF = true;
-                } else if (cmd.hasOption("sdfCoord")) {
-                    this.writeSDF = true;
-                    this.coordinates = true;
-                }
-            } else {
-                if (cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
-                    this.printSMILES = true;
-                }
-                if (cmd.hasOption("sdf")) {
-                    this.printSDF = true;
-                } else if (cmd.hasOption("sdfCoord")) {
-                    this.printSDF = true;
-                    this.coordinates = true;
-                }
-            }
-            if (cmd.hasOption("verbose")) this.verbose = true;
-            if (cmd.hasOption("tsvoutput")) this.tsvoutput = true;
-            if (cmd.hasOption("multithread")) this.multiThread = true;
             if (cmd.hasOption("help")) {
                 displayHelpMessage(options);
+                helpIsPresent = true;
+            } else {
+                if (cmd.hasOption("outputFile")) {
+                    String filedir = cmd.getOptionValue("outputFile");
+                    this.filedir = Objects.isNull(filedir) ? "." : filedir;
+                    if (cmd.hasOption("smi")) {
+                        this.writeSMILES = true;
+                    }
+                    if (cmd.hasOption("sdf")) {
+                        this.writeSDF = true;
+                    } else if (cmd.hasOption("sdfCoord")) {
+                        this.writeSDF = true;
+                        this.coordinates = true;
+                    }
+                } else {
+                    if (cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
+                        this.printSMILES = true;
+                    }
+                    if (cmd.hasOption("sdf")) {
+                        this.printSDF = true;
+                    } else if (cmd.hasOption("sdfCoord")) {
+                        this.printSDF = true;
+                        this.coordinates = true;
+                    }
+                }
+                if (cmd.hasOption("verbose")) this.verbose = true;
+                if (cmd.hasOption("tsvoutput")) this.tsvoutput = true;
+                if (cmd.hasOption("multithread")) this.multiThread = true;
             }
         } catch (ParseException e) {
             displayHelpMessage(options);
             throw new ParseException("Problem parsing command line");
         }
+        return helpIsPresent;
     }
 
     public void displayHelpMessage(Options options) {
@@ -3648,8 +3652,9 @@ public class MAYGEN {
     public static void main(String[] args) {
         MAYGEN gen = new MAYGEN();
         try {
-            gen.parseArgs(args);
-            gen.run();
+            if (!gen.parseArgs(args)) {
+                gen.run();
+            }
         } catch (Exception ex) {
             if (gen.verbose) {
                 Logger.getLogger(MAYGEN.class.getName())

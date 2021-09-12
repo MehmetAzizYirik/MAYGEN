@@ -45,49 +45,54 @@ To compile MAYGEN, Apache Maven and Java 1.8 (or later) are required.
 ```
 MAYGEN/$ mvn package
 ```
-This command will create jar file named as "MAYGEN-jar-with-dependencies" under the target folder.
+This command will create jar file named as "MAYGEN-1.7" under the target folder.
 
 ## Usage
 
-MAYGEN.jar can be run from command line with the specified arguments. An example command is given below.
+MAYGEN-1.7.jar can be run from command line with the specified arguments. An example command is given below.
 
 The definitions of the arguments are given below:
 
 ```
-usage: java -jar MAYGEN.jar -f <arg> [-v] [-t] [-o <arg>] [-m] [-smi] [-sdf] [-sdfCoord]
+usage: java -jar MAYGEN-1.7.jar -f <arg> [-v] [-t] [-o <arg>] [-m] [-smi]
+       [-sdf] [-sdfCoord] [-h]
 
 Generates molecular structures for a given molecular formula.
 The input is a molecular formula string.
 
 For example 'C2OH4'.
 
-If user wants an output file, the directory is needed to be specified.
-It is also possible to generate SMILES instead of an SDF file, but it will
-slow down the generation time. For this, use the '--smiles' option.
+If user wants to store output file in a specific directory, that is needed
+to be specified. It is also possible to generate SMILES instead of an SDF
+file, but it slows downthe generation time. For this, use the '-smi'
+option.
 
- -f,--formula <arg>    		formula (required)
+ -f,--formula <arg>        formula (required)
 
- -v,--verbose          		print message
+ -v,--verbose              print message
 
- -t,--tsvoutput        		Output formula, number of structures and execution
-                       		time in CSV format.In multithread, the 4th column in
-                       		the output is the number of threads.
+ -t,--tsvoutput            Output formula, number of structures and
+                           execution time in CSV format. In multithread,
+                           the 4th column in the output is the number of
+                           threads.
 
- -o,--outputFile <arg> 		Store output file   
+ -o,--outputFile <arg>     Store output file
 
- -m,--multithread      		Use multi thread
+ -m,--multithread          Use multi thread
 
- -smi,--SMILES         		Output in SMILES format
- 
- -sdf,--SDF             	Output in SDF format
- 
+ -smi,--SMILES             Output in SMILES format
+
+ -sdf,--SDF                Output in SDF format
+
  -sdfCoord,--coordinates   Output in SDF format with atom coordinates
+
+ -h,--help                 Displays help message
 
 Please report issues at https://github.com/MehmetAzizYirik/MAYGEN
 ```
 
 ```
-java -jar MAYGEN.jar -f C2OH4 -v -t -o C:\Users\UserName\Desktop\
+java -jar MAYGEN-1.7.jar -f C2OH4 -v -t -o C:\Users\UserName\Desktop\
 ```
 
 ## License
