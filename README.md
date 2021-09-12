@@ -45,16 +45,16 @@ To compile MAYGEN, Apache Maven and Java 1.8 (or later) are required.
 ```
 MAYGEN/$ mvn package
 ```
-This command will create jar file named as "MAYGEN-1.7" under the target folder.
+This command will create jar file named as "MAYGEN-1.8" under the target folder.
 
 ## Usage
 
-MAYGEN-1.7.jar can be run from command line with the specified arguments. An example command is given below.
+MAYGEN-1.8.jar can be run from command line with the specified arguments. An example command is given below.
 
 The definitions of the arguments are given below:
 
 ```
-usage: java -jar MAYGEN-1.7.jar -f <arg> [-v] [-t] [-o <arg>] [-m] [-smi]
+usage: java -jar MAYGEN-1.8.jar -f <arg> [-v] [-t] [-o <arg>] [-m] [-smi]
        [-sdf] [-sdfCoord] [-h]
 
 Generates molecular structures for a given molecular formula.
@@ -92,7 +92,7 @@ Please report issues at https://github.com/MehmetAzizYirik/MAYGEN
 ```
 
 ```
-java -jar MAYGEN-1.7.jar -f C2OH4 -v -t -o C:\Users\UserName\Desktop\
+java -jar MAYGEN-1.8.jar -f C2OH4 -v -t -o C:\Users\UserName\Desktop\
 ```
 
 ## License
