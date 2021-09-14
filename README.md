@@ -10,7 +10,7 @@ Copyright 2021 Mehmet Aziz Yirik
 
 ## Introduction
 
-MAYGEN is an open source chemical structure generator based on the orderly graph generation method. The principles of this method were outlined in the works by Grund et al. [1]. The theoretical basis and the outlines of the functions can be found in [1,2]. The pre-print of MAYGEN article is published in [ChemRxiv](https://bit.ly/3xwpzO7).
+MAYGEN is an open source chemical structure generator based on the orderly graph generation method. The principles of this method were outlined in the [MAYGEN article](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00529-9)[1].
 MAYGEN takes a molecular formula (such as C<sub>10</sub>H<sub>16</sub>O) as input and generates all constitutional isomers of this formula, i. e. all non-isomorphic molecules that can be constructed with the set of atoms in the input formula. For the case of C<sub>10</sub>H<sub>16</sub>O, for example, there are 452,458 non-identical molecules. Here are 12 out of those.
 
 <p align="center">
@@ -19,7 +19,7 @@ MAYGEN takes a molecular formula (such as C<sub>10</sub>H<sub>16</sub>O) as inpu
 
 As can be seen from these examples, MAYGEN makes no assumptions on chemical stability. In particular in small ring systems, this may lead to unlikely structures, such as C=1C=C1. 
 
-We benchmarked MAYGEN V.1.4 against the current state-of-the-art, but [closed-source structure generator MOLGEN 5.0](http://www.molgen.de) from the University of Bayreuth as well as against the [Parallel Molecule Generator (PMG)](https://sourceforge.net/projects/pmgcoordination/)[3], the fastest available open source structure generator. Since PMG can be run in multi-threaded mode, the benchmark was performed in single-threaded mode for algorithmic comparability. For randomly selected 50 formulae, MAYGEN was in average 3 times slower than MOLGEN but 47 times faster than PMG. For some formulae, PMG could not generate isomers. These are shown by gaps on the its plot.
+We benchmarked MAYGEN V.1.4 against the current state-of-the-art, but [closed-source structure generator MOLGEN 5.0](http://www.molgen.de) from the University of Bayreuth as well as against the [Parallel Molecule Generator (PMG)](https://sourceforge.net/projects/pmgcoordination/)[2], the fastest available open source structure generator. Since PMG can be run in multi-threaded mode, the benchmark was performed in single-threaded mode for algorithmic comparability. For randomly selected 50 formulae, MAYGEN was in average 3 times slower than MOLGEN but 47 times faster than PMG. For some formulae, PMG could not generate isomers. These are shown by gaps on the its plot.
 
 <p align="center">
   <img src=/resources/Benchmarking.png />
@@ -115,11 +115,9 @@ This project relies on the Chemistry Development Project (CDK), hosted under [CD
 
 ## References
 
-1- Grund, R. and Müller, R., 1995. Konstruktion molekularer Graphen mit gegebenen Hybridisierungen und überlappungsfreien Fragmenten. Lehrstuhl II für Mathematik.
+1- Yirik, M.A., Sorokina, M. & Steinbeck, C. MAYGEN: an open-source chemical structure generator for constitutional isomers based on the orderly generation principle. J Cheminform 13, 48 (2021). https://doi.org/10.1186/s13321-021-00529-9
 
-2- Kerber, A., Laue, R., Meringer, M., Rücker, C. and Schymanski, E., 2013. Mathematical chemistry and chemoinformatics: structure generation, elucidation and quantitative structure-property relationships. Walter de Gruyter.
-
-3- Jaghoori MM, Jongmans SS, De Boer F, Peironcely J, Faulon JL, Reijmers T, Hankemeier T. PMG: multi-core metabolite identification. Electronic Notes in Theoretical Computer Science. 2013 Dec 25;299:53-60.
+2- Jaghoori MM, Jongmans SS, De Boer F, Peironcely J, Faulon JL, Reijmers T, Hankemeier T. PMG: multi-core metabolite identification. Electronic Notes in Theoretical Computer Science. 2013 Dec 25;299:53-60.
   
   
 
