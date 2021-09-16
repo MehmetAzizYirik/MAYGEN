@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/359922963.svg)](https://zenodo.org/badge/latestdoi/359922963)
+<img src="docs/logo.png" alt="drawing" width="100" align = "right"/> [![DOI](https://zenodo.org/badge/359922963.svg)](https://zenodo.org/badge/latestdoi/359922963)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=MehmetAzizYirik_MAYGEN) 
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=MehmetAzizYirik_MAYGEN) 
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=security_rating)](https://sonarcloud.io/dashboard?id=MehmetAzizYirik_MAYGEN) 
