@@ -30,6 +30,7 @@ package maygen;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -52,7 +53,7 @@ public class Generation {
         boolean[] learningFromCanonicalTest = new boolean[] {false};
         boolean[] learningFromConnectivity = new boolean[] {false};
         int[] nonCanonicalIndices = new int[2];
-        ArrayList<ArrayList<Permutation>> formerPermutations = new ArrayList<>();
+        List<ArrayList<Permutation>> formerPermutations = new ArrayList<>();
         int[] hydrogens = maygen.setHydrogens(degree);
         int[] newPartition = maygen.getPartition(degree);
         final int[] initialPartition;
@@ -73,7 +74,6 @@ public class Generation {
         int[] connectivityIndices = new int[2];
         int[][] partitionList = new int[maygen.getSize() + 1][1];
         try {
-
             partSize[0] = partSize[0] + (maygen.findZeros(initialPartition) - 1);
             maygen.setYZValues(initialPartition, ys, zs);
             partitionList[0] = initialPartition;
