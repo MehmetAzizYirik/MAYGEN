@@ -540,6 +540,8 @@ public class MaygenTest {
         maygen.getOxygenSulfur();
         maygen.getTotalHydrogen();
         maygen.isOnSm();
+        maygen.setFiledir(".");
+        maygen.getFiledir();
     }
 
     @Test
