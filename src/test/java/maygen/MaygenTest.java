@@ -69,8 +69,6 @@ public class MaygenTest {
         maygen.run();
         assertEquals(4752, maygen.getCount());
     }
-    
-    
 
     @Test
     public void test_S27() throws IOException, CDKException, CloneNotSupportedException {
@@ -104,29 +102,7 @@ public class MaygenTest {
         maygen.run();
         assertEquals(84, maygen.getCount());
     }
-    
-    @Test
-    public void test_H2O() throws IOException, CDKException, CloneNotSupportedException {
-        MAYGEN maygen = new MAYGEN();
-        maygen.setFormula("H2O");
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-    }
 
-    @Test
-    public void test_NH3() throws IOException, CDKException, CloneNotSupportedException {
-        MAYGEN maygen = new MAYGEN();
-        maygen.setFormula("NH3");
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-    }
-    
     @Test
     public void test_C6H6() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
@@ -546,17 +522,6 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C_1_6_H_4_8() throws IOException, CDKException, CloneNotSupportedException {
-        MAYGEN maygen = new MAYGEN();
-        maygen.setFuzzyFormula("C[1-6]H[4-8]");
-        maygen.run();
-        assertEquals(159, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(159, maygen.getCount());
-    }
-
-    @Test
     public void test_gettersAndSetters() {
         MAYGEN maygen = new MAYGEN();
         maygen.setWriteSDF(true);
@@ -569,7 +534,6 @@ public class MaygenTest {
         assertTrue(maygen.isPrintSMILES());
         maygen.isMultiThread();
         maygen.getFormula();
-        maygen.getFuzzyFormula();
         maygen.getTotal();
         maygen.getSymbols();
         maygen.getOccurrences();
