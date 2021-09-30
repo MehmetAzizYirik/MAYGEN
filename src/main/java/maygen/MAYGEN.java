@@ -2047,7 +2047,7 @@ public class MAYGEN {
         }
     }
 
-    public void doRun(String localFormula)
+    private void doRun(String localFormula)
             throws IOException, CDKException, CloneNotSupportedException {
         String normalizedLocalFormula = normalizeFormula(localFormula);
         String[] unsupportedSymbols = validateFormula(normalizedLocalFormula);
@@ -2061,8 +2061,25 @@ public class MAYGEN {
             if (verbose)
                 System.out.println(
                         "MAYGEN is generating isomers of " + normalizedLocalFormula + "...");
-            configureSdf(normalizedLocalFormula);
-            configureSmiles(normalizedLocalFormula);
+            if (writeSDF || printSDF) {
+                if (writeSDF) {
+                    new File(filedir).mkdirs();
+                    sdfOut =
+                            new SDFWriter(
+                                    new FileWriter(
+                                            filedir + "/" + normalizedLocalFormula + ".sdf"));
+                } else {
+                    sdfOut = new SDFWriter(new PrintWriter(System.out));
+                }
+            }
+            if (writeSMILES || printSMILES) {
+                if (writeSMILES) {
+                    new File(filedir).mkdirs();
+                    smilesOut = new FileWriter(filedir + "/" + normalizedLocalFormula + ".smi");
+                } else {
+                    smilesOut = new PrintWriter(System.out);
+                }
+            }
             String[] atoms = normalizedLocalFormula.split(LETTERS_FROM_A_TO_Z);
             if (checkLengthTwoFormula(atoms)) {
                 singleAtomCheck(atoms);
@@ -2073,7 +2090,27 @@ public class MAYGEN {
                     displayStatistic(startTime, normalizedLocalFormula);
                 } else {
                     checkOxygenSulfur(atoms);
-                    processFormula(normalizedLocalFormula, startTime);
+                    if (onlyDegree2) {
+                        if (oxygen == 0 || sulfur == 0) {
+                            degree2graph();
+                        } else {
+                            distributeSulfurOxygen(normalizedLocalFormula);
+                        }
+                        displayStatistic(startTime, normalizedLocalFormula);
+                    } else {
+                        if (canBuildIsomer(normalizedLocalFormula)) {
+                            getSymbolOccurrences(normalizedLocalFormula);
+                            initialDegrees();
+                            structureGenerator(normalizedLocalFormula);
+                            displayStatistic(startTime, normalizedLocalFormula);
+                        } else {
+                            if (verbose)
+                                System.out.println(
+                                        "The input formula, "
+                                                + normalizedLocalFormula
+                                                + ", does not represent any molecule.");
+                        }
+                    }
                 }
             } else {
                 if (verbose)
@@ -2081,55 +2118,6 @@ public class MAYGEN {
                             "The input formula, "
                                     + normalizedLocalFormula
                                     + ", does not represent any molecule.");
-            }
-        }
-    }
-
-    public void processFormula(String normalizedLocalFormula, long startTime)
-            throws IOException, CDKException, CloneNotSupportedException {
-        if (onlyDegree2) {
-            if (oxygen == 0 || sulfur == 0) {
-                degree2graph();
-            } else {
-                distributeSulfurOxygen(normalizedLocalFormula);
-            }
-            displayStatistic(startTime, normalizedLocalFormula);
-        } else {
-            if (canBuildIsomer(normalizedLocalFormula)) {
-                getSymbolOccurrences(normalizedLocalFormula);
-                initialDegrees();
-                structureGenerator(normalizedLocalFormula);
-                displayStatistic(startTime, normalizedLocalFormula);
-            } else {
-                if (verbose)
-                    System.out.println(
-                            "The input formula, "
-                                    + normalizedLocalFormula
-                                    + ", does not represent any molecule.");
-            }
-        }
-    }
-
-    public void configureSmiles(String normalizedLocalFormula) throws IOException {
-        if (writeSMILES || printSMILES) {
-            if (writeSMILES) {
-                new File(filedir).mkdirs();
-                smilesOut = new FileWriter(filedir + "/" + normalizedLocalFormula + ".smi");
-            } else {
-                smilesOut = new PrintWriter(System.out);
-            }
-        }
-    }
-
-    public void configureSdf(String normalizedLocalFormula) throws IOException {
-        if (writeSDF || printSDF) {
-            if (writeSDF) {
-                new File(filedir).mkdirs();
-                sdfOut =
-                        new SDFWriter(
-                                new FileWriter(filedir + "/" + normalizedLocalFormula + ".sdf"));
-            } else {
-                sdfOut = new SDFWriter(new PrintWriter(System.out));
             }
         }
     }
@@ -2360,13 +2348,13 @@ public class MAYGEN {
      * Finding the W values of neighbors in the former connectivity partition.
      *
      * @param nValues the N values
-     * @param kFormer the K values of the former step
+     * @param Kformer the K values of the former step
      * @return the wValues
      */
-    public Set<Integer> wValues(Set<Integer> nValues, int[] kFormer) {
+    public Set<Integer> wValues(Set<Integer> nValues, int[] Kformer) {
         Set<Integer> wValues = new HashSet<>();
         for (Integer i : nValues) {
-            wValues.add(kFormer[i]);
+            wValues.add(Kformer[i]);
         }
         return wValues;
     }
@@ -3159,17 +3147,15 @@ public class MAYGEN {
      */
     public HashMap<String, Integer[]> getFuzzyFormulaRanges(
             String localFormula, List<String> symbolList) {
-        String[] atoms = localFormula.split(LETTERS_FROM_A_TO_Z);
+        String[] atoms = localFormula.split("(?=[A-Z])");
         HashMap<String, Integer[]> symbols = new HashMap<>();
-        String[] info;
-        String[] info2;
-        String[] info3;
+        String[] info, info2, info3;
         for (String atom : atoms) {
             info = atom.split("\\[");
             String symbol;
             Integer[] n = new Integer[2];
             if (info.length == 1) {
-                info2 = info[0].split(NUMBERS_FROM_0_TO_9, 2);
+                info2 = info[0].split("(?=[0-9])", 2);
                 symbol = info2[0];
                 if (info2.length == 1) {
                     n[0] = 1;
@@ -3202,7 +3188,7 @@ public class MAYGEN {
     public void generateFormulae(
             List<String> result,
             List<String> symbolList,
-            Map<String, Integer[]> symbols,
+            HashMap<String, Integer[]> symbols,
             String localFormula,
             int index) {
         if ((index) == symbols.size()) {
@@ -3256,10 +3242,10 @@ public class MAYGEN {
                                 + String.join(", ", unsupportedSymbols));
         } else {
             List<String> symbolList = new ArrayList<>();
-            HashMap<String, Integer[]> localSymbols =
+            HashMap<String, Integer[]> symbols =
                     getFuzzyFormulaRanges(normalizedLocalFuzzyFormula, symbolList);
             String newFormula = "";
-            generateFormulae(result, symbolList, localSymbols, newFormula, 0);
+            generateFormulae(result, symbolList, symbols, newFormula, 0);
         }
         return result;
     }
@@ -3328,22 +3314,22 @@ public class MAYGEN {
 
     public Options setupOptions() {
         Options options = new Options();
-        Option formulaOption =
+        Option formula =
                 Option.builder("f")
                         .required(false)
                         .hasArg()
                         .longOpt("formula")
                         .desc("formula (required)")
                         .build();
-        options.addOption(formulaOption);
-        Option fuzzyFormulaOption =
+        options.addOption(formula);
+        Option fuzzyFormula =
                 Option.builder("fuzzy")
                         .required(false)
                         .hasArg()
                         .longOpt("fuzzyFormula")
                         .desc("fuzzy formula (required)")
                         .build();
-        options.addOption(fuzzyFormulaOption);
+        options.addOption(fuzzyFormula);
         Option verbose =
                 Option.builder("v")
                         .required(false)
@@ -3809,9 +3795,15 @@ public class MAYGEN {
             }
         } catch (Exception ex) {
             if (gen.verbose) {
-                String localFormula = Objects.nonNull(gen.formula) ? gen.formula : gen.fuzzyFormula;
                 Logger.getLogger(MAYGEN.class.getName())
-                        .log(Level.SEVERE, ex, () -> "Formula " + localFormula);
+                        .log(
+                                Level.SEVERE,
+                                ex,
+                                () ->
+                                        "Formula "
+                                                + (Objects.nonNull(gen.formula)
+                                                        ? gen.formula
+                                                        : gen.fuzzyFormula));
             }
         }
     }
