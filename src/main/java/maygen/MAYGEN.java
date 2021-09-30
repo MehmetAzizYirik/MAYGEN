@@ -79,7 +79,10 @@ public class MAYGEN {
     private static final Map<String, Integer> valences;
     private int size = 0;
     private int total = 0;
+    private AtomicInteger fuzzyCount = new AtomicInteger();
+    private double fuzzySeconds = 0;
     private boolean tsvoutput = false;
+    private boolean fuzzy = false;
     private boolean writeSDF = false;
     private boolean coordinates = false;
     private SDFWriter sdfOut;
@@ -92,7 +95,8 @@ public class MAYGEN {
     private AtomicInteger count = new AtomicInteger();
     private int matrixSize = 0;
     private boolean verbose = false;
-    private String formula;
+    private boolean fuzzyVerbose = false;
+    private String formula, fuzzyFormula;
     private String filedir = ".";
     private List<String> symbols = new ArrayList<>();
     private int[] occurrences;
@@ -2024,30 +2028,38 @@ public class MAYGEN {
         formula = normalizeFormula(formula);
         String[] unsupportedSymbols = validateFormula(formula);
         if (unsupportedSymbols.length > 0) {
-            if (verbose)
+            if (verbose || fuzzyVerbose)
                 System.out.println(
                         "The input formula consists user defined element types: "
                                 + String.join(", ", unsupportedSymbols));
         } else {
             long startTime = System.nanoTime();
-            if (verbose) System.out.println("MAYGEN is generating isomers of " + formula + "...");
-            if (writeSDF || printSDF) {
-                if (writeSDF) {
-                    new File(filedir).mkdirs();
-                    sdfOut =
-                            new SDFWriter(
-                                    new FileWriter(
-                                            filedir + "/" + normalizeFormula(formula) + ".sdf"));
-                } else {
-                    sdfOut = new SDFWriter(new PrintWriter(System.out));
+
+            if (!fuzzy && verbose)
+                System.out.println("MAYGEN is generating isomers of " + formula + "...");
+            if (!fuzzy) {
+                if (writeSDF || printSDF) {
+                    if (writeSDF) {
+                        new File(filedir).mkdirs();
+                        sdfOut =
+                                new SDFWriter(
+                                        new FileWriter(
+                                                filedir
+                                                        + "/"
+                                                        + normalizeFormula(formula)
+                                                        + ".sdf"));
+                    } else {
+                        sdfOut = new SDFWriter(new PrintWriter(System.out));
+                    }
                 }
-            }
-            if (writeSMILES || printSMILES) {
-                if (writeSMILES) {
-                    new File(filedir).mkdirs();
-                    smilesOut = new FileWriter(filedir + "/" + normalizeFormula(formula) + ".smi");
-                } else {
-                    smilesOut = new PrintWriter(System.out);
+                if (writeSMILES || printSMILES) {
+                    if (writeSMILES) {
+                        new File(filedir).mkdirs();
+                        smilesOut =
+                                new FileWriter(filedir + "/" + normalizeFormula(formula) + ".smi");
+                    } else {
+                        smilesOut = new PrintWriter(System.out);
+                    }
                 }
             }
             String[] atoms = formula.split(LETTERS_FROM_A_TO_Z);
@@ -2091,20 +2103,57 @@ public class MAYGEN {
     }
 
     public void displayStatistic(long startTime) throws IOException {
+        if (!fuzzy) {
+            if (writeSDF || printSDF) {
+                sdfOut.close();
+            }
+            if (writeSMILES || printSMILES) {
+                smilesOut.close();
+            }
+            long endTime = System.nanoTime() - startTime;
+            double seconds = (double) endTime / 1000000000.0;
+            DecimalFormat d = new DecimalFormat(".###");
+            d.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+
+            if (verbose) {
+                if (printSMILES || printSDF) System.out.println();
+                if (verbose) System.out.println("The number of structures is: " + count);
+                if (verbose) System.out.println("Time: " + d.format(seconds) + " seconds");
+            }
+
+            if (tsvoutput) {
+                System.out.println(
+                        formula
+                                + "\t"
+                                + count
+                                + "\t"
+                                + d.format(seconds)
+                                + "\t"
+                                + (multiThread ? size : 1));
+            }
+        } else {
+            long endTime = System.nanoTime() - startTime;
+            double seconds = (double) endTime / 1000000000.0;
+            fuzzySeconds += seconds;
+        }
+    }
+
+    public void displayFuzzyStatistic(long startTime) throws IOException {
         if (writeSDF || printSDF) {
             sdfOut.close();
         }
         if (writeSMILES || printSMILES) {
             smilesOut.close();
         }
+
         long endTime = System.nanoTime() - startTime;
         double seconds = (double) endTime / 1000000000.0;
         DecimalFormat d = new DecimalFormat(".###");
         d.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
-        if (verbose) {
+        if (fuzzyVerbose) {
             if (printSMILES || printSDF) System.out.println();
-            System.out.println("The number of structures is: " + count);
+            System.out.println("The number of structures is: " + fuzzyCount);
             System.out.println("Time: " + d.format(seconds) + " seconds");
         }
 
@@ -2119,7 +2168,6 @@ public class MAYGEN {
                             + (multiThread ? size : 1));
         }
     }
-
     /**
      * If there are hydrogens in the formula, calling the hydrogenDistributor. This is the
      * pre-hydrogen distribution. Then, the new list of degrees is defined for each hydrogen
@@ -3104,139 +3152,6 @@ public class MAYGEN {
         }
     }
 
-    public boolean parseArgs(String[] args) throws ParseException {
-        Options options = setupOptions();
-        CommandLineParser parser = new DefaultParser();
-        boolean helpIsPresent = false;
-        try {
-            CommandLine cmd = parser.parse(options, args);
-            this.formula = cmd.getOptionValue("formula");
-            if (cmd.hasOption("help")) {
-                displayHelpMessage(options);
-                helpIsPresent = true;
-            } else {
-                if (cmd.hasOption("outputFile")) {
-                    String filedir = cmd.getOptionValue("outputFile");
-                    this.filedir = Objects.isNull(filedir) ? "." : filedir;
-                    if (cmd.hasOption("smi")) {
-                        this.writeSMILES = true;
-                    }
-                    if (cmd.hasOption("sdf")) {
-                        this.writeSDF = true;
-                    } else if (cmd.hasOption("sdfCoord")) {
-                        this.writeSDF = true;
-                        this.coordinates = true;
-                    }
-                } else {
-                    if (cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
-                        this.printSMILES = true;
-                    }
-                    if (cmd.hasOption("sdf")) {
-                        this.printSDF = true;
-                    } else if (cmd.hasOption("sdfCoord")) {
-                        this.printSDF = true;
-                        this.coordinates = true;
-                    }
-                }
-                if (cmd.hasOption("verbose")) this.verbose = true;
-                if (cmd.hasOption("tsvoutput")) this.tsvoutput = true;
-                if (cmd.hasOption("multithread")) this.multiThread = true;
-            }
-        } catch (ParseException e) {
-            displayHelpMessage(options);
-            throw new ParseException("Problem parsing command line");
-        }
-        return helpIsPresent;
-    }
-
-    public void displayHelpMessage(Options options) {
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.setOptionComparator(null);
-        String header =
-                "\nGenerates molecular structures for a given molecular formula."
-                        + "\nThe input is a molecular formula string."
-                        + "\n\nFor example 'C2OH4'."
-                        + "\n\nIf user wants to store output file in a specific directory, that is needed to be specified."
-                        + " It is also possible to generate SMILES instead of an SDF file, but it slows down"
-                        + " the generation time. For this, use the '-smi' option."
-                        + "\n\n";
-        String footer = "\nPlease report issues at https://github.com/MehmetAzizYirik/MAYGEN";
-        formatter.printHelp("java -jar MAYGEN-" + VERSION + ".jar", header, options, footer, true);
-    }
-
-    public Options setupOptions() {
-        Options options = new Options();
-        Option formula =
-                Option.builder("f")
-                        .required(true)
-                        .hasArg()
-                        .longOpt("formula")
-                        .desc("formula (required)")
-                        .build();
-        options.addOption(formula);
-        Option verbose =
-                Option.builder("v")
-                        .required(false)
-                        .longOpt("verbose")
-                        .desc("print message")
-                        .build();
-        options.addOption(verbose);
-        Option tvsoutput =
-                Option.builder("t")
-                        .required(false)
-                        .longOpt("tsvoutput")
-                        .desc(
-                                "Output formula, number of structures and execution time in CSV format."
-                                        + " In multithread, the 4th column in the output is the number of threads.")
-                        .build();
-        options.addOption(tvsoutput);
-        Option filedir =
-                Option.builder("o")
-                        .required(false)
-                        .hasArg()
-                        .optionalArg(true)
-                        .longOpt("outputFile")
-                        .desc("Store output file")
-                        .build();
-        options.addOption(filedir);
-        Option multithread =
-                Option.builder("m")
-                        .required(false)
-                        .longOpt("multithread")
-                        .desc("Use multi thread")
-                        .build();
-        options.addOption(multithread);
-        Option smiles =
-                Option.builder("smi")
-                        .required(false)
-                        .longOpt("SMILES")
-                        .desc("Output in SMILES format")
-                        .build();
-        options.addOption(smiles);
-        Option sdf =
-                Option.builder("sdf")
-                        .required(false)
-                        .longOpt("SDF")
-                        .desc("Output in SDF format")
-                        .build();
-        options.addOption(sdf);
-        Option coordinates =
-                Option.builder("sdfCoord")
-                        .required(false)
-                        .longOpt("coordinates")
-                        .desc("Output in SDF format with atom coordinates")
-                        .build();
-        options.addOption(coordinates);
-        Option help =
-                Option.builder("h")
-                        .required(false)
-                        .longOpt("help")
-                        .desc("Displays help message")
-                        .build();
-        options.addOption(help);
-        return options;
-    }
-
     public void write2smiles(int[][] mat, IAtomContainer ac)
             throws IOException, CloneNotSupportedException, CDKException {
         IAtomContainer ac2 = ac.clone();
@@ -3631,16 +3546,325 @@ public class MAYGEN {
         distributeSymbols(oxygen, sulfur, 1, 1, 0, 0, 0, false);
     }
 
+    /** Fuzzy formula functions */
+
+    /**
+     * To get the fuzzy formula ranges for each element type in the molecular formula
+     *
+     * @param formula String molecular formula
+     * @param symbolList List<String> symbol list
+     * @return
+     */
+    public HashMap<String, Integer[]> getFuzzyFormulaRanges(
+            String formula, List<String> symbolList) {
+        String[] atoms = formula.split("(?=[A-Z])");
+        HashMap<String, Integer[]> symbols = new HashMap<String, Integer[]>();
+        String[] info, info2, info3;
+        String symbol;
+        for (String atom : atoms) {
+            info = atom.split("\\[");
+            symbol = info[0];
+            Integer[] n = new Integer[2];
+            if (info.length == 1) {
+                info2 = info[0].split("(?=[0-9])", 2);
+                symbol = info2[0];
+                if (info2.length == 1) {
+                    n[0] = 1;
+                    n[1] = 1;
+                } else {
+                    n[0] = Integer.valueOf(info2[1]);
+                    n[1] = Integer.valueOf(info2[1]);
+                }
+            } else {
+                symbol = info[0];
+                info3 = info[1].split("-");
+                n[0] = Integer.valueOf(info3[0]);
+                n[1] = Integer.valueOf(info3[1].split("\\]")[0]);
+            }
+            symbolList.add(symbol);
+            symbols.put(symbol, n);
+        }
+        return symbols;
+    }
+
+    /**
+     * Generating list of formulae for the input fuzzy formula.
+     *
+     * @param formula String formula
+     * @return
+     */
+    public List<String> getFormulaList(String formula) {
+        List<String> result = new ArrayList<String>();
+        List<String> symbolList = new ArrayList<String>();
+        HashMap<String, Integer[]> symbols = getFuzzyFormulaRanges(formula, symbolList);
+        String newFormula = "";
+        generateFormulae(result, symbolList, symbols, newFormula, 0);
+        return result;
+    }
+
+    /**
+     * Formulae generator for each element ranges
+     *
+     * @param result List<String> result
+     * @param symbolList List<String> symbolList
+     * @param symbols HashMap<String, Integer[]>
+     * @param formula String
+     * @param index int
+     */
+    public void generateFormulae(
+            List<String> result,
+            List<String> symbolList,
+            HashMap<String, Integer[]> symbols,
+            String formula,
+            int index) {
+        if ((index) == symbols.size()) {
+            result.add(formula);
+        } else {
+            String symbol = symbolList.get(index);
+            Integer[] range = symbols.get(symbol);
+            for (int i = range[0]; i <= range[1]; i++) {
+                generateFormulae(
+                        result, symbolList, symbols, extendFormula(formula, i, symbol), index + 1);
+            }
+        }
+    }
+
+    /**
+     * Adding new entry to the new molecular formula
+     *
+     * @param formula String
+     * @param number int
+     * @param symbol String
+     * @return
+     */
+    public String extendFormula(String formula, int number, String symbol) {
+        String newFormula = formula;
+        if (number == 1) {
+            newFormula += symbol;
+        } else if (number > 1) {
+            newFormula += symbol + String.valueOf(number);
+        }
+        return newFormula;
+    }
+
+    /**
+     * Summation for the atomic integers
+     *
+     * @param i int
+     */
+    public void add(int i) {
+        fuzzyCount.addAndGet(i);
+    }
+
+    public void fuuzeRun() throws IOException {
+        System.out.println(writeSDF + " " + printSDF + " " + writeSMILES + " " + printSMILES);
+        long startTime = System.nanoTime();
+        List<String> list = getFormulaList(fuzzyFormula);
+        if (fuzzyVerbose)
+            System.out.println("MAYGEN is generating isomers of " + fuzzyFormula + "...");
+        if ((writeSDF || printSDF)) {
+            if (writeSDF) {
+                System.out.println(filedir);
+                new File(filedir).mkdirs();
+                sdfOut = new SDFWriter(new FileWriter(filedir + "/" + fuzzyFormula + ".sdf"));
+            } else {
+                sdfOut = new SDFWriter(new PrintWriter(System.out));
+            }
+        }
+        if (writeSMILES || printSMILES) {
+            if (writeSMILES) {
+                new File(filedir).mkdirs();
+                smilesOut = new FileWriter(filedir + "/" + fuzzyFormula + ".smi");
+            } else {
+                smilesOut = new PrintWriter(System.out);
+            }
+        }
+        clearGlobals();
+        list.forEach(
+                formula -> {
+                    try {
+                        if (canBuildIsomer(formula)) {
+                            setFormula(formula);
+                            run();
+                            add(count.intValue());
+                        }
+                    } catch (IOException | CDKException | CloneNotSupportedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                });
+        displayFuzzyStatistic(startTime);
+    }
+
+    public boolean parseArgs(String[] args) throws ParseException {
+        Options options = setupOptions();
+        CommandLineParser parser = new DefaultParser();
+        boolean helpIsPresent = false;
+        try {
+            CommandLine cmd = parser.parse(options, args);
+            if (cmd.hasOption("help")) {
+                displayHelpMessage(options);
+                helpIsPresent = true;
+            } else {
+                if (cmd.hasOption("fuzzyFormula")) {
+                    this.fuzzy = true;
+                    this.fuzzyFormula = cmd.getOptionValue("fuzzyFormula");
+                    if (cmd.hasOption("verbose")) {
+                        fuzzyVerbose = true;
+                    }
+                } else if (cmd.hasOption("formula")) {
+                    this.formula = cmd.getOptionValue("formula");
+                    if (cmd.hasOption("verbose")) {
+                        verbose = true;
+                    }
+                }
+                if (cmd.hasOption("outputFile")) {
+                    String filedir = cmd.getOptionValue("outputFile");
+                    this.filedir = Objects.isNull(filedir) ? "." : filedir;
+                    if (cmd.hasOption("smi")) {
+                        this.writeSMILES = true;
+                    }
+                    if (cmd.hasOption("sdf")) {
+                        this.writeSDF = true;
+                    } else if (cmd.hasOption("sdfCoord")) {
+                        this.writeSDF = true;
+                        this.coordinates = true;
+                    }
+                } else {
+                    if (cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
+                        this.printSMILES = true;
+                    }
+                    if (cmd.hasOption("sdf")) {
+                        this.printSDF = true;
+                    } else if (cmd.hasOption("sdfCoord")) {
+                        this.printSDF = true;
+                        this.coordinates = true;
+                    }
+                }
+                if (cmd.hasOption("tsvoutput")) this.tsvoutput = true;
+                if (cmd.hasOption("multithread")) this.multiThread = true;
+            }
+        } catch (ParseException e) {
+            displayHelpMessage(options);
+            throw new ParseException("Problem parsing command line");
+        }
+        return helpIsPresent;
+    }
+
+    public void displayHelpMessage(Options options) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.setOptionComparator(null);
+        String header =
+                "\nGenerates molecular structures for a given molecular formula."
+                        + "\nThe input is a molecular formula string."
+                        + "\n\nFor example 'C2OH4'."
+                        + "\n\nIf user wants to store output file in a specific directory, that is needed to be specified."
+                        + " It is also possible to generate SMILES instead of an SDF file, but it slows down"
+                        + " the generation time. For this, use the '-smi' option."
+                        + "\n\n";
+        String footer = "\nPlease report issues at https://github.com/MehmetAzizYirik/MAYGEN";
+        formatter.printHelp("java -jar MAYGEN-" + VERSION + ".jar", header, options, footer, true);
+    }
+
+    public Options setupOptions() {
+        Options options = new Options();
+        Option formula =
+                Option.builder("f")
+                        .required(false)
+                        .hasArg()
+                        .longOpt("formula")
+                        .desc("formula (required)")
+                        .build();
+        options.addOption(formula);
+        Option fuzzyFormula =
+                Option.builder("fuzzy")
+                        .required(false)
+                        .hasArg()
+                        .longOpt("fuzzyFormula")
+                        .desc("fuzzy formula (required)")
+                        .build();
+        options.addOption(fuzzyFormula);
+        Option verbose =
+                Option.builder("v")
+                        .required(false)
+                        .longOpt("verbose")
+                        .desc("print message")
+                        .build();
+        options.addOption(verbose);
+        Option tvsoutput =
+                Option.builder("t")
+                        .required(false)
+                        .longOpt("tsvoutput")
+                        .desc(
+                                "Output formula, number of structures and execution time in CSV format."
+                                        + " In multithread, the 4th column in the output is the number of threads.")
+                        .build();
+        options.addOption(tvsoutput);
+        Option filedir =
+                Option.builder("o")
+                        .required(false)
+                        .hasArg()
+                        .optionalArg(true)
+                        .longOpt("outputFile")
+                        .desc("Store output file")
+                        .build();
+        options.addOption(filedir);
+        Option multithread =
+                Option.builder("m")
+                        .required(false)
+                        .longOpt("multithread")
+                        .desc("Use multi thread")
+                        .build();
+        options.addOption(multithread);
+        Option smiles =
+                Option.builder("smi")
+                        .required(false)
+                        .longOpt("SMILES")
+                        .desc("Output in SMILES format")
+                        .build();
+        options.addOption(smiles);
+        Option sdf =
+                Option.builder("sdf")
+                        .required(false)
+                        .longOpt("SDF")
+                        .desc("Output in SDF format")
+                        .build();
+        options.addOption(sdf);
+        Option coordinates =
+                Option.builder("sdfCoord")
+                        .required(false)
+                        .longOpt("coordinates")
+                        .desc("Output in SDF format with atom coordinates")
+                        .build();
+        options.addOption(coordinates);
+        Option help =
+                Option.builder("h")
+                        .required(false)
+                        .longOpt("help")
+                        .desc("Displays help message")
+                        .build();
+        options.addOption(help);
+        return options;
+    }
+
     public static void main(String[] args) {
+        String[] a = {"-fuzzy", "C[1-6]H[4-8]", "-v", "-m", "-smi"};
         MAYGEN gen = new MAYGEN();
         try {
-            if (!gen.parseArgs(args)) {
-                gen.run();
+            if (!gen.parseArgs(a)) {
+                if (gen.fuzzyVerbose) {
+                    gen.fuuzeRun();
+                } else {
+                    gen.run();
+                }
             }
         } catch (Exception ex) {
             if (gen.verbose) {
                 Logger.getLogger(MAYGEN.class.getName())
                         .log(Level.SEVERE, ex, () -> "Formula " + gen.formula);
+            } else if (gen.fuzzyVerbose) {
+                Logger.getLogger(MAYGEN.class.getName())
+                        .log(Level.SEVERE, ex, () -> "Formula " + gen.fuzzyFormula);
             }
         }
     }
