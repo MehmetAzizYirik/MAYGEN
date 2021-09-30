@@ -69,6 +69,8 @@ public class MaygenTest {
         maygen.run();
         assertEquals(4752, maygen.getCount());
     }
+    
+    
 
     @Test
     public void test_S27() throws IOException, CDKException, CloneNotSupportedException {
@@ -102,7 +104,29 @@ public class MaygenTest {
         maygen.run();
         assertEquals(84, maygen.getCount());
     }
+    
+    @Test
+    public void test_H2O() throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN maygen = new MAYGEN();
+        maygen.setFormula("H2O");
+        maygen.run();
+        assertEquals(1, maygen.getCount());
+        maygen.setMultiThread(true);
+        maygen.run();
+        assertEquals(1, maygen.getCount());
+    }
 
+    @Test
+    public void test_NH3() throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN maygen = new MAYGEN();
+        maygen.setFormula("NH3");
+        maygen.run();
+        assertEquals(1, maygen.getCount());
+        maygen.setMultiThread(true);
+        maygen.run();
+        assertEquals(1, maygen.getCount());
+    }
+    
     @Test
     public void test_C6H6() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
