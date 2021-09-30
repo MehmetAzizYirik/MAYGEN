@@ -522,6 +522,17 @@ public class MaygenTest {
     }
 
     @Test
+    public void test_C_1_6_H_4_8() throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN maygen = new MAYGEN();
+        maygen.setFuzzyFormula("C[1-6]H[4-8]");
+        maygen.run();
+        assertEquals(159, maygen.getCount());
+        maygen.setMultiThread(true);
+        maygen.run();
+        assertEquals(159, maygen.getCount());
+    }
+
+    @Test
     public void test_gettersAndSetters() {
         MAYGEN maygen = new MAYGEN();
         maygen.setWriteSDF(true);
@@ -534,6 +545,7 @@ public class MaygenTest {
         assertTrue(maygen.isPrintSMILES());
         maygen.isMultiThread();
         maygen.getFormula();
+        maygen.getFuzzyFormula();
         maygen.getTotal();
         maygen.getSymbols();
         maygen.getOccurrences();
