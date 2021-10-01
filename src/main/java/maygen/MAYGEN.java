@@ -2055,11 +2055,7 @@ public class MAYGEN {
 
         if (atoms.length == 1) {
             String[] info = atoms[0].split(NUMBERS_FROM_0_TO_9, 2);
-            if (info[1].equals("2")) {
-                if (valences.get(info[0]) > 3) {
-                    check = false;
-                }
-            }
+            if (info[1].equals("2") && valences.get(info[0]) > 3) check=false;
         }
         return check;
     }
