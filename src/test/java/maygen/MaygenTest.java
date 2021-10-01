@@ -590,7 +590,8 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C_1_6_Cl2_H_4_8() throws IOException, CDKException, CloneNotSupportedException {
+    public void test_C_1_6_Cl2_H_4_8()
+            throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
         maygen.clearGlobals();
         maygen.setFuzzyFormula("C[1-6]Cl2H[4-8]");
@@ -600,7 +601,7 @@ public class MaygenTest {
         maygen.run();
         assertEquals(4141, maygen.getFuzzyCount());
     }
-    
+
     @Test
     public void test_C_1_2_H_3_8() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
@@ -683,7 +684,7 @@ public class MaygenTest {
         maygen.run();
         assertEquals(4141, maygen.getFuzzyCount());
     }
-    
+
     @Test
     public void test_C_1_2_H_3_8_writeSdfAndSmiles()
             throws IOException, CDKException, CloneNotSupportedException {
