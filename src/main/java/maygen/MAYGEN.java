@@ -146,7 +146,7 @@ public class MAYGEN {
     public void setWriteSDF(boolean writeSDF) {
         this.writeSDF = writeSDF;
     }
-    
+
     public boolean isCoordinates() {
         return coordinates;
     }
@@ -154,7 +154,7 @@ public class MAYGEN {
     public void setCoordinates(boolean coord) {
         this.coordinates = coord;
     }
-    
+
     public boolean isTSV() {
         return tsvoutput;
     }
@@ -433,17 +433,16 @@ public class MAYGEN {
     public void singleAtomCheckLengthIsBiggerThanOne(String[] atoms) {
         String symbol;
         String[] info;
-        int localCount=0;
+        int localCount = 0;
         for (String atom : atoms) {
             info = atom.split(NUMBERS_FROM_0_TO_9, 2);
             symbol = info[0];
-            if (!symbol.equals("H")){
-            	localCount++;
-            	if(atomOccurrence(info) > 1 || localCount>1) {
-            		singleAtom = false;
+            if (!symbol.equals("H")) {
+                localCount++;
+                if (atomOccurrence(info) > 1 || localCount > 1) {
+                    singleAtom = false;
                     break;
-            	}
-                
+                }
             }
         }
     }
@@ -1605,8 +1604,8 @@ public class MAYGEN {
      * @return the adjacency matrix
      */
     public int[][] addHydrogens(int[][] a, int index, int[] hydrogens) {
-    	int localHIndex = index;
-    	if (singleAtom) {
+        int localHIndex = index;
+        if (singleAtom) {
             int hydrogen = valences.get(symbolArray[0]);
             for (int j = localHIndex; j < hydrogen + localHIndex; j++) {
                 a[0][j] = 1;
@@ -1623,7 +1622,7 @@ public class MAYGEN {
                     a[j][i] = 1;
                 }
                 if (hydrogen != 0) {
-                	localHIndex = localHIndex + hydrogen;
+                    localHIndex = localHIndex + hydrogen;
                 }
             }
         }
@@ -2075,7 +2074,7 @@ public class MAYGEN {
 
         if (atoms.length == 1) {
             String[] info = atoms[0].split(NUMBERS_FROM_0_TO_9, 2);
-            if (info[1].equals("2") && valences.get(info[0]) > 3) check=false;
+            if (info[1].equals("2") && valences.get(info[0]) > 3) check = false;
         }
         return check;
     }
@@ -2093,7 +2092,8 @@ public class MAYGEN {
             configureSdf(normalizedLocalFuzzyFormula);
             configureSmiles(normalizedLocalFuzzyFormula);
             if (verbose)
-            	System.out.println("MAYGEN is generating isomers of " + normalizedLocalFuzzyFormula + "...");
+                System.out.println(
+                        "MAYGEN is generating isomers of " + normalizedLocalFuzzyFormula + "...");
             long startTime = System.nanoTime();
             fuzzyCount = 0;
             for (String fuzzyFormulaItem : getFormulaList(normalizedLocalFuzzyFormula)) {
@@ -2992,7 +2992,7 @@ public class MAYGEN {
         int index = start;
         for (int i = start; i < length; i++) {
             if (non[i] == value && max[i] != non[i]) {
-            	index = i;
+                index = i;
                 break;
             }
         }
@@ -3762,8 +3762,8 @@ public class MAYGEN {
                 displayHelpMessage(options);
                 helpIsPresent = true;
             } else {
-            	String OUTPUTFILE = "outputFile";
-            	String SDFCOORD = "sdfCoord";
+                String OUTPUTFILE = "outputFile";
+                String SDFCOORD = "sdfCoord";
                 if (cmd.hasOption(OUTPUTFILE)) {
                     String filedir = cmd.getOptionValue(OUTPUTFILE);
                     this.filedir = Objects.isNull(filedir) ? "." : filedir;

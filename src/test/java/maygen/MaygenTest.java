@@ -47,7 +47,7 @@ public class MaygenTest {
         maygen.run();
         assertEquals(7, maygen.getCount());
     }
-    
+
     @Test
     public void test_C3MAY2H4() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
@@ -58,7 +58,7 @@ public class MaygenTest {
         maygen.run();
         assertEquals(0, maygen.getCount());
     }
-    
+
     @Test
     public void test_CClH10() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
@@ -69,7 +69,7 @@ public class MaygenTest {
         maygen.run();
         assertEquals(0, maygen.getCount());
     }
-    
+
     @Test
     public void test_H3() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
@@ -80,7 +80,7 @@ public class MaygenTest {
         maygen.run();
         assertEquals(0, maygen.getCount());
     }
-    
+
     @Test
     public void test_N2() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
@@ -91,7 +91,7 @@ public class MaygenTest {
         maygen.run();
         assertEquals(1, maygen.getCount());
     }
-    
+
     @Test
     public void test_C4Cl2() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
@@ -102,7 +102,7 @@ public class MaygenTest {
         maygen.run();
         assertEquals(7, maygen.getCount());
     }
-    
+
     @Test
     public void test_H2() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
@@ -674,7 +674,7 @@ public class MaygenTest {
         maygen.run();
         assertEquals(7, maygen.getCount());
     }
-    
+
     @Test
     public void test_C3Cl2H4_sdfCoordinates()
             throws IOException, CDKException, CloneNotSupportedException {
@@ -702,7 +702,6 @@ public class MaygenTest {
         maygen.run();
         assertEquals(1980, maygen.getCount());
     }
-    
 
     @Test
     public void test_C_1_6_Cl2_H_4_8_writeSdfAndSmiles()
@@ -731,7 +730,7 @@ public class MaygenTest {
         maygen.run();
         assertEquals(3, maygen.getFuzzyCount());
     }
-    
+
     @Test
     public void test_C_1_2_O_H_3_8_writeSdfAndSmiles()
             throws IOException, CDKException, CloneNotSupportedException {
@@ -745,7 +744,7 @@ public class MaygenTest {
         maygen.run();
         assertEquals(6, maygen.getFuzzyCount());
     }
-    
+
     @Test
     public void test_C_1_2_O_H_3_8_falseFormat()
             throws IOException, CDKException, CloneNotSupportedException {
@@ -757,5 +756,4 @@ public class MaygenTest {
         maygen.run();
         assertEquals(0, maygen.getFuzzyCount());
     }
-    
 }
