@@ -375,4 +375,8 @@ public class SDFWriter extends DefaultChemObjectWriter {
             // ignored
         }
     }
+
+    public void flush() throws IOException {
+        writer.flush();
+    }
 }

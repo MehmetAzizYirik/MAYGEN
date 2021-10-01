@@ -2064,11 +2064,17 @@ public class MAYGEN {
                 doRun(fuzzyFormulaItem);
                 fuzzyCount += count.get();
             }
-            if (writeSDF || printSDF) {
+            if (writeSDF) {
                 sdfOut.close();
             }
-            if (writeSMILES || printSMILES) {
+            if (printSDF) {
+                sdfOut.flush();
+            }
+            if (writeSMILES) {
                 smilesOut.close();
+            }
+            if (printSMILES) {
+                System.out.flush();
             }
             if (verbose) {
                 long endTime = System.nanoTime() - startTime;
@@ -2175,11 +2181,17 @@ public class MAYGEN {
 
     public void displayStatistic(long startTime, String localFormula) throws IOException {
         if (Objects.isNull(fuzzyFormula)) {
-            if (writeSDF || printSDF) {
+            if (writeSDF) {
                 sdfOut.close();
             }
-            if (writeSMILES || printSMILES) {
+            if (printSDF) {
+                sdfOut.flush();
+            }
+            if (writeSMILES) {
                 smilesOut.close();
+            }
+            if (printSMILES) {
+                System.out.flush();
             }
         }
         long endTime = System.nanoTime() - startTime;
