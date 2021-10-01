@@ -40,6 +40,7 @@ public class MaygenTest {
     @Test
     public void test_C3Cl2H4() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C3Cl2H4");
         maygen.run();
         assertEquals(7, maygen.getCount());
@@ -51,6 +52,7 @@ public class MaygenTest {
     @Test
     public void test_O13S7() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("O13S7");
         maygen.run();
         assertEquals(1980, maygen.getCount());
@@ -62,6 +64,7 @@ public class MaygenTest {
     @Test
     public void test_O10S10() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("O10S10");
         maygen.run();
         assertEquals(4752, maygen.getCount());
@@ -73,6 +76,7 @@ public class MaygenTest {
     @Test
     public void test_S27() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("S27");
         maygen.run();
         assertEquals(1, maygen.getCount());
@@ -84,6 +88,7 @@ public class MaygenTest {
     @Test
     public void test_O18() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("O18");
         maygen.run();
         assertEquals(1, maygen.getCount());
@@ -95,6 +100,7 @@ public class MaygenTest {
     @Test
     public void test_C2NO2H5() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C2NO2H5");
         maygen.run();
         assertEquals(84, maygen.getCount());
@@ -106,6 +112,7 @@ public class MaygenTest {
     @Test
     public void test_H2O() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("H2O");
         maygen.run();
         assertEquals(1, maygen.getCount());
@@ -117,6 +124,7 @@ public class MaygenTest {
     @Test
     public void test_NH3() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("NH3");
         maygen.run();
         assertEquals(1, maygen.getCount());
@@ -128,6 +136,7 @@ public class MaygenTest {
     @Test
     public void test_C6H6() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C6H6");
         maygen.run();
         assertEquals(217, maygen.getCount());
@@ -139,6 +148,7 @@ public class MaygenTest {
     @Test
     public void test_C3O3H4() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C3O3H4");
         maygen.run();
         assertEquals(152, maygen.getCount());
@@ -150,6 +160,7 @@ public class MaygenTest {
     @Test
     public void test_Cl2C5H4() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("Cl2C5H4");
         maygen.run();
         assertEquals(217, maygen.getCount());
@@ -161,6 +172,7 @@ public class MaygenTest {
     @Test
     public void test_C5H9ClO() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C5H9ClO");
         maygen.run();
         assertEquals(334, maygen.getCount());
@@ -172,6 +184,7 @@ public class MaygenTest {
     @Test
     public void test_C6OF2H12() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C6OF2H12");
         maygen.run();
         assertEquals(536, maygen.getCount());
@@ -183,6 +196,7 @@ public class MaygenTest {
     @Test
     public void test_C7H10() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C7H10");
         maygen.run();
         assertEquals(575, maygen.getCount());
@@ -194,6 +208,7 @@ public class MaygenTest {
     @Test
     public void test_C6O2H12() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C6O2H12");
         maygen.run();
         assertEquals(1313, maygen.getCount());
@@ -205,6 +220,7 @@ public class MaygenTest {
     @Test
     public void test_F2P3BrNO2H() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("F2P3BrNO2H");
         maygen.run();
         assertEquals(1958, maygen.getCount());
@@ -216,6 +232,7 @@ public class MaygenTest {
     @Test
     public void test_C6OH6() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C6OH6");
         maygen.run();
         assertEquals(2237, maygen.getCount());
@@ -227,6 +244,7 @@ public class MaygenTest {
     @Test
     public void test_C5H6BrN() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C5H6BrN");
         maygen.run();
         assertEquals(2325, maygen.getCount());
@@ -238,6 +256,7 @@ public class MaygenTest {
     @Test
     public void test_C6H7F2I() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C6H7F2I");
         maygen.run();
         assertEquals(3523, maygen.getCount());
@@ -249,6 +268,7 @@ public class MaygenTest {
     @Test
     public void test_C5F2O2H2() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C5F2O2H2");
         maygen.run();
         assertEquals(7094, maygen.getCount());
@@ -260,6 +280,7 @@ public class MaygenTest {
     @Test
     public void test_C7OH10() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C7OH10");
         maygen.run();
         assertEquals(7166, maygen.getCount());
@@ -271,6 +292,7 @@ public class MaygenTest {
     @Test
     public void test_C4ClHF2O3() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C4ClHF2O3");
         maygen.run();
         assertEquals(7346, maygen.getCount());
@@ -282,6 +304,7 @@ public class MaygenTest {
     @Test
     public void test_C4O5H6() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C4O5H6");
         maygen.run();
         assertEquals(8070, maygen.getCount());
@@ -293,6 +316,7 @@ public class MaygenTest {
     @Test
     public void test_C5ClHF2O2() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C5ClHF2O2");
         maygen.run();
         assertEquals(12400, maygen.getCount());
@@ -304,6 +328,7 @@ public class MaygenTest {
     @Test
     public void test_C5H10BrF2OP() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C5H10BrF2OP");
         maygen.run();
         assertEquals(15009, maygen.getCount());
@@ -315,6 +340,7 @@ public class MaygenTest {
     @Test
     public void test_C9H12() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C9H12");
         maygen.run();
         assertEquals(19983, maygen.getCount());
@@ -326,6 +352,7 @@ public class MaygenTest {
     @Test
     public void test_C6H10O2Br2() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C6H10O2Br2");
         maygen.run();
         assertEquals(24201, maygen.getCount());
@@ -337,6 +364,7 @@ public class MaygenTest {
     @Test
     public void test_C10H16() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C10H16");
         maygen.run();
         assertEquals(24938, maygen.getCount());
@@ -348,6 +376,7 @@ public class MaygenTest {
     @Test
     public void test_C6H6ClOI() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C6H6ClOI");
         maygen.run();
         assertEquals(30728, maygen.getCount());
@@ -359,6 +388,7 @@ public class MaygenTest {
     @Test
     public void test_C4H5O2Br2N() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C4H5O2Br2N");
         maygen.run();
         assertEquals(41067, maygen.getCount());
@@ -370,6 +400,7 @@ public class MaygenTest {
     @Test
     public void test_C4H10NOSP() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C4H10NOSP");
         maygen.run();
         assertEquals(52151, maygen.getCount());
@@ -381,6 +412,7 @@ public class MaygenTest {
     @Test
     public void test_C7O2H10() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C7O2H10");
         maygen.run();
         assertEquals(54641, maygen.getCount());
@@ -392,6 +424,7 @@ public class MaygenTest {
     @Test
     public void test_P3O3NCl2() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("P3O3NCl2");
         maygen.run();
         assertEquals(665, maygen.getCount());
@@ -403,6 +436,7 @@ public class MaygenTest {
     @Test
     public void test_C5H5SI5() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C5H5SI5");
         maygen.run();
         assertEquals(2619, maygen.getCount());
@@ -414,6 +448,7 @@ public class MaygenTest {
     @Test
     public void test_C3O3NH5() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C3O3NH5");
         maygen.run();
         assertEquals(2644, maygen.getCount());
@@ -425,6 +460,7 @@ public class MaygenTest {
     @Test
     public void test_C5H9ClOS() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C5H9ClOS");
         maygen.run();
         assertEquals(3763, maygen.getCount());
@@ -436,6 +472,7 @@ public class MaygenTest {
     @Test
     public void test_C3NO2SH7() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C3NO2SH7");
         maygen.run();
         assertEquals(3838, maygen.getCount());
@@ -447,6 +484,7 @@ public class MaygenTest {
     @Test
     public void test_C4H8Cl3O2P() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C4H8Cl3O2P");
         maygen.run();
         assertEquals(9313, maygen.getCount());
@@ -458,6 +496,7 @@ public class MaygenTest {
     @Test
     public void test_C5H2F2SO() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C5H2F2SO");
         maygen.run();
         assertEquals(13446, maygen.getCount());
@@ -469,6 +508,7 @@ public class MaygenTest {
     @Test
     public void test_C7H11ClS() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C7H11ClS");
         maygen.run();
         assertEquals(15093, maygen.getCount());
@@ -480,6 +520,7 @@ public class MaygenTest {
     @Test
     public void test_C4NO3H7() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C4NO3H7");
         maygen.run();
         assertEquals(18469, maygen.getCount());
@@ -491,6 +532,7 @@ public class MaygenTest {
     @Test
     public void test_C4H5O2F2P() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C4H5O2F2P");
         maygen.run();
         assertEquals(41067, maygen.getCount());
@@ -502,6 +544,7 @@ public class MaygenTest {
     @Test
     public void test_C3N3O2H7() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C3N3O2H7");
         maygen.run();
         assertEquals(45626, maygen.getCount());
@@ -513,6 +556,7 @@ public class MaygenTest {
     @Test
     public void test_C5N3H9() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C5N3H9");
         maygen.run();
         assertEquals(46125, maygen.getCount());
@@ -524,6 +568,7 @@ public class MaygenTest {
     @Test
     public void test_C3O6PH5() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C3O6PH5");
         maygen.run();
         assertEquals(51323, maygen.getCount());
@@ -535,6 +580,7 @@ public class MaygenTest {
     @Test
     public void test_C5H5POBr2() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C5H5POBr2");
         maygen.run();
         assertEquals(62886, maygen.getCount());
@@ -544,20 +590,33 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C_1_6_H_4_8() throws IOException, CDKException, CloneNotSupportedException {
+    public void test_C_1_6_Cl2_H_4_8() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFuzzyFormula("C[1-6]Cl2H[4-8]");
-        maygen.setVerbose(true);
         maygen.run();
         assertEquals(4141, maygen.getFuzzyCount());
         maygen.setMultiThread(true);
         maygen.run();
         assertEquals(4141, maygen.getFuzzyCount());
     }
+    
+    @Test
+    public void test_C_1_2_H_3_8() throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
+        maygen.setFuzzyFormula("C[1-2]H[3-8]");
+        maygen.run();
+        assertEquals(3, maygen.getFuzzyCount());
+        maygen.setMultiThread(true);
+        maygen.run();
+        assertEquals(3, maygen.getFuzzyCount());
+    }
 
     @Test
     public void test_gettersAndSetters() {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setWriteSDF(true);
         assertTrue(maygen.isWriteSDF());
         maygen.setWriteSMILES(true);
@@ -584,10 +643,10 @@ public class MaygenTest {
     public void test_C3Cl2H4_writeSdfAndSmiles()
             throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("C3Cl2H4");
         maygen.setWriteSDF(true);
         maygen.setWriteSMILES(true);
-        maygen.setVerbose(true);
         maygen.run();
         assertEquals(7, maygen.getCount());
         maygen.setMultiThread(true);
@@ -599,10 +658,10 @@ public class MaygenTest {
     public void test_O13S7_writeSdfAndSmiles()
             throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFormula("O13S7");
         maygen.setWriteSDF(true);
         maygen.setWriteSMILES(true);
-        maygen.setVerbose(true);
         maygen.run();
         assertEquals(1980, maygen.getCount());
         maygen.setMultiThread(true);
@@ -611,17 +670,32 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C_1_6_H_4_8_writeSdfAndSmiles()
+    public void test_C_1_6_Cl2_H_4_8_writeSdfAndSmiles()
             throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
         maygen.setFuzzyFormula("C[1-6]Cl2H[4-8]");
         maygen.setWriteSDF(true);
         maygen.setWriteSMILES(true);
-        maygen.setVerbose(true);
         maygen.run();
         assertEquals(4141, maygen.getFuzzyCount());
         maygen.setMultiThread(true);
         maygen.run();
         assertEquals(4141, maygen.getFuzzyCount());
+    }
+    
+    @Test
+    public void test_C_1_2_H_3_8_writeSdfAndSmiles()
+            throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN maygen = new MAYGEN();
+        maygen.clearGlobals();
+        maygen.setFuzzyFormula("C[1-2]H[3-8]");
+        maygen.setWriteSDF(true);
+        maygen.setWriteSMILES(true);
+        maygen.run();
+        assertEquals(3, maygen.getFuzzyCount());
+        maygen.setMultiThread(true);
+        maygen.run();
+        assertEquals(3, maygen.getFuzzyCount());
     }
 }
