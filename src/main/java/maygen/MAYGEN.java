@@ -1584,26 +1584,25 @@ public class MAYGEN {
      * @return the adjacency matrix
      */
     public int[][] addHydrogens(int[][] a, int index, int[] hydrogens) {
-        if (singleAtom) {
-            int hIndex = index;
+    	int localHIndex = index;
+    	if (singleAtom) {
             int hydrogen = valences.get(symbolArray[0]);
-            for (int j = hIndex; j < hydrogen + hIndex; j++) {
+            for (int j = localHIndex; j < hydrogen + localHIndex; j++) {
                 a[0][j] = 1;
                 a[j][0] = 1;
             }
         } else if (callHydrogenDistributor) {
-            int hIndex = index;
             int limit = 0;
             int hydrogen = 0;
             for (int i = 0; i < index; i++) {
                 hydrogen = hydrogens[i];
-                limit = hIndex + hydrogen;
-                for (int j = hIndex; j < limit; j++) {
+                limit = localHIndex + hydrogen;
+                for (int j = localHIndex; j < limit; j++) {
                     a[i][j] = 1;
                     a[j][i] = 1;
                 }
                 if (hydrogen != 0) {
-                    hIndex = hIndex + hydrogen;
+                	localHIndex = localHIndex + hydrogen;
                 }
             }
         }
