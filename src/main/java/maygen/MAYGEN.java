@@ -433,12 +433,17 @@ public class MAYGEN {
     public void singleAtomCheckLengthIsBiggerThanOne(String[] atoms) {
         String symbol;
         String[] info;
+        int localCount=0;
         for (String atom : atoms) {
             info = atom.split(NUMBERS_FROM_0_TO_9, 2);
             symbol = info[0];
-            if (!symbol.equals("H") && atomOccurrence(info) > 1) {
-                singleAtom = false;
-                break;
+            if (!symbol.equals("H")){
+            	localCount++;
+            	if(atomOccurrence(info) > 1 || localCount>1) {
+            		singleAtom = false;
+                    break;
+            	}
+                
             }
         }
     }
@@ -2772,7 +2777,7 @@ public class MAYGEN {
         } else {
             int value = indexYZ(initialPartition, r);
             y[0] = ys[0][value];
-            ArrayList<Permutation> cycles = new ArrayList<>();
+            List<Permutation> cycles = new ArrayList<>();
             if (partition[size - 1] != 0) {
                 Permutation id = new Permutation(size);
                 cycles.add(id);
@@ -2824,7 +2829,7 @@ public class MAYGEN {
     public int[] refinedPartitioning(int[] partition, int[] row) {
         int[] refined = new int[size];
         int index = 0;
-        int count = 1;
+        int localCount = 1;
         int refinedIndex = 0;
         int limit = findZeros(partition);
         for (int s = 0; s < limit; s++) {
@@ -2832,23 +2837,23 @@ public class MAYGEN {
                 for (int i = index; i < partition[s] + index - 1; i++) {
                     if (i + 1 < partition[s] + index - 1) {
                         if (row[i] == row[i + 1]) {
-                            count++;
+                            localCount++;
                         } else {
-                            refined[refinedIndex] = count;
+                            refined[refinedIndex] = localCount;
                             refinedIndex++;
-                            count = 1;
+                            localCount = 1;
                         }
                     } else {
                         if (row[i] == row[i + 1]) {
-                            count++;
-                            refined[refinedIndex] = count;
+                            localCount++;
+                            refined[refinedIndex] = localCount;
                         } else {
-                            refined[refinedIndex] = count;
+                            refined[refinedIndex] = localCount;
                             refinedIndex++;
                             refined[refinedIndex] = 1;
                         }
                         refinedIndex++;
-                        count = 1;
+                        localCount = 1;
                     }
                 }
                 index = index + partition[s];
@@ -2856,7 +2861,7 @@ public class MAYGEN {
                 index++;
                 refined[refinedIndex] = 1;
                 refinedIndex++;
-                count = 1;
+                localCount = 1;
             }
         }
         return refined;
@@ -2884,9 +2889,9 @@ public class MAYGEN {
      * @return int
      */
     public int findIndex(int index, Permutation cycle) {
-        int size = cycle.size();
+        int cycleSize = cycle.size();
         int output = 0;
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < cycleSize; i++) {
             if (cycle.get(i) == index) {
                 output = i;
                 break;
@@ -2983,14 +2988,12 @@ public class MAYGEN {
      * @return the index
      */
     public int findMatch(int[] max, int[] non, int value, int start) {
-        int size = non.length;
+        int length = non.length;
         int index = start;
-        for (int i = start; i < size; i++) {
-            if (non[i] == value) {
-                if (max[i] != non[i]) {
-                    index = i;
-                    break;
-                }
+        for (int i = start; i < length; i++) {
+            if (non[i] == value && max[i] != non[i]) {
+            	index = i;
+                break;
             }
         }
         return index;
@@ -3054,8 +3057,8 @@ public class MAYGEN {
         return check;
     }
 
-    public ArrayList<Permutation> cycleTranspositions(int index, int[] partition) {
-        ArrayList<Permutation> perms = new ArrayList<>();
+    public List<Permutation> cycleTranspositions(int index, int[] partition) {
+        List<Permutation> perms = new ArrayList<>();
         int lValue = LValue(partition, index);
         int[] values;
         int former;
@@ -3246,7 +3249,7 @@ public class MAYGEN {
     public Map<String, Integer[]> getFuzzyFormulaRanges(
             String localFormula, List<String> symbolList) {
         String[] atoms = localFormula.split(LETTERS_FROM_A_TO_Z);
-        HashMap<String, Integer[]> symbols = new HashMap<>();
+        HashMap<String, Integer[]> symbolsMap = new HashMap<>();
         String[] info;
         String[] info2;
         String[] info3;
@@ -3271,9 +3274,9 @@ public class MAYGEN {
                 n[1] = Integer.valueOf(info3[1].split("\\]")[0]);
             }
             symbolList.add(symbol);
-            symbols.put(symbol, n);
+            symbolsMap.put(symbol, n);
         }
-        return symbols;
+        return symbolsMap;
     }
 
     /**
