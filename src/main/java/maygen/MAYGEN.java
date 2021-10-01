@@ -385,14 +385,17 @@ public class MAYGEN {
                     singleAtom = false;
                 }
             }
-        } else {
+        } else if(atoms.length==2){
             singleAtomCheckLengthIsBiggerThanOne(atoms);
+        }else {
+        	singleAtom=false;
         }
     }
 
     public void singleAtomCheckLengthIsBiggerThanOne(String[] atoms) {
         String symbol;
         String[] info;
+        System.out.println(Arrays.toString(atoms));
         for (String atom : atoms) {
             info = atom.split(NUMBERS_FROM_0_TO_9, 2);
             symbol = info[0];
