@@ -67,8 +67,10 @@ to be specified. It is also possible to generate SMILES instead of an SDF
 file, but it slows down the generation time. For this, use the '-smi'
 option.
 
- -f,--formula <arg>        formula (required)
+ -f,--formula <arg>        formula
 
+ -fuzzy,--fuzzyFormula <arg>   fuzzy formula
+ 
  -v,--verbose              print message
 
  -t,--tsvoutput            Output formula, number of structures and
