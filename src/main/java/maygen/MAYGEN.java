@@ -146,6 +146,22 @@ public class MAYGEN {
     public void setWriteSDF(boolean writeSDF) {
         this.writeSDF = writeSDF;
     }
+    
+    public boolean isCoordinates() {
+        return writeSDF;
+    }
+
+    public void setCoordinates(boolean coord) {
+        this.coordinates = coord;
+    }
+    
+    public boolean isTSV() {
+        return writeSDF;
+    }
+
+    public void setTSV(boolean TSV) {
+        this.tsvoutput = TSV;
+    }
 
     public boolean isWriteSMILES() {
         return writeSMILES;
@@ -2026,27 +2042,27 @@ public class MAYGEN {
      * @return int
      */
     public int[] nextCount(int index, int i, int size, int[] degrees, int[] partition) {
-        int count = 1;
+        int localCount = 1;
         if (i == (size - 1)) {
             partition[index] = 1;
             index++;
         } else {
             for (int j = i + 1; j < size; j++) {
                 if (degrees[i] == degrees[j]) {
-                    count++;
+                    localCount++;
                     if (j == (size - 1)) {
-                        partition[index] = count;
+                        partition[index] = localCount;
                         index++;
                         break;
                     }
                 } else {
-                    partition[index] = count;
+                    partition[index] = localCount;
                     index++;
                     break;
                 }
             }
         }
-        return new int[] {count, index};
+        return new int[] {localCount, index};
     }
 
     public boolean checkLengthTwoFormula(String[] atoms) {
@@ -2072,8 +2088,7 @@ public class MAYGEN {
             configureSdf(normalizedLocalFuzzyFormula);
             configureSmiles(normalizedLocalFuzzyFormula);
             if (verbose)
-                System.out.println(
-                        "MAYGEN is generating isomers of " + normalizedLocalFuzzyFormula + "...");
+            	System.out.println("MAYGEN is generating isomers of " + normalizedLocalFuzzyFormula + "...");
             long startTime = System.nanoTime();
             fuzzyCount = 0;
             for (String fuzzyFormulaItem : getFormulaList(normalizedLocalFuzzyFormula)) {
@@ -2243,8 +2258,8 @@ public class MAYGEN {
      *
      * @return the list of int arrays
      */
-    public ArrayList<int[]> distributeHydrogens() {
-        ArrayList<int[]> degreeList = new ArrayList<>();
+    public List<int[]> distributeHydrogens() {
+        List<int[]> degreeList = new ArrayList<>();
         if (!callHydrogenDistributor) {
             degreeList.add(firstDegrees);
         } else {
@@ -2357,7 +2372,7 @@ public class MAYGEN {
         } else {
             size = sum(firstOccurrences, firstOccurrences.length - 2);
         }
-        ArrayList<int[]> newDegrees = distributeHydrogens();
+        List<int[]> newDegrees = distributeHydrogens();
 
         if (multiThread) {
             try {
@@ -2396,7 +2411,6 @@ public class MAYGEN {
         hIndex = 0;
         count.set(0);
         matrixSize = 0;
-        noHydrogen = false;
         justH = false;
         noHydrogen = false;
         oxygenSulfur = new ArrayList<>();
