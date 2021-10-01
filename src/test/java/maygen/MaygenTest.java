@@ -104,6 +104,28 @@ public class MaygenTest {
     }
 
     @Test
+    public void test_H2O() throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN maygen = new MAYGEN();
+        maygen.setFormula("H2O");
+        maygen.run();
+        assertEquals(1, maygen.getCount());
+        maygen.setMultiThread(true);
+        maygen.run();
+        assertEquals(1, maygen.getCount());
+    }
+
+    @Test
+    public void test_NH3() throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN maygen = new MAYGEN();
+        maygen.setFormula("NH3");
+        maygen.run();
+        assertEquals(1, maygen.getCount());
+        maygen.setMultiThread(true);
+        maygen.run();
+        assertEquals(1, maygen.getCount());
+    }
+
+    @Test
     public void test_C6H6() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
         maygen.setFormula("C6H6");
@@ -522,6 +544,18 @@ public class MaygenTest {
     }
 
     @Test
+    public void test_C_1_6_H_4_8() throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN maygen = new MAYGEN();
+        maygen.setFuzzyFormula("C[1-6]Cl2H[4-8]");
+        maygen.setVerbose(true);
+        maygen.run();
+        assertEquals(4141, maygen.getFuzzyCount());
+        maygen.setMultiThread(true);
+        maygen.run();
+        assertEquals(4141, maygen.getFuzzyCount());
+    }
+
+    @Test
     public void test_gettersAndSetters() {
         MAYGEN maygen = new MAYGEN();
         maygen.setWriteSDF(true);
@@ -534,6 +568,7 @@ public class MaygenTest {
         assertTrue(maygen.isPrintSMILES());
         maygen.isMultiThread();
         maygen.getFormula();
+        maygen.getFuzzyFormula();
         maygen.getTotal();
         maygen.getSymbols();
         maygen.getOccurrences();
@@ -542,6 +577,7 @@ public class MaygenTest {
         maygen.isOnSm();
         maygen.setFiledir(".");
         maygen.getFiledir();
+        maygen.getVerbose();
     }
 
     @Test
@@ -551,10 +587,41 @@ public class MaygenTest {
         maygen.setFormula("C3Cl2H4");
         maygen.setWriteSDF(true);
         maygen.setWriteSMILES(true);
+        maygen.setVerbose(true);
         maygen.run();
         assertEquals(7, maygen.getCount());
         maygen.setMultiThread(true);
         maygen.run();
         assertEquals(7, maygen.getCount());
+    }
+
+    @Test
+    public void test_O13S7_writeSdfAndSmiles()
+            throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN maygen = new MAYGEN();
+        maygen.setFormula("O13S7");
+        maygen.setWriteSDF(true);
+        maygen.setWriteSMILES(true);
+        maygen.setVerbose(true);
+        maygen.run();
+        assertEquals(1980, maygen.getCount());
+        maygen.setMultiThread(true);
+        maygen.run();
+        assertEquals(1980, maygen.getCount());
+    }
+
+    @Test
+    public void test_C_1_6_H_4_8_writeSdfAndSmiles()
+            throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN maygen = new MAYGEN();
+        maygen.setFuzzyFormula("C[1-6]Cl2H[4-8]");
+        maygen.setWriteSDF(true);
+        maygen.setWriteSMILES(true);
+        maygen.setVerbose(true);
+        maygen.run();
+        assertEquals(4141, maygen.getFuzzyCount());
+        maygen.setMultiThread(true);
+        maygen.run();
+        assertEquals(4141, maygen.getFuzzyCount());
     }
 }
