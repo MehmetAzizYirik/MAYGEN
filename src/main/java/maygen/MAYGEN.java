@@ -417,7 +417,6 @@ public class MAYGEN {
     public void singleAtomCheckLengthIsBiggerThanOne(String[] atoms) {
         String symbol;
         String[] info;
-        System.out.println(Arrays.toString(atoms));
         for (String atom : atoms) {
             info = atom.split(NUMBERS_FROM_0_TO_9, 2);
             symbol = info[0];
@@ -632,6 +631,26 @@ public class MAYGEN {
         return sum % 2 == 0 && sum >= 2 * (localSize - 1);
     }
 
+    public boolean canBuildIsomerSingle(String formula) {
+        String[] atoms = normalizeFormula(formula).split(LETTERS_FROM_A_TO_Z);
+        String[] info;
+        String symbol;
+        boolean check=false;
+        int nonHydrogen=0;
+        int hydrogens=0;
+        for (String atom : atoms) {
+            info = atom.split(NUMBERS_FROM_0_TO_9, 2);
+            symbol = info[0];
+            if(symbol.equals("H")) {
+            	hydrogens=atomOccurrence(info);
+            }else {
+            	nonHydrogen=valences.get(symbol);
+            }
+        }
+        if(nonHydrogen==hydrogens) check=true;
+        return check;
+    }
+    
     /** Initial degree arrays are set based on the molecular formula. */
     public void initialDegrees() {
         firstDegrees = new int[matrixSize];
@@ -2115,10 +2134,12 @@ public class MAYGEN {
             if (checkLengthTwoFormula(atoms)) {
                 singleAtomCheck(atoms);
                 if (singleAtom) {
-                    getSingleAtomVariables(normalizedLocalFormula);
-                    initSingleAC();
-                    writeSingleAtom(new int[] {});
-                    displayStatistic(startTime, normalizedLocalFormula);
+                	if(canBuildIsomerSingle(normalizedLocalFormula)) {
+                		getSingleAtomVariables(normalizedLocalFormula);
+                        initSingleAC();
+                        writeSingleAtom(new int[] {});
+                        displayStatistic(startTime, normalizedLocalFormula);
+                	}
                 } else {
                     checkOxygenSulfur(atoms);
                     processFormula(normalizedLocalFormula, startTime);
