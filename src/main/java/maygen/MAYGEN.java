@@ -407,10 +407,10 @@ public class MAYGEN {
                     singleAtom = false;
                 }
             }
-        } else if(atoms.length==2){
+        } else if (atoms.length == 2) {
             singleAtomCheckLengthIsBiggerThanOne(atoms);
-        }else {
-        	singleAtom=false;
+        } else {
+            singleAtom = false;
         }
     }
 
@@ -635,22 +635,22 @@ public class MAYGEN {
         String[] atoms = normalizeFormula(formula).split(LETTERS_FROM_A_TO_Z);
         String[] info;
         String symbol;
-        boolean check=false;
-        int nonHydrogen=0;
-        int hydrogens=0;
+        boolean check = false;
+        int nonHydrogen = 0;
+        int hydrogens = 0;
         for (String atom : atoms) {
             info = atom.split(NUMBERS_FROM_0_TO_9, 2);
             symbol = info[0];
-            if(symbol.equals("H")) {
-            	hydrogens=atomOccurrence(info);
-            }else {
-            	nonHydrogen=valences.get(symbol);
+            if (symbol.equals("H")) {
+                hydrogens = atomOccurrence(info);
+            } else {
+                nonHydrogen = valences.get(symbol);
             }
         }
-        if(nonHydrogen==hydrogens) check=true;
+        if (nonHydrogen == hydrogens) check = true;
         return check;
     }
-    
+
     /** Initial degree arrays are set based on the molecular formula. */
     public void initialDegrees() {
         firstDegrees = new int[matrixSize];
@@ -2134,12 +2134,12 @@ public class MAYGEN {
             if (checkLengthTwoFormula(atoms)) {
                 singleAtomCheck(atoms);
                 if (singleAtom) {
-                	if(canBuildIsomerSingle(normalizedLocalFormula)) {
-                		getSingleAtomVariables(normalizedLocalFormula);
+                    if (canBuildIsomerSingle(normalizedLocalFormula)) {
+                        getSingleAtomVariables(normalizedLocalFormula);
                         initSingleAC();
                         writeSingleAtom(new int[] {});
                         displayStatistic(startTime, normalizedLocalFormula);
-                	}
+                    }
                 } else {
                     checkOxygenSulfur(atoms);
                     processFormula(normalizedLocalFormula, startTime);
@@ -3878,7 +3878,7 @@ public class MAYGEN {
         options.addOption(help);
         return options;
     }
-    
+
     public static void main(String[] args) {
         MAYGEN gen = new MAYGEN();
         try {
