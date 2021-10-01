@@ -93,18 +93,6 @@ public class MaygenTest {
     }
     
     @Test
-    public void test_N2_tsv() throws IOException, CDKException, CloneNotSupportedException {
-        MAYGEN maygen = new MAYGEN();
-        maygen.setFormula("N2");
-        maygen.setTSV(true);
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-    }
-    
-    @Test
     public void test_C4Cl2() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
         maygen.setFormula("C4Cl2");
@@ -655,6 +643,10 @@ public class MaygenTest {
         assertTrue(maygen.isPrintSDF());
         maygen.setPrintSMILES(true);
         assertTrue(maygen.isPrintSMILES());
+        maygen.setCoordinates(true);
+        assertTrue(maygen.isCoordinates());
+        maygen.setTSV(true);
+        assertTrue(maygen.isTSV());
         maygen.isMultiThread();
         maygen.getFormula();
         maygen.getFuzzyFormula();
@@ -702,7 +694,6 @@ public class MaygenTest {
             throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
         maygen.setFormula("O13S7");
-        maygen.setVerbose(true);
         maygen.setWriteSDF(true);
         maygen.setWriteSMILES(true);
         maygen.run();
@@ -712,20 +703,6 @@ public class MaygenTest {
         assertEquals(1980, maygen.getCount());
     }
     
-    @Test
-    public void test_O2S2_printSdfAndSmiles()
-            throws IOException, CDKException, CloneNotSupportedException {
-        MAYGEN maygen = new MAYGEN();
-        maygen.setFormula("OS");
-        maygen.setVerbose(true);
-        maygen.setPrintSDF(true);
-        maygen.setPrintSMILES(true);
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-    }
 
     @Test
     public void test_C_1_6_Cl2_H_4_8_writeSdfAndSmiles()

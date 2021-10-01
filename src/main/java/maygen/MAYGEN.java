@@ -148,7 +148,7 @@ public class MAYGEN {
     }
     
     public boolean isCoordinates() {
-        return writeSDF;
+        return coordinates;
     }
 
     public void setCoordinates(boolean coord) {
@@ -156,7 +156,7 @@ public class MAYGEN {
     }
     
     public boolean isTSV() {
-        return writeSDF;
+        return tsvoutput;
     }
 
     public void setTSV(boolean TSV) {
@@ -3752,8 +3752,9 @@ public class MAYGEN {
         boolean helpIsPresent = false;
         try {
             CommandLine cmd = parser.parse(options, args);
-            this.formula = cmd.getOptionValue("formula");
-            if (!cmd.hasOption("formula")) {
+            String FORMULA = "formula";
+            this.formula = cmd.getOptionValue(FORMULA);
+            if (!cmd.hasOption(FORMULA)) {
                 this.fuzzyFormula = cmd.getOptionValue("fuzzyFormula");
             }
             if (cmd.hasOption("help")
@@ -3761,15 +3762,17 @@ public class MAYGEN {
                 displayHelpMessage(options);
                 helpIsPresent = true;
             } else {
-                if (cmd.hasOption("outputFile")) {
-                    String filedir = cmd.getOptionValue("outputFile");
+            	String OUTPUTFILE = "outputFile";
+            	String SDFCOORD = "sdfCoord";
+                if (cmd.hasOption(OUTPUTFILE)) {
+                    String filedir = cmd.getOptionValue(OUTPUTFILE);
                     this.filedir = Objects.isNull(filedir) ? "." : filedir;
                     if (cmd.hasOption("smi")) {
                         this.writeSMILES = true;
                     }
                     if (cmd.hasOption("sdf")) {
                         this.writeSDF = true;
-                    } else if (cmd.hasOption("sdfCoord")) {
+                    } else if (cmd.hasOption(SDFCOORD)) {
                         this.writeSDF = true;
                         this.coordinates = true;
                     }
@@ -3779,7 +3782,7 @@ public class MAYGEN {
                     }
                     if (cmd.hasOption("sdf")) {
                         this.printSDF = true;
-                    } else if (cmd.hasOption("sdfCoord")) {
+                    } else if (cmd.hasOption(SDFCOORD)) {
                         this.printSDF = true;
                         this.coordinates = true;
                     }
@@ -3828,13 +3831,13 @@ public class MAYGEN {
                         .desc("fuzzy formula")
                         .build();
         options.addOption(fuzzyFormulaOption);
-        Option verbose =
+        Option verboseOption =
                 Option.builder("v")
                         .required(false)
                         .longOpt("verbose")
                         .desc("print message")
                         .build();
-        options.addOption(verbose);
+        options.addOption(verboseOption);
         Option tvsoutput =
                 Option.builder("t")
                         .required(false)
@@ -3844,7 +3847,7 @@ public class MAYGEN {
                                         + " In multithread, the 4th column in the output is the number of threads.")
                         .build();
         options.addOption(tvsoutput);
-        Option filedir =
+        Option fileDirectory =
                 Option.builder("o")
                         .required(false)
                         .hasArg()
@@ -3852,7 +3855,7 @@ public class MAYGEN {
                         .longOpt("outputFile")
                         .desc("Store output file")
                         .build();
-        options.addOption(filedir);
+        options.addOption(fileDirectory);
         Option multithread =
                 Option.builder("m")
                         .required(false)
@@ -3874,13 +3877,13 @@ public class MAYGEN {
                         .desc("Output in SDF format")
                         .build();
         options.addOption(sdf);
-        Option coordinates =
+        Option coordinateOption =
                 Option.builder("sdfCoord")
                         .required(false)
                         .longOpt("coordinates")
                         .desc("Output in SDF format with atom coordinates")
                         .build();
-        options.addOption(coordinates);
+        options.addOption(coordinateOption);
         Option help =
                 Option.builder("h")
                         .required(false)
