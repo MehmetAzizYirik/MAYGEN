@@ -645,8 +645,8 @@ public class MaygenTest {
         assertTrue(maygen.isPrintSMILES());
         maygen.setCoordinates(true);
         assertTrue(maygen.isCoordinates());
-        maygen.setTSV(true);
-        assertTrue(maygen.isTSV());
+        maygen.setTsvoutput(true);
+        assertTrue(maygen.isTsvoutput());
         maygen.isMultiThread();
         maygen.getFormula();
         maygen.getFuzzyFormula();

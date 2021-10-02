@@ -76,6 +76,9 @@ public class MAYGEN {
     public static final String VERSION = "1.8";
     private static final String NUMBERS_FROM_0_TO_9 = "(?=[0-9])";
     private static final String LETTERS_FROM_A_TO_Z = "(?=[A-Z])";
+    private static final String FORMULA_TEXT = "formula";
+    private static final String OUTPUT_FILE = "outputFile";
+    private static final String SDF_COORD = "sdfCoord";
     private static final Map<String, Integer> valences;
     private int size = 0;
     private int total = 0;
@@ -155,12 +158,12 @@ public class MAYGEN {
         this.coordinates = coord;
     }
 
-    public boolean isTSV() {
+    public boolean isTsvoutput() {
         return tsvoutput;
     }
 
-    public void setTSV(boolean TSV) {
-        this.tsvoutput = TSV;
+    public void setTsvoutput(boolean tsvoutput) {
+        this.tsvoutput = tsvoutput;
     }
 
     public boolean isWriteSMILES() {
@@ -344,14 +347,14 @@ public class MAYGEN {
     }
 
     /**
-     * Values for an id permutation for a given size
+     * Values for an id permutation for a given localSize
      *
-     * @param size int permutation size
+     * @param localSize int permutation localSize
      * @return int[]
      */
-    public int[] idValues(int size) {
-        int[] id = new int[size];
-        for (int i = 0; i < size; i++) {
+    public int[] idValues(int localSize) {
+        int[] id = new int[localSize];
+        for (int i = 0; i < localSize; i++) {
             id[i] = i;
         }
         return id;
@@ -360,11 +363,11 @@ public class MAYGEN {
     /**
      * Builds id permutation.
      *
-     * @param size int Permutation size
+     * @param localSize int Permutation localSize
      * @return Permutation
      */
-    public Permutation idPermutation(int size) {
-        return new Permutation(size);
+    public Permutation idPermutation(int localSize) {
+        return new Permutation(localSize);
     }
 
     /**
@@ -541,16 +544,16 @@ public class MAYGEN {
         }
     }
 
-    public int[] nextCount(int index, int i, int size, List<String> symbols, int[] partition) {
+    public int[] nextCount(int index, int i, int localSize, List<String> symbols, int[] partition) {
         int localCount = 1;
-        if (i == (size - 1)) {
+        if (i == (localSize - 1)) {
             partition[index] = 1;
             index++;
         } else {
-            for (int j = i + 1; j < size; j++) {
+            for (int j = i + 1; j < localSize; j++) {
                 if (symbols.get(i).equals(symbols.get(j))) {
                     localCount++;
-                    if (j == (size - 1)) {
+                    if (j == (localSize - 1)) {
                         partition[index] = localCount;
                         index++;
                         break;
@@ -1475,16 +1478,16 @@ public class MAYGEN {
      * Calculation of the next index pair in a matrix.
      *
      * @param indices int[] index pair.
-     * @param size int row length.
+     * @param localSize int row length.
      * @return int[]
      */
-    public int[] successor(int[] indices, int size) {
+    public int[] successor(int[] indices, int localSize) {
         int i0 = indices[0];
         int i1 = indices[1];
-        if (i1 < (size - 1)) {
+        if (i1 < (localSize - 1)) {
             indices[0] = i0;
             indices[1] = (i1 + 1);
-        } else if (i0 < (size - 2) && i1 == (size - 1)) {
+        } else if (i0 < (localSize - 2) && i1 == (localSize - 1)) {
             indices[0] = (i0 + 1);
             indices[1] = (i0 + 2);
         }
@@ -1495,15 +1498,15 @@ public class MAYGEN {
      * Calculation of the former index pair in a matrix.
      *
      * @param indices int[] index pair.
-     * @param size int row length.
+     * @param localSize int row length.
      * @return int[]
      */
-    public int[] predecessor(int[] indices, int size) {
+    public int[] predecessor(int[] indices, int localSize) {
         int i0 = indices[0];
         int i1 = indices[1];
         if (i0 == i1 - 1) {
-            indices[0] = (i0 - 1);
-            indices[1] = (size - 1);
+            indices[0] = i0 - 1;
+            indices[1] = localSize - 1;
         } else {
             indices[0] = i0;
             indices[1] = (i1 - 1);
@@ -1646,6 +1649,7 @@ public class MAYGEN {
         }
         r[0] = block;
     }
+
     /**
      * The third line of the backward method in Grund 3.2.3. The criteria to decide which function
      * is needed: forward or backward.
@@ -2017,16 +2021,16 @@ public class MAYGEN {
      */
     public int[] getSubPartition(int[] degrees) {
         int i = 0;
-        int size = degrees.length;
-        int[] partition = new int[size];
+        int localSize = degrees.length;
+        int[] partition = new int[localSize];
         int next;
         int index = 0;
         int[] result;
-        while (i < size) {
-            result = nextCount(index, i, size, degrees, partition);
+        while (i < localSize) {
+            result = nextCount(index, i, localSize, degrees, partition);
             index = result[1];
             next = (i + result[0]);
-            if (next == size) {
+            if (next == localSize) {
                 break;
             } else {
                 i = next;
@@ -2040,21 +2044,21 @@ public class MAYGEN {
      *
      * @param index the index
      * @param i the i
-     * @param size int number
+     * @param localSize int number
      * @param degrees int[] valences
      * @param partition int[] partition
      * @return int
      */
-    public int[] nextCount(int index, int i, int size, int[] degrees, int[] partition) {
+    public int[] nextCount(int index, int i, int localSize, int[] degrees, int[] partition) {
         int localCount = 1;
-        if (i == (size - 1)) {
+        if (i == (localSize - 1)) {
             partition[index] = 1;
             index++;
         } else {
-            for (int j = i + 1; j < size; j++) {
+            for (int j = i + 1; j < localSize; j++) {
                 if (degrees[i] == degrees[j]) {
                     localCount++;
-                    if (j == (size - 1)) {
+                    if (j == (localSize - 1)) {
                         partition[index] = localCount;
                         index++;
                         break;
@@ -2078,6 +2082,7 @@ public class MAYGEN {
         }
         return check;
     }
+
     /**
      * Main function to initialize the global variables and calling the generate function.
      *
@@ -2101,29 +2106,33 @@ public class MAYGEN {
                 doRun(fuzzyFormulaItem);
                 fuzzyCount += count.get();
             }
-            if (writeSDF) {
-                sdfOut.close();
-            }
-            if (printSDF) {
-                sdfOut.flush();
-            }
-            if (writeSMILES) {
-                smilesOut.close();
-            }
-            if (printSMILES) {
-                System.out.flush();
-            }
-            if (verbose) {
-                long endTime = System.nanoTime() - startTime;
-                double seconds = (double) endTime / 1000000000.0;
-                DecimalFormat d = new DecimalFormat(".###");
-                d.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-                if (printSMILES || printSDF) System.out.println();
-                System.out.println("The number of structures is: " + fuzzyCount);
-                System.out.println("Time: " + d.format(seconds) + " seconds");
-            }
+            closeFilesAndDisplayStatistic(startTime);
         } else {
             doRun(formula);
+        }
+    }
+
+    public void closeFilesAndDisplayStatistic(long startTime) throws IOException {
+        if (writeSDF) {
+            sdfOut.close();
+        }
+        if (printSDF) {
+            sdfOut.flush();
+        }
+        if (writeSMILES) {
+            smilesOut.close();
+        }
+        if (printSMILES) {
+            System.out.flush();
+        }
+        if (verbose) {
+            long endTime = System.nanoTime() - startTime;
+            double seconds = endTime / 1000000000.0;
+            DecimalFormat d = new DecimalFormat(".###");
+            d.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+            if (printSMILES || printSDF) System.out.println();
+            System.out.println("The number of structures is: " + fuzzyCount);
+            System.out.println("Time: " + d.format(seconds) + " seconds");
         }
     }
 
@@ -2145,27 +2154,32 @@ public class MAYGEN {
                 configureSdf(normalizedLocalFormula);
                 configureSmiles(normalizedLocalFormula);
             }
-            String[] atoms = normalizedLocalFormula.split(LETTERS_FROM_A_TO_Z);
-            if (checkLengthTwoFormula(atoms)) {
-                singleAtomCheck(atoms);
-                if (singleAtom) {
-                    if (canBuildIsomerSingle(normalizedLocalFormula)) {
-                        getSingleAtomVariables(normalizedLocalFormula);
-                        initSingleAC();
-                        writeSingleAtom(new int[] {});
-                        displayStatistic(startTime, normalizedLocalFormula);
-                    }
-                } else {
-                    checkOxygenSulfur(atoms);
-                    processFormula(normalizedLocalFormula, startTime);
+            processRun(normalizedLocalFormula, startTime);
+        }
+    }
+
+    public void processRun(String normalizedLocalFormula, long startTime)
+            throws IOException, CDKException, CloneNotSupportedException {
+        String[] atoms = normalizedLocalFormula.split(LETTERS_FROM_A_TO_Z);
+        if (checkLengthTwoFormula(atoms)) {
+            singleAtomCheck(atoms);
+            if (singleAtom) {
+                if (canBuildIsomerSingle(normalizedLocalFormula)) {
+                    getSingleAtomVariables(normalizedLocalFormula);
+                    initSingleAC();
+                    writeSingleAtom(new int[] {});
+                    displayStatistic(startTime, normalizedLocalFormula);
                 }
             } else {
-                if (verbose)
-                    System.out.println(
-                            "The input formula, "
-                                    + normalizedLocalFormula
-                                    + ", does not represent any molecule.");
+                checkOxygenSulfur(atoms);
+                processFormula(normalizedLocalFormula, startTime);
             }
+        } else {
+            if (verbose)
+                System.out.println(
+                        "The input formula, "
+                                + normalizedLocalFormula
+                                + ", does not represent any molecule.");
         }
     }
 
@@ -2234,7 +2248,7 @@ public class MAYGEN {
             }
         }
         long endTime = System.nanoTime() - startTime;
-        double seconds = (double) endTime / 1000000000.0;
+        double seconds = endTime / 1000000000.0;
         DecimalFormat d = new DecimalFormat(".###");
         d.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
@@ -3187,9 +3201,9 @@ public class MAYGEN {
     public int[] sortWithPartition(
             int[] partitionList, int[] degrees, String[] symbols, int[] hydrogens) {
         int[] partition = buildArray(partitionList);
-        int size = partition.length;
-        for (int n = 0; n < size; n++) {
-            for (int m = 0; m < (size - 1) - n; m++) {
+        int localSize = partition.length;
+        for (int n = 0; n < localSize; n++) {
+            for (int m = 0; m < (localSize - 1) - n; m++) {
                 if ((partition[m] > partition[m + 1])) {
                     swap(partition, m, (m + 1));
                     swap(degrees, m, (m + 1));
@@ -3752,9 +3766,8 @@ public class MAYGEN {
         boolean helpIsPresent = false;
         try {
             CommandLine cmd = parser.parse(options, args);
-            String FORMULA = "formula";
-            this.formula = cmd.getOptionValue(FORMULA);
-            if (!cmd.hasOption(FORMULA)) {
+            this.formula = cmd.getOptionValue(FORMULA_TEXT);
+            if (!cmd.hasOption(FORMULA_TEXT)) {
                 this.fuzzyFormula = cmd.getOptionValue("fuzzyFormula");
             }
             if (cmd.hasOption("help")
@@ -3762,17 +3775,15 @@ public class MAYGEN {
                 displayHelpMessage(options);
                 helpIsPresent = true;
             } else {
-                String OUTPUTFILE = "outputFile";
-                String SDFCOORD = "sdfCoord";
-                if (cmd.hasOption(OUTPUTFILE)) {
-                    String filedir = cmd.getOptionValue(OUTPUTFILE);
-                    this.filedir = Objects.isNull(filedir) ? "." : filedir;
+                if (cmd.hasOption(OUTPUT_FILE)) {
+                    String localFiledir = cmd.getOptionValue(OUTPUT_FILE);
+                    this.filedir = Objects.isNull(localFiledir) ? "." : localFiledir;
                     if (cmd.hasOption("smi")) {
                         this.writeSMILES = true;
                     }
                     if (cmd.hasOption("sdf")) {
                         this.writeSDF = true;
-                    } else if (cmd.hasOption(SDFCOORD)) {
+                    } else if (cmd.hasOption(SDF_COORD)) {
                         this.writeSDF = true;
                         this.coordinates = true;
                     }
@@ -3782,7 +3793,7 @@ public class MAYGEN {
                     }
                     if (cmd.hasOption("sdf")) {
                         this.printSDF = true;
-                    } else if (cmd.hasOption(SDFCOORD)) {
+                    } else if (cmd.hasOption(SDF_COORD)) {
                         this.printSDF = true;
                         this.coordinates = true;
                     }
@@ -3852,7 +3863,7 @@ public class MAYGEN {
                         .required(false)
                         .hasArg()
                         .optionalArg(true)
-                        .longOpt("outputFile")
+                        .longOpt(OUTPUT_FILE)
                         .desc("Store output file")
                         .build();
         options.addOption(fileDirectory);
@@ -3878,7 +3889,7 @@ public class MAYGEN {
                         .build();
         options.addOption(sdf);
         Option coordinateOption =
-                Option.builder("sdfCoord")
+                Option.builder(SDF_COORD)
                         .required(false)
                         .longOpt("coordinates")
                         .desc("Output in SDF format with atom coordinates")
