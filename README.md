@@ -4,6 +4,7 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=security_rating)](https://sonarcloud.io/dashboard?id=MehmetAzizYirik_MAYGEN) 
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=ncloc)](https://sonarcloud.io/dashboard?id=MehmetAzizYirik_MAYGEN)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=bugs)](https://sonarcloud.io/dashboard?id=MehmetAzizYirik_MAYGEN)
+[![CodeQL](https://github.com/MehmetAzizYirik/MAYGEN/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/MehmetAzizYirik/MAYGEN/actions/workflows/codeql-analysis.yml)
 # MAYGEN - A chemical structure generator for constitutional isomers based on the orderly generation principle
 
 Copyright 2021 Mehmet Aziz Yirik
