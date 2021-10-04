@@ -49,17 +49,6 @@ public class MaygenTest {
     }
 
     @Test
-    public void test_C3MAY2H4() throws IOException, CDKException, CloneNotSupportedException {
-        MAYGEN maygen = new MAYGEN();
-        maygen.setFormula("C3MAY2H4");
-        maygen.run();
-        assertEquals(0, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(0, maygen.getCount());
-    }
-
-    @Test
     public void test_CClH10() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
         maygen.setFormula("CClH10");
@@ -755,5 +744,17 @@ public class MaygenTest {
         maygen.setMultiThread(true);
         maygen.run();
         assertEquals(0, maygen.getFuzzyCount());
+    }
+    
+    @Test
+    public void test_userDefined()
+            throws IOException, CDKException, CloneNotSupportedException {
+    	MAYGEN maygen = new MAYGEN();
+        maygen.setFormula("C(val=4)6H(val=1)6");
+        maygen.run();
+        assertEquals(217, maygen.getCount());
+        maygen.setMultiThread(true);
+        maygen.run();
+        assertEquals(217, maygen.getCount());
     }
 }
