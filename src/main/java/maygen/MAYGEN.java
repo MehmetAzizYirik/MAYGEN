@@ -4004,10 +4004,9 @@ public class MAYGEN {
     }
 
     public static void main(String[] args) {
-    	String[] a= {"-fuzzy","C(val=4)[1-6]6H(val=1)6","-setElements","-v"};
         MAYGEN gen = new MAYGEN();
         try {
-            if (!gen.parseArgs(a)) {
+            if (!gen.parseArgs(args)) {
                 gen.run();
             }
         } catch (Exception ex) {
