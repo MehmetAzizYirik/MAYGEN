@@ -83,7 +83,7 @@ public class MAYGEN {
     private int size = 0;
     private int total = 0;
     private boolean tsvoutput = false;
-    private boolean setElement=false;
+    private boolean setElement = false;
     private boolean writeSDF = false;
     private boolean coordinates = false;
     private SDFWriter sdfOut;
@@ -325,15 +325,15 @@ public class MAYGEN {
      * @return int
      */
     public int atomOccurrence(String[] info) {
-    	if(info.length==1) return 1;
-    	else {
-    		if(info[1].contains(")")){
-    			String[] info2= info[1].split("\\)");
-    			return info2.length > 1 ? Integer.parseInt(info2[1]) : 1;
-    		}else {
-        		return info.length > 1 ? Integer.parseInt(info[1]) : 1;
-    		}
-    	}
+        if (info.length == 1) return 1;
+        else {
+            if (info[1].contains(")")) {
+                String[] info2 = info[1].split("\\)");
+                return info2.length > 1 ? Integer.parseInt(info2[1]) : 1;
+            } else {
+                return info.length > 1 ? Integer.parseInt(info[1]) : 1;
+            }
+        }
     }
 
     /**
@@ -425,7 +425,7 @@ public class MAYGEN {
     }
 
     public void singleAtomCheck(String[] atoms) {
-    	String[] info = atoms[0].split(NUMBERS_FROM_0_TO_9, 2);
+        String[] info = atoms[0].split(NUMBERS_FROM_0_TO_9, 2);
         String symbol = info[0].split("\\(")[0];
         if (atoms.length == 1) {
             if (symbol.equals("H")) {
@@ -484,7 +484,7 @@ public class MAYGEN {
     }
 
     public void getSingleAtomVariables(String localFormula) {
-    	String[] atoms = localFormula.split(LETTERS_FROM_A_TO_Z);
+        String[] atoms = localFormula.split(LETTERS_FROM_A_TO_Z);
         List<String> symbolList = new ArrayList<>();
         String[] info;
         int hydrogens = 0;
@@ -642,7 +642,6 @@ public class MAYGEN {
      * @param formula String molecular formula
      * @return boolean
      */
-    
     public boolean canBuildIsomer(String formula) {
         String[] atoms = normalizeFormula(formula).split(LETTERS_FROM_A_TO_Z);
         String[] info;
@@ -652,13 +651,13 @@ public class MAYGEN {
         int localSize = 0;
         int sum = 0;
         for (String atom : atoms) {
-            if(atom.contains(")")) info = atom.split("\\)");
+            if (atom.contains(")")) info = atom.split("\\)");
             else info = atom.split(NUMBERS_FROM_0_TO_9, 2);
             symbol = info[0].split("\\(")[0];
-            if(!setElement) valence = valences.get(symbol);
+            if (!setElement) valence = valences.get(symbol);
             else {
-            	if(info[0].contains("(")) valence = Integer.valueOf(info[0].split("\\(")[1]);
-            	else valence = valences.get(symbol);
+                if (info[0].contains("(")) valence = Integer.valueOf(info[0].split("\\(")[1]);
+                else valence = valences.get(symbol);
             }
             occur = atomOccurrence(info);
             localSize += occur;
@@ -669,7 +668,7 @@ public class MAYGEN {
     }
 
     public boolean canBuildIsomerSingle(String formula) {
-    	String[] atoms = normalizeFormula(formula).split(LETTERS_FROM_A_TO_Z);
+        String[] atoms = normalizeFormula(formula).split(LETTERS_FROM_A_TO_Z);
         String[] info;
         String symbol;
         boolean check = false;
@@ -681,7 +680,7 @@ public class MAYGEN {
             if (symbol.equals("H")) {
                 hydrogens = atomOccurrence(info);
             } else {
-                if(!setElement) nonHydrogen = valences.get(symbol);
+                if (!setElement) nonHydrogen = valences.get(symbol);
                 else nonHydrogen = Integer.valueOf(info[0].split("\\(")[1]);
             }
         }
@@ -2089,17 +2088,16 @@ public class MAYGEN {
     }
 
     public boolean checkLengthTwoFormula(String[] atoms) {
-    	boolean check = true;
-        String[] info2= null;
+        boolean check = true;
+        String[] info2 = null;
         if (atoms.length == 1) {
-        	String[] info = atoms[0].split(NUMBERS_FROM_0_TO_9, 2);
-            if(atoms[0].contains("(")) {
-            	info2=info[1].split("\\)");
-            	if (info2[1].equals("2") && Integer.valueOf(info2[0]) > 3) check = false;
-            }else {
-            	 if (info[1].equals("2") && valences.get(info[0]) > 3) check = false;
+            String[] info = atoms[0].split(NUMBERS_FROM_0_TO_9, 2);
+            if (atoms[0].contains("(")) {
+                info2 = info[1].split("\\)");
+                if (info2[1].equals("2") && Integer.valueOf(info2[0]) > 3) check = false;
+            } else {
+                if (info[1].equals("2") && valences.get(info[0]) > 3) check = false;
             }
-            
         }
         return check;
     }
@@ -2114,28 +2112,27 @@ public class MAYGEN {
     public void run() throws IOException, CDKException, CloneNotSupportedException {
         clearGlobals();
         if (Objects.nonNull(fuzzyFormula)) {
-        	if(!setElement) fuzzyFormula = normalizeFormula(fuzzyFormula);
+            if (!setElement) fuzzyFormula = normalizeFormula(fuzzyFormula);
             configureSdf(fuzzyFormula);
             configureSmiles(fuzzyFormula);
             if (verbose)
-                System.out.println(
-                        "MAYGEN is generating isomers of " + fuzzyFormula + "...");
+                System.out.println("MAYGEN is generating isomers of " + fuzzyFormula + "...");
             long startTime = System.nanoTime();
             fuzzyCount = 0;
             List<String> formulae = getFormulaList(fuzzyFormula);
-            if(formulae.size()==0) {
-            	if (verbose)
+            if (formulae.size() == 0) {
+                if (verbose)
                     System.out.println(
                             "The input formula, "
                                     + fuzzyFormula
                                     + ", does not represent any molecule.");
-            }else {
-            	for (String fuzzyFormulaItem : formulae) {
+            } else {
+                for (String fuzzyFormulaItem : formulae) {
                     clearGlobals();
                     doRun(fuzzyFormulaItem);
                     fuzzyCount += count.get();
-            	}
-            	closeFilesAndDisplayStatistic(startTime);
+                }
+                closeFilesAndDisplayStatistic(startTime);
             }
         } else {
             doRun(formula);
@@ -2169,26 +2166,28 @@ public class MAYGEN {
     public void doRun(String localFormula)
             throws IOException, CDKException, CloneNotSupportedException {
         String normalizedLocalFormula = normalizeFormula(localFormula);
-        if(!setElement) {
-        	String[] unsupportedSymbols = validateFormula(normalizedLocalFormula);
-        	if (unsupportedSymbols.length > 0 && verbose) {
-                    System.out.println(
-                            "The input formula consists user defined element types: "
-                                    + String.join(", ", unsupportedSymbols));
+        if (!setElement) {
+            String[] unsupportedSymbols = validateFormula(normalizedLocalFormula);
+            if (unsupportedSymbols.length > 0 && verbose) {
+                System.out.println(
+                        "The input formula consists user defined element types: "
+                                + String.join(", ", unsupportedSymbols));
             } else {
                 long startTime = System.nanoTime();
                 if (Objects.isNull(fuzzyFormula)) {
                     if (verbose)
                         System.out.println(
-                                "MAYGEN is generating isomers of " + normalizedLocalFormula + "...");
+                                "MAYGEN is generating isomers of "
+                                        + normalizedLocalFormula
+                                        + "...");
                     configureSdf(normalizedLocalFormula);
                     configureSmiles(normalizedLocalFormula);
                 }
                 processRun(normalizedLocalFormula, startTime);
             }
-        }else{
-        	long startTime = System.nanoTime();
-        	normalizedLocalFormula=normalizedLocalFormula.replaceAll("val=", "");
+        } else {
+            long startTime = System.nanoTime();
+            normalizedLocalFormula = normalizedLocalFormula.replaceAll("val=", "");
             if (Objects.isNull(fuzzyFormula)) {
                 if (verbose)
                     System.out.println(
@@ -3340,44 +3339,44 @@ public class MAYGEN {
         String[] atoms = localFormula.split(LETTERS_FROM_A_TO_Z);
         HashMap<String, Integer[]> symbolsMap = new HashMap<>();
         String[] info, info2, info3, info4;
-        String symbol;        
+        String symbol;
         for (String atom : atoms) {
-        	info = atom.split("\\(val="); // to get the higher valence value
-        	Integer[] n = new Integer[2];
-        	if(info.length!=1) {
-            	symbol=info[0];
-            	info2=info[1].split("\\)");
-            	symbol+="("+info2[0]+")";
-            	if(info2.length==1) {
-            		 n[0] = 1;
-                     n[1] = 1;
-            	}else {
-            		info3=info2[1].split("\\-");
-            		if(info3.length==1) {
-            			n[0] = Integer.valueOf(info3[0]);
-                        n[1] = Integer.valueOf(info3[0]);
-            		}else {
-            			n[0] = Integer.valueOf(info3[0].split("\\[")[1]);
-                        n[1] = Integer.valueOf(info3[1].split("\\]")[0]);
-            		}
-            	}
-        	}else{
-        		info4=info[0].split(NUMBERS_FROM_0_TO_9);
-        		symbol=info4[0];
-        		if(info4.length==1) {
-        			n[0] = 1;
+            info = atom.split("\\(val="); // to get the higher valence value
+            Integer[] n = new Integer[2];
+            if (info.length != 1) {
+                symbol = info[0];
+                info2 = info[1].split("\\)");
+                symbol += "(" + info2[0] + ")";
+                if (info2.length == 1) {
+                    n[0] = 1;
                     n[1] = 1;
-        		}else {
-        			n[0] = Integer.valueOf(info4[1]);
+                } else {
+                    info3 = info2[1].split("\\-");
+                    if (info3.length == 1) {
+                        n[0] = Integer.valueOf(info3[0]);
+                        n[1] = Integer.valueOf(info3[0]);
+                    } else {
+                        n[0] = Integer.valueOf(info3[0].split("\\[")[1]);
+                        n[1] = Integer.valueOf(info3[1].split("\\]")[0]);
+                    }
+                }
+            } else {
+                info4 = info[0].split(NUMBERS_FROM_0_TO_9);
+                symbol = info4[0];
+                if (info4.length == 1) {
+                    n[0] = 1;
+                    n[1] = 1;
+                } else {
+                    n[0] = Integer.valueOf(info4[1]);
                     n[1] = Integer.valueOf(info4[1]);
-        		}
-        	}
-        	symbolList.add(symbol);
+                }
+            }
+            symbolList.add(symbol);
             symbolsMap.put(symbol, n);
         }
         return symbolsMap;
     }
-    
+
     /**
      * Formulae generator for each element ranges
      *
@@ -3434,10 +3433,10 @@ public class MAYGEN {
      * @return the list of formulas
      */
     public List<String> getFormulaList(String normalizedLocalFuzzyFormula) {
-    	List<String> result = new ArrayList<>();
-    	String[] unsupportedSymbols = null;
-        if(!setElement)	unsupportedSymbols = validateFuzzyFormula(normalizedLocalFuzzyFormula);
-        if (unsupportedSymbols!=null && unsupportedSymbols.length > 0) {
+        List<String> result = new ArrayList<>();
+        String[] unsupportedSymbols = null;
+        if (!setElement) unsupportedSymbols = validateFuzzyFormula(normalizedLocalFuzzyFormula);
+        if (unsupportedSymbols != null && unsupportedSymbols.length > 0) {
             if (verbose)
                 System.out.println(
                         "The input fuzzyFormula consists user defined element types: "
@@ -3445,8 +3444,12 @@ public class MAYGEN {
         } else {
             List<String> symbolList = new ArrayList<>();
             Map<String, Integer[]> localSymbols;
-            if(!setElement) localSymbols= getFuzzyFormulaRanges(normalizedLocalFuzzyFormula, symbolList);
-            else localSymbols= getFuzzyFormulaRangesWithNewElements(normalizedLocalFuzzyFormula, symbolList);
+            if (!setElement)
+                localSymbols = getFuzzyFormulaRanges(normalizedLocalFuzzyFormula, symbolList);
+            else
+                localSymbols =
+                        getFuzzyFormulaRangesWithNewElements(
+                                normalizedLocalFuzzyFormula, symbolList);
             String newFormula = "";
             generateFormulae(result, symbolList, localSymbols, newFormula, 0);
         }
@@ -3500,7 +3503,7 @@ public class MAYGEN {
             atom.setImplicitHydrogenCount(0);
         }
     }
-    
+
     /**
      * Building an atom container from a string of atom-implicit hydrogen information.
      *
@@ -3517,7 +3520,7 @@ public class MAYGEN {
         }
         return ac;
     }
-    
+
     /**
      * Building an atom container from a string of atom-implicit hydrogen information.
      *
@@ -3606,9 +3609,9 @@ public class MAYGEN {
 
     public IAtomContainer buildContainer4SDF(String[] symbols) throws CloneNotSupportedException {
         IAtomContainer ac = this.builder.newAtomContainer();
-        String symbol=null;
+        String symbol = null;
         for (String s : symbols) {
-        	symbol=s.split(NUMBERS_FROM_0_TO_9)[0];
+            symbol = s.split(NUMBERS_FROM_0_TO_9)[0];
             ac.addAtom(new Atom(symbol));
         }
         for (IAtom atom : ac.atoms()) {

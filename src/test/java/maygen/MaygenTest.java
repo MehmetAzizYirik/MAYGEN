@@ -745,11 +745,10 @@ public class MaygenTest {
         maygen.run();
         assertEquals(0, maygen.getFuzzyCount());
     }
-    
+
     @Test
-    public void test_userDefined()
-            throws IOException, CDKException, CloneNotSupportedException {
-    	MAYGEN maygen = new MAYGEN();
+    public void test_userDefined() throws IOException, CDKException, CloneNotSupportedException {
+        MAYGEN maygen = new MAYGEN();
         maygen.setFormula("C(val=4)6H(val=1)6");
         maygen.run();
         assertEquals(217, maygen.getCount());
