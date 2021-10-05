@@ -150,7 +150,7 @@ public class MAYGEN {
     public void setWriteSDF(boolean writeSDF) {
         this.writeSDF = writeSDF;
     }
-    
+
     public boolean isSetElement() {
         return setElement;
     }
@@ -158,6 +158,7 @@ public class MAYGEN {
     public void setSetElement(boolean setElement) {
         this.setElement = setElement;
     }
+
     public boolean isCoordinates() {
         return coordinates;
     }
@@ -332,18 +333,21 @@ public class MAYGEN {
      * @return int
      */
     public int atomOccurrence(String[] info) {
-    	if (info.length == 1) {
-    		if(info[0].contains("(")) {
-    			return 1;
-    		}else {
-    			String[] info2 = info[0].split(NUMBERS_FROM_0_TO_9,2); // Here we need 2 otherwise it will split also integers in case of C10 -> C,1,0
-    			if(info2.length==1) return 1;
-    			else {
-    				return Integer.valueOf(info2[1]);
-    			}
-    		}
-    	}
-        else {
+        if (info.length == 1) {
+            if (info[0].contains("(")) {
+                return 1;
+            } else {
+                String[] info2 =
+                        info[0].split(
+                                NUMBERS_FROM_0_TO_9,
+                                2); // Here we need 2 otherwise it will split also integers in case
+                                    // of C10 -> C,1,0
+                if (info2.length == 1) return 1;
+                else {
+                    return Integer.valueOf(info2[1]);
+                }
+            }
+        } else {
             if (info[1].contains(")")) {
                 String[] info2 = info[1].split("\\)");
                 return info2.length > 1 ? Integer.parseInt(info2[1]) : 1;
@@ -480,12 +484,12 @@ public class MAYGEN {
         String[] info;
         String symbol;
         for (String atom : atoms) {
-        	info = atom.split("\\("); // to get the higher valence value
-            if(info.length!=1) {
-            	symbol=info[0];
-            	symbol+=info[1].split("\\)")[0]; // to get the valence and frequency from x)y
-            }else {
-            	symbol = info[0].split(NUMBERS_FROM_0_TO_9)[0];
+            info = atom.split("\\("); // to get the higher valence value
+            if (info.length != 1) {
+                symbol = info[0];
+                symbol += info[1].split("\\)")[0]; // to get the valence and frequency from x)y
+            } else {
+                symbol = info[0].split(NUMBERS_FROM_0_TO_9)[0];
             }
             if (valences.get(symbol) != 2) {
                 onlyDegree2 = false;
@@ -536,11 +540,11 @@ public class MAYGEN {
         int hydrogens = 0;
         String symbol;
         for (String atom : atoms) {
-        	info=atom.split("\\(");
-        	if(info.length!=1) {
-        		symbol=info[0];
-        		symbol+=info[1].split("\\)")[0];
-        		if (!symbol.equals("H")) {
+            info = atom.split("\\(");
+            if (info.length != 1) {
+                symbol = info[0];
+                symbol += info[1].split("\\)")[0];
+                if (!symbol.equals("H")) {
                     occur = atomOccurrence(info);
                     sizePart++;
                     for (int i = 0; i < occur; i++) {
@@ -550,9 +554,9 @@ public class MAYGEN {
                 } else {
                     hydrogens = atomOccurrence(info);
                 }
-        	}else {
-        		symbol=info[0].split(NUMBERS_FROM_0_TO_9)[0];
-        		if (!symbol.equals("H")) {
+            } else {
+                symbol = info[0].split(NUMBERS_FROM_0_TO_9)[0];
+                if (!symbol.equals("H")) {
                     occur = atomOccurrence(info);
                     sizePart++;
                     for (int i = 0; i < occur; i++) {
@@ -562,7 +566,7 @@ public class MAYGEN {
                 } else {
                     hydrogens = atomOccurrence(info);
                 }
-        	}
+            }
         }
         sortAscending(symbolList);
         for (int i = 0; i < hydrogens; i++) {
@@ -2244,7 +2248,7 @@ public class MAYGEN {
     public void processRun(String normalizedLocalFormula, long startTime)
             throws IOException, CDKException, CloneNotSupportedException {
         String[] atoms = normalizedLocalFormula.split(LETTERS_FROM_A_TO_Z);
-        if(setElement)	getHigherValences(normalizedLocalFormula);
+        if (setElement) getHigherValences(normalizedLocalFormula);
         if (checkLengthTwoFormula(atoms)) {
             singleAtomCheck(atoms);
             if (singleAtom) {
@@ -3704,25 +3708,24 @@ public class MAYGEN {
 
     /**
      * Reading the molecular formula and setting the higher valences.
-     * 
-     * @param localFormula	String formula
+     *
+     * @param localFormula String formula
      */
-    
     public void getHigherValences(String localFormula) {
-    	String[] atoms = localFormula.split(LETTERS_FROM_A_TO_Z);
-        String[] info,info2;
-        String valence="";
-        String symbol= "";
+        String[] atoms = localFormula.split(LETTERS_FROM_A_TO_Z);
+        String[] info, info2;
+        String valence = "";
+        String symbol = "";
         for (String atom : atoms) {
             info = atom.split("\\("); // to get the higher valence value
-            if(info.length!=1) {
-            	symbol=info[0];
-            	info2=info[1].split("\\)"); // to get the valence and frequency from x)y
-            	valence=info2[0];
-            	valences.put(symbol+valence, Integer.valueOf(valence));
+            if (info.length != 1) {
+                symbol = info[0];
+                info2 = info[1].split("\\)"); // to get the valence and frequency from x)y
+                valence = info2[0];
+                valences.put(symbol + valence, Integer.valueOf(valence));
             }
         }
-    }    
+    }
     /*
      The following functions are for the distribution of given number of sulfurs and oxygens in
      regular graphs as node labelling. These functions are the Java implementation of Sawada's
