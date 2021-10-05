@@ -2212,36 +2212,26 @@ public class MAYGEN {
     public void doRun(String localFormula)
             throws IOException, CDKException, CloneNotSupportedException {
         String normalizedLocalFormula = normalizeFormula(localFormula);
-        if (setElement) {
+        if(setElement) normalizedLocalFormula = normalizedLocalFormula.replace("val=", "");
+        String checkFormula= normalizedLocalFormula.replace("(", "");
+        checkFormula=checkFormula.replace(")","");
+        String[] unsupportedSymbols = validateFormula(checkFormula);
+        if (unsupportedSymbols.length > 0 && verbose) {
+            System.out.println(
+                    "The input formula consists user defined element types: "
+                            + String.join(", ", unsupportedSymbols));
+        } else {
             long startTime = System.nanoTime();
-            normalizedLocalFormula = normalizedLocalFormula.replace("val=", "");
             if (Objects.isNull(fuzzyFormula)) {
                 if (verbose)
                     System.out.println(
-                            "MAYGEN is generating isomers of " + normalizedLocalFormula + "...");
+                            "MAYGEN is generating isomers of "
+                                    + normalizedLocalFormula
+                                    + "...");
                 configureSdf(normalizedLocalFormula);
                 configureSmiles(normalizedLocalFormula);
             }
             processRun(normalizedLocalFormula, startTime);
-        } else {
-            String[] unsupportedSymbols = validateFormula(normalizedLocalFormula);
-            if (unsupportedSymbols.length > 0 && verbose) {
-                System.out.println(
-                        "The input formula consists user defined element types: "
-                                + String.join(", ", unsupportedSymbols));
-            } else {
-                long startTime = System.nanoTime();
-                if (Objects.isNull(fuzzyFormula)) {
-                    if (verbose)
-                        System.out.println(
-                                "MAYGEN is generating isomers of "
-                                        + normalizedLocalFormula
-                                        + "...");
-                    configureSdf(normalizedLocalFormula);
-                    configureSmiles(normalizedLocalFormula);
-                }
-                processRun(normalizedLocalFormula, startTime);
-            }
         }
     }
 
