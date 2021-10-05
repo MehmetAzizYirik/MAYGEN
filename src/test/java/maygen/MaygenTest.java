@@ -749,6 +749,7 @@ public class MaygenTest {
     @Test
     public void test_userDefined() throws IOException, CDKException, CloneNotSupportedException {
         MAYGEN maygen = new MAYGEN();
+        maygen.setSetElement(true);
         maygen.setFormula("C(val=4)6H(val=1)6");
         maygen.run();
         assertEquals(217, maygen.getCount());

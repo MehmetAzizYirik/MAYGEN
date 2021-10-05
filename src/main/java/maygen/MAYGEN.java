@@ -150,7 +150,14 @@ public class MAYGEN {
     public void setWriteSDF(boolean writeSDF) {
         this.writeSDF = writeSDF;
     }
+    
+    public boolean isSetElement() {
+        return setElement;
+    }
 
+    public void setSetElement(boolean setElement) {
+        this.setElement = setElement;
+    }
     public boolean isCoordinates() {
         return coordinates;
     }
@@ -329,7 +336,11 @@ public class MAYGEN {
     		if(info[0].contains("(")) {
     			return 1;
     		}else {
-    			return Integer.valueOf(info[0].split(NUMBERS_FROM_0_TO_9)[1]);
+    			String[] info2 = info[0].split(NUMBERS_FROM_0_TO_9,2); // Here we need 2 otherwise it will split also integers in case of C10 -> C,1,0
+    			if(info2.length==1) return 1;
+    			else {
+    				return Integer.valueOf(info2[1]);
+    			}
     		}
     	}
         else {
@@ -474,7 +485,7 @@ public class MAYGEN {
             	symbol=info[0];
             	symbol+=info[1].split("\\)")[0]; // to get the valence and frequency from x)y
             }else {
-            	symbol = info[0];
+            	symbol = info[0].split(NUMBERS_FROM_0_TO_9)[0];
             }
             if (valences.get(symbol) != 2) {
                 onlyDegree2 = false;
@@ -2233,7 +2244,7 @@ public class MAYGEN {
     public void processRun(String normalizedLocalFormula, long startTime)
             throws IOException, CDKException, CloneNotSupportedException {
         String[] atoms = normalizedLocalFormula.split(LETTERS_FROM_A_TO_Z);
-        getHigherValences(normalizedLocalFormula);
+        if(setElement)	getHigherValences(normalizedLocalFormula);
         if (checkLengthTwoFormula(atoms)) {
             singleAtomCheck(atoms);
             if (singleAtom) {
