@@ -102,7 +102,7 @@ java -jar MAYGEN-1.8.jar -f C2OH4 -v -t -o C:\Users\UserName\Desktop\
 
 java -jar MAYGEN-1.8.jar -fuzzy C[2-5]O2H[4-8] -v -t -o C:\Users\UserName\Desktop\
 
-java -jar MAYGEN-1.8.jar -f E(val=4)6K(val=1)6 -setElements -v -t -o C:\Users\UserName\Desktop\
+java -jar MAYGEN-1.8.jar -f N(val=4)6H6 -setElements -v -t -o C:\Users\UserName\Desktop\
 ```
 
 ## License
