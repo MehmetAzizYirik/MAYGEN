@@ -341,7 +341,7 @@ public class MAYGEN {
                         info[0].split(
                                 NUMBERS_FROM_0_TO_9,
                                 2); // Here we need 2 otherwise it will split also integers in case
-                                    // of C10 -> C,1,0
+                // of C10 -> C,1,0
                 if (info2.length == 1) return 1;
                 else {
                     return Integer.valueOf(info2[1]);
@@ -2212,9 +2212,9 @@ public class MAYGEN {
     public void doRun(String localFormula)
             throws IOException, CDKException, CloneNotSupportedException {
         String normalizedLocalFormula = normalizeFormula(localFormula);
-        if(setElement) normalizedLocalFormula = normalizedLocalFormula.replace("val=", "");
-        String checkFormula= normalizedLocalFormula.replace("(", "");
-        checkFormula=checkFormula.replace(")","");
+        if (setElement) normalizedLocalFormula = normalizedLocalFormula.replace("val=", "");
+        String checkFormula = normalizedLocalFormula.replace("(", "");
+        checkFormula = checkFormula.replace(")", "");
         String[] unsupportedSymbols = validateFormula(checkFormula);
         if (unsupportedSymbols.length > 0 && verbose) {
             System.out.println(
@@ -2225,9 +2225,7 @@ public class MAYGEN {
             if (Objects.isNull(fuzzyFormula)) {
                 if (verbose)
                     System.out.println(
-                            "MAYGEN is generating isomers of "
-                                    + normalizedLocalFormula
-                                    + "...");
+                            "MAYGEN is generating isomers of " + normalizedLocalFormula + "...");
                 configureSdf(normalizedLocalFormula);
                 configureSmiles(normalizedLocalFormula);
             }
