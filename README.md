@@ -73,6 +73,8 @@ option.
 
  -fuzzy,--fuzzyFormula <arg>   fuzzy formula
  
+ -setElements,--settingElements   User defined element types and valences
+ 
  -v,--verbose              print message
 
  -t,--tsvoutput            Output formula, number of structures and
@@ -99,6 +101,8 @@ Please report issues at https://github.com/MehmetAzizYirik/MAYGEN
 java -jar MAYGEN-1.8.jar -f C2OH4 -v -t -o C:\Users\UserName\Desktop\
 
 java -jar MAYGEN-1.8.jar -fuzzy C[2-5]O2H[4-8] -v -t -o C:\Users\UserName\Desktop\
+
+java -jar MAYGEN-1.8.jar -f E(val=4)6K(val=1)6 -setElements -v -t -o C:\Users\UserName\Desktop\
 ```
 
 ## License
