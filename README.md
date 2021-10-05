@@ -57,7 +57,7 @@ The definitions of the arguments are given below:
 ```
 usage: java -jar MAYGEN-1.8.jar [-f <arg>] [-fuzzy <arg>] [-v] [-t] [-o <arg>]
 
- 		[-m] [-smi] [-sdf] [-sdfCoord] [-h]
+ 		[-setElements] [-m] [-smi] [-sdf] [-sdfCoord] [-h]
 
 Generates molecular structures for a given molecular formula.
 The input is a molecular formula string.
