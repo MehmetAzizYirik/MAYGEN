@@ -29,34 +29,16 @@ package maygen;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 public class HydrogenDistributor {
-    private static final Map<Integer, Integer> capacities;
     private int[] capacity;
     private int[] valences;
     private int totalHydrogen; // Total number of hydrogens.
     private int[] totalAtom; // Total number of atoms.
     private int hydrogens2distribute;
-
-    static {
-        // The atom capacities from MOLGEN book. Capacity of an atom equals to
-        capacities = new HashMap<>();
-        capacities.put(6, 3);
-        capacities.put(7, 2);
-        capacities.put(8, 1);
-        capacities.put(16, 1);
-        capacities.put(15, 2);
-        capacities.put(9, 0);
-        capacities.put(53, 0);
-        capacities.put(1, 0);
-        capacities.put(17, 0);
-        capacities.put(35, 0);
-    }
 
     /**
      * The basic functions used in the hydrogen distributor.
