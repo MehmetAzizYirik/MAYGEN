@@ -4007,7 +4007,7 @@ public class MAYGEN {
                 Option.builder("setElements")
                         .required(false)
                         .longOpt("settingElements")
-                        .desc("User defined element types and valences")
+                        .desc("User defined valences")
                         .build();
         options.addOption(settingElements);
         Option verboseOption =
