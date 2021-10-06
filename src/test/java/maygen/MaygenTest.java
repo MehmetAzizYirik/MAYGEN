@@ -647,7 +647,9 @@ public class MaygenTest {
         maygen.isOnSm();
         maygen.setFiledir(".");
         maygen.getFiledir();
+        maygen.setVerbose(true);
         maygen.getVerbose();
+        maygen.isSetElement();
     }
 
     @Test

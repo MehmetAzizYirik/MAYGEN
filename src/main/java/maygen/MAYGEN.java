@@ -79,7 +79,7 @@ public class MAYGEN {
     private static final String FORMULA_TEXT = "formula";
     private static final String OUTPUT_FILE = "outputFile";
     private static final String SDF_COORD = "sdfCoord";
-    private static final Map<String, Integer> valences;
+    private final Map<String, Integer> valences;
     private int size = 0;
     private int total = 0;
     private boolean tsvoutput = false;
@@ -123,7 +123,7 @@ public class MAYGEN {
     private final SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
     private IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
 
-    static {
+    {
         // The atom valences from CDK.
         valences = new HashMap<>();
 
@@ -352,7 +352,7 @@ public class MAYGEN {
                 String[] info2 = info[1].split("\\)");
                 return info2.length > 1 ? Integer.parseInt(info2[1]) : 1;
             } else {
-                return info.length > 1 ? Integer.parseInt(info[1]) : 1;
+                return Integer.parseInt(info[1]);
             }
         }
     }
@@ -2133,14 +2133,18 @@ public class MAYGEN {
 
     public boolean checkLengthTwoFormula(String[] atoms) {
         boolean check = true;
-        String[] info2 = null;
+        String[] info2;
         if (atoms.length == 1) {
             String[] info = atoms[0].split(NUMBERS_FROM_0_TO_9, 2);
             if (atoms[0].contains("(")) {
                 info2 = info[1].split("\\)");
-                if (info2[1].equals("2") && Integer.valueOf(info2[0]) > 3) check = false;
+                if (info2[1].equals("2") && Integer.valueOf(info2[0]) > 3) {
+                    check = false;
+                }
             } else {
-                if (info[1].equals("2") && valences.get(info[0]) > 3) check = false;
+                if (info[1].equals("2") && valences.get(info[0]) > 3) {
+                    check = false;
+                }
             }
         }
         return check;
@@ -3361,7 +3365,7 @@ public class MAYGEN {
                 symbol = info[0];
                 info3 = info[1].split("-");
                 n[0] = Integer.valueOf(info3[0]);
-                n[1] = Integer.valueOf(info3[1].split("\\]")[0]);
+                n[1] = Integer.valueOf(info3[1].split("]")[0]);
             }
             symbolList.add(symbol);
             symbolsMap.put(symbol, n);
@@ -3386,13 +3390,13 @@ public class MAYGEN {
                     n[0] = 1;
                     n[1] = 1;
                 } else {
-                    info3 = info2[1].split("\\-");
+                    info3 = info2[1].split("-");
                     if (info3.length == 1) {
                         n[0] = Integer.valueOf(info3[0]);
                         n[1] = Integer.valueOf(info3[0]);
                     } else {
                         n[0] = Integer.valueOf(info3[0].split("\\[")[1]);
-                        n[1] = Integer.valueOf(info3[1].split("\\]")[0]);
+                        n[1] = Integer.valueOf(info3[1].split("]")[0]);
                     }
                 }
             } else {
@@ -3702,18 +3706,21 @@ public class MAYGEN {
     public void getHigherValences(String localFormula) {
         String[] atoms = localFormula.split(LETTERS_FROM_A_TO_Z);
         String[] info, info2;
-        String valence = "";
-        String symbol = "";
+        String valence;
+        String symbol;
         for (String atom : atoms) {
-            info = atom.split("\\("); // to get the higher valence value
+            // to get the higher valence value
+            info = atom.split("\\(");
             if (info.length != 1) {
                 symbol = info[0];
-                info2 = info[1].split("\\)"); // to get the valence and frequency from x)y
+                // to get the valence and frequency from x)y
+                info2 = info[1].split("\\)");
                 valence = info2[0];
                 valences.put(symbol + valence, Integer.valueOf(valence));
             }
         }
     }
+
     /*
      The following functions are for the distribution of given number of sulfurs and oxygens in
      regular graphs as node labelling. These functions are the Java implementation of Sawada's
