@@ -123,7 +123,7 @@ public class MAYGEN {
     private final SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
     private IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
 
-    {
+    public MAYGEN() {
         // The atom valences from CDK.
         valences = new HashMap<>();
 
@@ -2200,7 +2200,7 @@ public class MAYGEN {
             smilesOut.close();
         }
         if (printSMILES) {
-            System.out.flush();
+            ((PrintWriter) smilesOut).flush();
         }
         if (verbose) {
             long endTime = System.nanoTime() - startTime;
@@ -2324,7 +2324,7 @@ public class MAYGEN {
                 smilesOut.close();
             }
             if (printSMILES) {
-                System.out.flush();
+                ((PrintWriter) smilesOut).flush();
             }
         }
         long endTime = System.nanoTime() - startTime;
@@ -3944,6 +3944,9 @@ public class MAYGEN {
                     } else if (cmd.hasOption(SDF_COORD)) {
                         this.writeSDF = true;
                         this.coordinates = true;
+                    }
+                    if (!cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
+                        this.writeSDF = true;
                     }
                 } else {
                     if (cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
