@@ -57,11 +57,12 @@ public class Generation {
         int[] hydrogens = maygen.setHydrogens(degree);
         int[] newPartition = maygen.getPartition(degree);
         final int[] initialPartition;
+        String[] symbolArrayCopy=maygen.getSymbolArray();
         if (maygen.isWriteSDF()
                 || maygen.isPrintSDF()
                 || maygen.isWriteSMILES()
                 || maygen.isPrintSMILES()) {
-            String[] symbolArrayCopy =
+            symbolArrayCopy =
                     Arrays.copyOf(maygen.getSymbolArray(), maygen.getSymbolArray().length);
             initialPartition =
                     maygen.sortWithPartition(newPartition, degree, symbolArrayCopy, hydrogens);
@@ -79,6 +80,7 @@ public class Generation {
             partitionList[0] = initialPartition;
             maygen.generate(
                     atomContainer,
+                    symbolArrayCopy,
                     degree,
                     initialPartition,
                     partitionList,

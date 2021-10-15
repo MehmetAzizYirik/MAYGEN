@@ -84,6 +84,7 @@ public class MAYGEN {
     private int total = 0;
     private boolean tsvoutput = false;
     private boolean setElement = false;
+    private boolean boundary = false;
     private boolean writeSDF = false;
     private boolean coordinates = false;
     private SDFWriter sdfOut;
@@ -149,6 +150,14 @@ public class MAYGEN {
 
     public void setWriteSDF(boolean writeSDF) {
         this.writeSDF = writeSDF;
+    }
+    
+    public boolean isBoundary() {
+        return boundary;
+    }
+
+    public void setBoundary(boolean boundary) {
+        this.boundary = boundary;
     }
 
     public boolean isSetElement() {
@@ -1453,6 +1462,7 @@ public class MAYGEN {
      */
     public void generate(
             IAtomContainer ac,
+            String[] symbolArrayCopy,
             int[] degreeList,
             int[] initialPartition,
             int[][] partitionList,
@@ -1488,6 +1498,7 @@ public class MAYGEN {
         while (flag[0]) {
             nextStep(
                     ac,
+                    symbolArrayCopy,
                     a,
                     indices,
                     degrees,
@@ -1604,6 +1615,7 @@ public class MAYGEN {
      */
     public void nextStep(
             IAtomContainer ac,
+            String[] symbolArrayCopy,
             int[][] a,
             int[] indices,
             int[] degrees,
@@ -1630,6 +1642,7 @@ public class MAYGEN {
         if (callForward[0]) {
             forward(
                     ac,
+                    symbolArrayCopy,
                     a,
                     indices,
                     degrees,
@@ -1757,7 +1770,6 @@ public class MAYGEN {
             flag[0] = false;
         } else {
             indices = predecessor(indices, max[0].length);
-            // UPDATE
             findR(indices, initialPartition, r);
             i = indices[0];
             j = indices[1];
@@ -1771,7 +1783,6 @@ public class MAYGEN {
                 a[i][j] = (x - 1);
                 a[j][i] = (x - 1);
                 indices = successor(indices, max[0].length);
-                // UPDATE
                 findR(indices, initialPartition, r);
                 callForward[0] = true;
             } else {
@@ -1813,6 +1824,7 @@ public class MAYGEN {
      */
     public int[][] forward(
             IAtomContainer ac,
+            String[] symbolArrayCopy,
             int[][] a,
             int[] indices,
             int[] degrees,
@@ -1844,6 +1856,7 @@ public class MAYGEN {
         callForward[0] = true;
         return forward(
                 ac,
+                symbolArrayCopy,
                 lInverse,
                 cInverse,
                 maximumValue,
@@ -1870,9 +1883,10 @@ public class MAYGEN {
                 zs,
                 learningFromCanonicalTest);
     }
-
+    
     public int[][] forward(
             IAtomContainer ac,
+            String[] symbolArrayCopy,
             int lInverse,
             int cInverse,
             int maximalX,
@@ -1903,7 +1917,9 @@ public class MAYGEN {
             a[i][j] = maximalX;
             a[j][i] = maximalX;
             if (i == (max[0].length - 2) && j == (max[0].length - 1)) {
-                if (canonicalTest(
+            	boolean boundaryCheck=true;
+            	if(boundary) boundaryCheck = new boundaryConditions().boundaryConditionCheck(a, symbolArrayCopy);
+                if (boundaryCheck && canonicalTest(
                         a,
                         initialPartition,
                         partitionList,
@@ -1941,30 +1957,31 @@ public class MAYGEN {
             } else {
                 int value = indexYZ(initialPartition, r);
                 if (indices[0] == zs[0][value] && indices[1] == (max[0].length - 1)) {
-                    callForward[0] =
-                            canonicalTest(
-                                    a,
-                                    initialPartition,
-                                    partitionList,
-                                    nonCanonicalIndices,
-                                    formerPermutations,
-                                    partSize,
-                                    r,
-                                    y,
-                                    z,
-                                    ys,
-                                    zs,
-                                    learningFromCanonicalTest);
+                	//We cant set boundary condition here. For example, a matrix can have triple bond. When we filter it, 
+                	//we also filter the other isomers that we get by decrementing the triple bond order of that matrix.
+                	callForward[0] =
+                			canonicalTest(
+                                        a,
+                                        initialPartition,
+                                        partitionList,
+                                        nonCanonicalIndices,
+                                        formerPermutations,
+                                        partSize,
+                                        r,
+                                        y,
+                                        z,
+                                        ys,
+                                        zs,
+                                        learningFromCanonicalTest);
+
                     if (callForward[0]) {
                         indices = successor(indices, max[0].length);
-                        // update
                         findR(indices, initialPartition, r);
                     } else {
                         callForward[0] = false;
                     }
                 } else {
                     indices = successor(indices, max[0].length);
-                    // update
                     findR(indices, initialPartition, r);
                     callForward[0] = true;
                 }
@@ -3960,6 +3977,7 @@ public class MAYGEN {
                     }
                 }
                 if (cmd.hasOption("verbose")) this.verbose = true;
+                if (cmd.hasOption("boundaryConditions")) this.boundary = true;
                 if (cmd.hasOption("settingElements")) this.setElement = true;
                 if (cmd.hasOption("tsvoutput")) this.tsvoutput = true;
                 if (cmd.hasOption("multithread")) this.multiThread = true;
@@ -4036,6 +4054,13 @@ public class MAYGEN {
                         .desc("Store output file")
                         .build();
         options.addOption(fileDirectory);
+        Option boundaryConditions =
+                Option.builder("b")
+                        .required(false)
+                        .longOpt("boundaryConditions")
+                        .desc("Setting the boundary conditions option")
+                        .build();
+        options.addOption(boundaryConditions);
         Option multithread =
                 Option.builder("m")
                         .required(false)
@@ -4073,7 +4098,7 @@ public class MAYGEN {
         options.addOption(help);
         return options;
     }
-
+    
     public static void main(String[] args) {
         MAYGEN gen = new MAYGEN();
         try {
