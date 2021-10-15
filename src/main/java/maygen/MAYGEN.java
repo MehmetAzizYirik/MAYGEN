@@ -151,7 +151,7 @@ public class MAYGEN {
     public void setWriteSDF(boolean writeSDF) {
         this.writeSDF = writeSDF;
     }
-    
+
     public boolean isBoundary() {
         return boundary;
     }
@@ -1883,7 +1883,7 @@ public class MAYGEN {
                 zs,
                 learningFromCanonicalTest);
     }
-    
+
     public int[][] forward(
             IAtomContainer ac,
             String[] symbolArrayCopy,
@@ -1917,21 +1917,24 @@ public class MAYGEN {
             a[i][j] = maximalX;
             a[j][i] = maximalX;
             if (i == (max[0].length - 2) && j == (max[0].length - 1)) {
-            	boolean boundaryCheck=true;
-            	if(boundary) boundaryCheck = new boundaryConditions().boundaryConditionCheck(a, symbolArrayCopy);
-                if (boundaryCheck && canonicalTest(
-                        a,
-                        initialPartition,
-                        partitionList,
-                        nonCanonicalIndices,
-                        formerPermutations,
-                        partSize,
-                        r,
-                        y,
-                        z,
-                        ys,
-                        zs,
-                        learningFromCanonicalTest)) {
+                boolean boundaryCheck = true;
+                if (boundary)
+                    boundaryCheck =
+                            new boundaryConditions().boundaryConditionCheck(a, symbolArrayCopy);
+                if (boundaryCheck
+                        && canonicalTest(
+                                a,
+                                initialPartition,
+                                partitionList,
+                                nonCanonicalIndices,
+                                formerPermutations,
+                                partSize,
+                                r,
+                                y,
+                                z,
+                                ys,
+                                zs,
+                                learningFromCanonicalTest)) {
                     if (connectivityTest(a, connectivityIndices, learningFromConnectivity)) {
                         count.incrementAndGet();
                         if (writeSDF || printSDF) {
@@ -1957,22 +1960,24 @@ public class MAYGEN {
             } else {
                 int value = indexYZ(initialPartition, r);
                 if (indices[0] == zs[0][value] && indices[1] == (max[0].length - 1)) {
-                	//We cant set boundary condition here. For example, a matrix can have triple bond. When we filter it, 
-                	//we also filter the other isomers that we get by decrementing the triple bond order of that matrix.
-                	callForward[0] =
-                			canonicalTest(
-                                        a,
-                                        initialPartition,
-                                        partitionList,
-                                        nonCanonicalIndices,
-                                        formerPermutations,
-                                        partSize,
-                                        r,
-                                        y,
-                                        z,
-                                        ys,
-                                        zs,
-                                        learningFromCanonicalTest);
+                    // We cant set boundary condition here. For example, a matrix can have triple
+                    // bond. When we filter it,
+                    // we also filter the other isomers that we get by decrementing the triple bond
+                    // order of that matrix.
+                    callForward[0] =
+                            canonicalTest(
+                                    a,
+                                    initialPartition,
+                                    partitionList,
+                                    nonCanonicalIndices,
+                                    formerPermutations,
+                                    partSize,
+                                    r,
+                                    y,
+                                    z,
+                                    ys,
+                                    zs,
+                                    learningFromCanonicalTest);
 
                     if (callForward[0]) {
                         indices = successor(indices, max[0].length);
@@ -4098,7 +4103,7 @@ public class MAYGEN {
         options.addOption(help);
         return options;
     }
-    
+
     public static void main(String[] args) {
         MAYGEN gen = new MAYGEN();
         try {

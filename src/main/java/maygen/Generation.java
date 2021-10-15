@@ -57,7 +57,7 @@ public class Generation {
         int[] hydrogens = maygen.setHydrogens(degree);
         int[] newPartition = maygen.getPartition(degree);
         final int[] initialPartition;
-        String[] symbolArrayCopy=maygen.getSymbolArray();
+        String[] symbolArrayCopy = maygen.getSymbolArray();
         if (maygen.isWriteSDF()
                 || maygen.isPrintSDF()
                 || maygen.isWriteSMILES()
