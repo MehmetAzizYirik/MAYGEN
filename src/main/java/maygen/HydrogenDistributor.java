@@ -67,7 +67,7 @@ public class HydrogenDistributor {
         int[] localValences = new int[partitionSize];
         int[] localTotalAtom = new int[partitionSize];
         int i = 0;
-        int sum = 0;
+        int sum;
         for (int j = 0; j < partitionSize; j++) {
             localTotalAtom[i] = partition[i];
             sum = sum(partition, i);

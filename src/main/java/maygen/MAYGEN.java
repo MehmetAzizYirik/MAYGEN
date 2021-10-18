@@ -1441,6 +1441,7 @@ public class MAYGEN {
      * Initialization of global variables for the generate of structures for given degree list.
      *
      * @param ac the IAtomContainer
+     * @param symbolArrayCopy the symbolArrayCopy
      * @param degreeList int[] valences
      * @param initialPartition the initial partition
      * @param partitionList the partitionList
@@ -1587,6 +1588,7 @@ public class MAYGEN {
      * Calling
      *
      * @param ac the IAtomContainer
+     * @param symbolArrayCopy the symbolArrayCopy
      * @param a the a matrix
      * @param indices the indices
      * @param degrees the degrees
@@ -1796,6 +1798,7 @@ public class MAYGEN {
      * Setting successor indices entry if there is a possible filling.
      *
      * @param ac the IAtomContainer
+     * @param symbolArrayCopy the symbolArrayCopy
      * @param a the adjacency matrix
      * @param indices the entry indices
      * @param degrees the degrees
@@ -1919,8 +1922,7 @@ public class MAYGEN {
             if (i == (max[0].length - 2) && j == (max[0].length - 1)) {
                 boolean boundaryCheck = true;
                 if (boundary)
-                    boundaryCheck =
-                            new boundaryConditions().boundaryConditionCheck(a, symbolArrayCopy);
+                    boundaryCheck = BoundaryConditions.boundaryConditionCheck(a, symbolArrayCopy);
                 if (boundaryCheck
                         && canonicalTest(
                                 a,
