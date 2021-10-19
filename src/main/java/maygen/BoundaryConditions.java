@@ -104,11 +104,11 @@ public class BoundaryConditions {
      * <p>This class will help users to easily define the badlist or the any sort of filtering in
      * the generation process. This will help to avoid post processing filtering.
      *
-     * @param a int[][] adjacency matrix
+     * @param mat the adjacency matrix
      * @param symbolArray the symbolArray
      * @return boolean
      */
-    public static boolean boundaryConditionCheck(int[][] a, String[] symbolArray) {
+    public static boolean boundaryConditionCheck(int[][] mat, String[] symbolArray) {
         boolean check = true;
 
         /*
@@ -116,10 +116,15 @@ public class BoundaryConditions {
         given below.
         */
 
-        if (detectAllenes(a, symbolArray)) /* check = false */ ;
-        if (detectAdjacentDoubleBonds(a)) /* check = false */ ;
-        if (detectTripleBonds(a)) /* check = false */ ;
-
+        if (detectAllenes(mat, symbolArray)) {
+            check = false;
+        }
+        if (detectAdjacentDoubleBonds(mat)) {
+            check = false;
+        }
+        if (detectTripleBonds(mat)) {
+            check = false;
+        }
         return check;
     }
 }
