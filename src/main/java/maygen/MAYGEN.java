@@ -123,6 +123,7 @@ public class MAYGEN {
     private final IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
     private final SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavor.Unique);
     private IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
+    private String[] boundaries;
 
     public MAYGEN() {
         // The atom valences from CDK.
@@ -1922,7 +1923,9 @@ public class MAYGEN {
             if (i == (max[0].length - 2) && j == (max[0].length - 1)) {
                 boolean boundaryCheck = true;
                 if (boundary)
-                    boundaryCheck = BoundaryConditions.boundaryConditionCheck(a, symbolArrayCopy);
+                    boundaryCheck =
+                            BoundaryConditions.boundaryConditionCheck(
+                                    a, symbolArrayCopy, boundaries);
                 if (boundaryCheck
                         && canonicalTest(
                                 a,
@@ -3984,7 +3987,11 @@ public class MAYGEN {
                     }
                 }
                 if (cmd.hasOption("verbose")) this.verbose = true;
-                if (cmd.hasOption("boundaryConditions")) this.boundary = true;
+                if (cmd.hasOption("boundaryConditions")) {
+                    this.boundary = true;
+                    this.boundaries =
+                            StringUtils.split(cmd.getOptionValue("boundaryConditions"), ",", 5);
+                }
                 if (cmd.hasOption("settingElements")) this.setElement = true;
                 if (cmd.hasOption("tsvoutput")) this.tsvoutput = true;
                 if (cmd.hasOption("multithread")) this.multiThread = true;
@@ -4064,8 +4071,11 @@ public class MAYGEN {
         Option boundaryConditions =
                 Option.builder("b")
                         .required(false)
+                        .hasArg()
                         .longOpt("boundaryConditions")
-                        .desc("Setting the boundary conditions option")
+                        .desc(
+                                "Setting the boundary conditions option "
+                                        + "(detectAllenes,detectAdjacentDoubleBonds,detectAdjacentDoubleBonds)")
                         .build();
         options.addOption(boundaryConditions);
         Option multithread =
