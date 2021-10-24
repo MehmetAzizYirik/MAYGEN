@@ -79,6 +79,7 @@ public class MAYGEN {
     private static final String FORMULA_TEXT = "formula";
     private static final String OUTPUT_FILE = "outputFile";
     private static final String SDF_COORD = "sdfCoord";
+    private static final String THE_INPUT_FORMULA = "The input formula, ";
     private final Map<String, Integer> valences;
     private int size = 0;
     private int total = 0;
@@ -545,36 +546,13 @@ public class MAYGEN {
         String[] atoms = localFormula.split(LETTERS_FROM_A_TO_Z);
         List<String> symbolList = new ArrayList<>();
         String[] info;
-        int occur;
         int hydrogens = 0;
-        String symbol;
         for (String atom : atoms) {
             info = atom.split("\\(");
-            if (info.length != 1) {
-                symbol = info[0];
-                symbol += info[1].split("\\)")[0];
-                if (!symbol.equals("H")) {
-                    occur = atomOccurrence(info);
-                    sizePart++;
-                    for (int i = 0; i < occur; i++) {
-                        symbolList.add(symbol);
-                        hIndex++;
-                    }
-                } else {
-                    hydrogens = atomOccurrence(info);
-                }
+            if (info.length == 1) {
+                hydrogens = getHydrogensInfoLengthIsOne(symbolList, info, hydrogens);
             } else {
-                symbol = info[0].split(NUMBERS_FROM_0_TO_9)[0];
-                if (!symbol.equals("H")) {
-                    occur = atomOccurrence(info);
-                    sizePart++;
-                    for (int i = 0; i < occur; i++) {
-                        symbolList.add(symbol);
-                        hIndex++;
-                    }
-                } else {
-                    hydrogens = atomOccurrence(info);
-                }
+                hydrogens = getHydrogens(symbolList, info, hydrogens);
             }
         }
         sortAscending(symbolList);
@@ -601,6 +579,41 @@ public class MAYGEN {
             callHydrogenDistributor = false;
             noHydrogen = true;
         }
+    }
+
+    public int getHydrogensInfoLengthIsOne(List<String> symbolList, String[] info, int hydrogens) {
+        String symbol;
+        int occur;
+        symbol = info[0].split(NUMBERS_FROM_0_TO_9)[0];
+        if (!symbol.equals("H")) {
+            occur = atomOccurrence(info);
+            sizePart++;
+            for (int i = 0; i < occur; i++) {
+                symbolList.add(symbol);
+                hIndex++;
+            }
+        } else {
+            hydrogens = atomOccurrence(info);
+        }
+        return hydrogens;
+    }
+
+    private int getHydrogens(List<String> symbolList, String[] info, int hydrogens) {
+        String symbol;
+        int occur;
+        symbol = info[0];
+        symbol += info[1].split("\\)")[0];
+        if (!symbol.equals("H")) {
+            occur = atomOccurrence(info);
+            sizePart++;
+            for (int i = 0; i < occur; i++) {
+                symbolList.add(symbol);
+                hIndex++;
+            }
+        } else {
+            hydrogens = atomOccurrence(info);
+        }
+        return hydrogens;
     }
 
     public int[] nextCount(int index, int i, int localSize, List<String> symbols, int[] partition) {
@@ -2197,7 +2210,7 @@ public class MAYGEN {
             if (formulae.size() == 0) {
                 if (verbose)
                     System.out.println(
-                            "The input formula, "
+                            THE_INPUT_FORMULA
                                     + fuzzyFormula
                                     + ", does not represent any molecule.");
             } else {
@@ -2281,7 +2294,7 @@ public class MAYGEN {
         } else {
             if (verbose)
                 System.out.println(
-                        "The input formula, "
+                        THE_INPUT_FORMULA
                                 + normalizedLocalFormula
                                 + ", does not represent any molecule.");
         }
@@ -2305,7 +2318,7 @@ public class MAYGEN {
             } else {
                 if (Objects.isNull(fuzzyFormula) && verbose)
                     System.out.println(
-                            "The input formula, "
+                            THE_INPUT_FORMULA
                                     + normalizedLocalFormula
                                     + ", does not represent any molecule.");
             }
@@ -2337,20 +2350,7 @@ public class MAYGEN {
     }
 
     public void displayStatistic(long startTime, String localFormula) throws IOException {
-        if (Objects.isNull(fuzzyFormula)) {
-            if (writeSDF) {
-                sdfOut.close();
-            }
-            if (printSDF) {
-                sdfOut.flush();
-            }
-            if (writeSMILES) {
-                smilesOut.close();
-            }
-            if (printSMILES) {
-                ((PrintWriter) smilesOut).flush();
-            }
-        }
+        checkAndCloseFiles();
         long endTime = System.nanoTime() - startTime;
         double seconds = endTime / 1000000000.0;
         DecimalFormat d = new DecimalFormat(".###");
@@ -2374,6 +2374,23 @@ public class MAYGEN {
         }
     }
 
+    public void checkAndCloseFiles() throws IOException {
+        if (Objects.isNull(fuzzyFormula)) {
+            if (writeSDF) {
+                sdfOut.close();
+            }
+            if (printSDF) {
+                sdfOut.flush();
+            }
+            if (writeSMILES) {
+                smilesOut.close();
+            }
+            if (printSMILES) {
+                ((PrintWriter) smilesOut).flush();
+            }
+        }
+    }
+
     /**
      * If there are hydrogens in the formula, calling the hydrogenDistributor. This is the
      * pre-hydrogen distribution. Then, the new list of degrees is defined for each hydrogen
@@ -2389,13 +2406,7 @@ public class MAYGEN {
             List<int[]> distributions =
                     new HydrogenDistributor().run(firstOccurrences, firstDegrees);
             if (hIndex == 2) {
-                for (int[] dist : distributions) {
-                    int[] newDegree = new int[size];
-                    for (int i = 0; i < size; i++) {
-                        newDegree[i] = (firstDegrees[i] - dist[i]);
-                    }
-                    if (newDegree[0] == newDegree[1]) degreeList.add(newDegree);
-                }
+                fillDegreeListHindexIsTwo(degreeList, distributions);
             } else {
                 for (int[] dist : distributions) {
                     int[] newDegree = new int[size];
@@ -2407,6 +2418,16 @@ public class MAYGEN {
             }
         }
         return degreeList;
+    }
+
+    public void fillDegreeListHindexIsTwo(List<int[]> degreeList, List<int[]> distributions) {
+        for (int[] dist : distributions) {
+            int[] newDegree = new int[size];
+            for (int i = 0; i < size; i++) {
+                newDegree[i] = (firstDegrees[i] - dist[i]);
+            }
+            if (newDegree[0] == newDegree[1]) degreeList.add(newDegree);
+        }
     }
 
     /**
@@ -3401,28 +3422,14 @@ public class MAYGEN {
             String localFormula, List<String> symbolList) {
         String[] atoms = localFormula.split(LETTERS_FROM_A_TO_Z);
         HashMap<String, Integer[]> symbolsMap = new HashMap<>();
-        String[] info, info2, info3, info4;
+        String[] info;
+        String[] info4;
         String symbol;
         for (String atom : atoms) {
             info = atom.split("\\(val="); // to get the higher valence value
             Integer[] n = new Integer[2];
             if (info.length != 1) {
-                symbol = info[0];
-                info2 = info[1].split("\\)");
-                symbol += "(" + info2[0] + ")";
-                if (info2.length == 1) {
-                    n[0] = 1;
-                    n[1] = 1;
-                } else {
-                    info3 = info2[1].split("-");
-                    if (info3.length == 1) {
-                        n[0] = Integer.valueOf(info3[0]);
-                        n[1] = Integer.valueOf(info3[0]);
-                    } else {
-                        n[0] = Integer.valueOf(info3[0].split("\\[")[1]);
-                        n[1] = Integer.valueOf(info3[1].split("]")[0]);
-                    }
-                }
+                symbol = getSymbol(info, n);
             } else {
                 info4 = info[0].split(NUMBERS_FROM_0_TO_9);
                 symbol = info4[0];
@@ -3438,6 +3445,29 @@ public class MAYGEN {
             symbolsMap.put(symbol, n);
         }
         return symbolsMap;
+    }
+
+    public String getSymbol(String[] info, Integer[] n) {
+        String symbol;
+        String[] info2;
+        String[] info3;
+        symbol = info[0];
+        info2 = info[1].split("\\)");
+        symbol += "(" + info2[0] + ")";
+        if (info2.length == 1) {
+            n[0] = 1;
+            n[1] = 1;
+        } else {
+            info3 = info2[1].split("-");
+            if (info3.length == 1) {
+                n[0] = Integer.valueOf(info3[0]);
+                n[1] = Integer.valueOf(info3[0]);
+            } else {
+                n[0] = Integer.valueOf(info3[0].split("\\[")[1]);
+                n[1] = Integer.valueOf(info3[1].split("]")[0]);
+            }
+        }
+        return symbol;
     }
 
     /**
@@ -3826,24 +3856,10 @@ public class MAYGEN {
             throws CDKException, CloneNotSupportedException, IOException {
 
         if (2 * (nextSize - 1) > (graphSize + reversedLength)) {
-            if (nodeLabels[nextSize - 1] > nodeLabels[graphSize - nextSize + 2 + reversedLength])
-                reversalIsSmaller = false;
-            else if (nodeLabels[nextSize - 1]
-                    < nodeLabels[graphSize - nextSize + 2 + reversedLength])
-                reversalIsSmaller = true;
+            reversalIsSmaller = isReversalIsSmaller(nextSize, reversedLength, reversalIsSmaller);
         }
         if (nextSize > graphSize) {
-            if (!reversalIsSmaller && (graphSize % currentSize) == 0) {
-                count.incrementAndGet();
-                if (writeSDF || printSDF) {
-                    IAtomContainer ac = buildContainer4SDF(buildSymbolArray());
-                    if (coordinates) new StructureDiagramGenerator().generateCoordinates(ac);
-                    sdfOut.write(ac);
-                }
-                if (writeSMILES || printSMILES) {
-                    write2smiles(buildSymbolArray());
-                }
-            }
+            distributeSymbolsNextSizeAboveGraphSize(currentSize, reversalIsSmaller);
         } else {
             int oxy2 = oxy;
             int sul2 = sul;
@@ -3873,28 +3889,16 @@ public class MAYGEN {
                             && nodeLabels[graphSize] == nodeLabels[1])) {
                 if (leftEquivalents == rightEquivalents) {
                     int reverse = reverseComparison(nextSize, leftEquivalents);
-                    if (reverse == 0) {
-                        distributeSymbols(
-                                oxy2,
-                                sul2,
-                                nextSize + 1,
-                                currentSize,
-                                reversedLength,
-                                leftEquivalents,
-                                rightEquivalents,
-                                reversalIsSmaller);
-
-                    } else if (reverse == 1) {
-                        distributeSymbols(
-                                oxy2,
-                                sul2,
-                                nextSize + 1,
-                                currentSize,
-                                nextSize,
-                                leftEquivalents,
-                                rightEquivalents,
-                                false);
-                    }
+                    runDistributeSymbols(
+                            nextSize,
+                            currentSize,
+                            reversedLength,
+                            leftEquivalents,
+                            rightEquivalents,
+                            reversalIsSmaller,
+                            oxy2,
+                            sul2,
+                            reverse);
                 } else {
                     distributeSymbols(
                             oxy2,
@@ -3912,25 +3916,102 @@ public class MAYGEN {
                 leftEquivalents--;
             }
 
-            if (nodeLabels[nextSize - currentSize] == 0 && sul > 0) {
-                nodeLabels[nextSize] = 1;
+            runDistributeSymbolsCheckNodeLabels(
+                    oxy,
+                    sul,
+                    nextSize,
+                    currentSize,
+                    reversedLength,
+                    leftEquivalents,
+                    reversalIsSmaller);
+        }
+    }
 
-                if (nextSize == 1) {
-                    distributeSymbols(
-                            oxy, sul - 1, nextSize + 1, nextSize, 1, 1, 1, reversalIsSmaller);
-                } else {
-                    distributeSymbols(
-                            oxy,
-                            sul - 1,
-                            nextSize + 1,
-                            nextSize,
-                            reversedLength,
-                            leftEquivalents,
-                            0,
-                            reversalIsSmaller);
-                }
+    public void runDistributeSymbolsCheckNodeLabels(
+            int oxy,
+            int sul,
+            int nextSize,
+            int currentSize,
+            int reversedLength,
+            int leftEquivalents,
+            boolean reversalIsSmaller)
+            throws CDKException, CloneNotSupportedException, IOException {
+        if (nodeLabels[nextSize - currentSize] == 0 && sul > 0) {
+            nodeLabels[nextSize] = 1;
+
+            if (nextSize == 1) {
+                distributeSymbols(oxy, sul - 1, nextSize + 1, nextSize, 1, 1, 1, reversalIsSmaller);
+            } else {
+                distributeSymbols(
+                        oxy,
+                        sul - 1,
+                        nextSize + 1,
+                        nextSize,
+                        reversedLength,
+                        leftEquivalents,
+                        0,
+                        reversalIsSmaller);
             }
         }
+    }
+
+    public void runDistributeSymbols(
+            int nextSize,
+            int currentSize,
+            int reversedLength,
+            int leftEquivalents,
+            int rightEquivalents,
+            boolean reversalIsSmaller,
+            int oxy2,
+            int sul2,
+            int reverse)
+            throws CDKException, CloneNotSupportedException, IOException {
+        if (reverse == 0) {
+            distributeSymbols(
+                    oxy2,
+                    sul2,
+                    nextSize + 1,
+                    currentSize,
+                    reversedLength,
+                    leftEquivalents,
+                    rightEquivalents,
+                    reversalIsSmaller);
+
+        } else if (reverse == 1) {
+            distributeSymbols(
+                    oxy2,
+                    sul2,
+                    nextSize + 1,
+                    currentSize,
+                    nextSize,
+                    leftEquivalents,
+                    rightEquivalents,
+                    false);
+        }
+    }
+
+    public void distributeSymbolsNextSizeAboveGraphSize(int currentSize, boolean reversalIsSmaller)
+            throws CloneNotSupportedException, CDKException, IOException {
+        if (!reversalIsSmaller && (graphSize % currentSize) == 0) {
+            count.incrementAndGet();
+            if (writeSDF || printSDF) {
+                IAtomContainer ac = buildContainer4SDF(buildSymbolArray());
+                if (coordinates) new StructureDiagramGenerator().generateCoordinates(ac);
+                sdfOut.write(ac);
+            }
+            if (writeSMILES || printSMILES) {
+                write2smiles(buildSymbolArray());
+            }
+        }
+    }
+
+    public boolean isReversalIsSmaller(
+            int nextSize, int reversedLength, boolean reversalIsSmaller) {
+        if (nodeLabels[nextSize - 1] > nodeLabels[graphSize - nextSize + 2 + reversedLength])
+            reversalIsSmaller = false;
+        else if (nodeLabels[nextSize - 1] < nodeLabels[graphSize - nextSize + 2 + reversedLength])
+            reversalIsSmaller = true;
+        return reversalIsSmaller;
     }
 
     public void distributeSulfurOxygen(String localFormula)
@@ -3958,20 +4039,7 @@ public class MAYGEN {
                 helpIsPresent = true;
             } else {
                 if (cmd.hasOption(OUTPUT_FILE)) {
-                    String localFiledir = cmd.getOptionValue(OUTPUT_FILE);
-                    this.filedir = Objects.isNull(localFiledir) ? "." : localFiledir;
-                    if (cmd.hasOption("smi")) {
-                        this.writeSMILES = true;
-                    }
-                    if (cmd.hasOption("sdf")) {
-                        this.writeSDF = true;
-                    } else if (cmd.hasOption(SDF_COORD)) {
-                        this.writeSDF = true;
-                        this.coordinates = true;
-                    }
-                    if (!cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
-                        this.writeSDF = true;
-                    }
+                    checkSmiAndSdf(cmd);
                 } else {
                     if (cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
                         this.printSMILES = true;
@@ -3994,6 +4062,23 @@ public class MAYGEN {
             throw new ParseException("Problem parsing command line");
         }
         return helpIsPresent;
+    }
+
+    public void checkSmiAndSdf(CommandLine cmd) {
+        String localFiledir = cmd.getOptionValue(OUTPUT_FILE);
+        this.filedir = Objects.isNull(localFiledir) ? "." : localFiledir;
+        if (cmd.hasOption("smi")) {
+            this.writeSMILES = true;
+        }
+        if (cmd.hasOption("sdf")) {
+            this.writeSDF = true;
+        } else if (cmd.hasOption(SDF_COORD)) {
+            this.writeSDF = true;
+            this.coordinates = true;
+        }
+        if (!cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
+            this.writeSDF = true;
+        }
     }
 
     public void displayHelpMessage(Options options) {
