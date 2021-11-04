@@ -35,7 +35,7 @@ import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.group.Permutation;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-public class Generation {
+class Generation {
     private final MAYGEN maygen;
 
     public Generation(MAYGEN maygen) {

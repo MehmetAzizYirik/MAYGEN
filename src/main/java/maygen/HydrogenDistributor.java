@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class HydrogenDistributor {
+class HydrogenDistributor {
     private int[] capacity;
     private int[] valences;
     private int totalHydrogen; // Total number of hydrogens.

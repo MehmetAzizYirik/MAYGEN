@@ -26,7 +26,7 @@
 */
 package maygen;
 
-public class BoundaryConditions {
+class BoundaryConditions {
 
     private BoundaryConditions() {}
 

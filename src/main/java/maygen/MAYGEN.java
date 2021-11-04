@@ -80,6 +80,8 @@ public class MAYGEN {
     private static final String OUTPUT_FILE = "outputFile";
     private static final String SDF_COORD = "sdfCoord";
     private static final String THE_INPUT_FORMULA = "The input formula, ";
+    private static final String DOES_NOT_REPRESENT_ANY_MOLECULE =
+            ", does not represent any molecule.";
     private final Map<String, Integer> valences;
     private int size = 0;
     private int total = 0;
@@ -347,11 +349,9 @@ public class MAYGEN {
             if (info[0].contains("(")) {
                 return 1;
             } else {
-                String[] info2 =
-                        info[0].split(
-                                NUMBERS_FROM_0_TO_9,
-                                2); // Here we need 2 otherwise it will split also integers in case
+                // Here we need 2 otherwise it will split also integers in case
                 // of C10 -> C,1,0
+                String[] info2 = info[0].split(NUMBERS_FROM_0_TO_9, 2);
                 if (info2.length == 1) return 1;
                 else {
                     return Integer.valueOf(info2[1]);
@@ -659,6 +659,7 @@ public class MAYGEN {
         }
         return partition;
     }
+
     /**
      * Setting the firstSymbols and symbols global variables for the initial sorted list of symbols.
      *
@@ -2210,9 +2211,7 @@ public class MAYGEN {
             if (formulae.size() == 0) {
                 if (verbose)
                     System.out.println(
-                            THE_INPUT_FORMULA
-                                    + fuzzyFormula
-                                    + ", does not represent any molecule.");
+                            THE_INPUT_FORMULA + fuzzyFormula + DOES_NOT_REPRESENT_ANY_MOLECULE);
             } else {
                 for (String fuzzyFormulaItem : formulae) {
                     clearGlobals();
@@ -2296,7 +2295,7 @@ public class MAYGEN {
                 System.out.println(
                         THE_INPUT_FORMULA
                                 + normalizedLocalFormula
-                                + ", does not represent any molecule.");
+                                + DOES_NOT_REPRESENT_ANY_MOLECULE);
         }
     }
 
@@ -2320,7 +2319,7 @@ public class MAYGEN {
                     System.out.println(
                             THE_INPUT_FORMULA
                                     + normalizedLocalFormula
-                                    + ", does not represent any molecule.");
+                                    + DOES_NOT_REPRESENT_ANY_MOLECULE);
             }
         }
     }
