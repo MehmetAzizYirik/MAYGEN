@@ -55,9 +55,8 @@ MAYGEN-1.8.jar can be run from command line with the specified arguments. An exa
 The definitions of the arguments are given below:
 
 ```
-usage: java -jar MAYGEN-1.8.jar [-f <arg>] [-fuzzy <arg>] [-v] [-t] [-o <arg>]
-
- 		[-setElements] [-m] [-smi] [-sdf] [-sdfCoord] [-h]
+usage: java -jar MAYGEN-1.8.jar [-f <arg>] [-fuzzy <arg>] [-setElements]
+       [-v] [-t] [-o <arg>] [-b] [-m] [-smi] [-sdf] [-sdfCoord] [-h]
 
 Generates molecular structures for a given molecular formula.
 The input is a molecular formula string.
@@ -69,30 +68,33 @@ to be specified. It is also possible to generate SMILES instead of an SDF
 file, but it slows down the generation time. For this, use the '-smi'
 option.
 
- -f,--formula <arg>        formula
+ -f,--formula <arg>               formula
 
- -fuzzy,--fuzzyFormula <arg>   fuzzy formula
- 
- -setElements,--settingElements   User defined element types and valences
- 
- -v,--verbose              print message
+ -fuzzy,--fuzzyFormula <arg>      fuzzy formula
 
- -t,--tsvoutput            Output formula, number of structures and
-                           execution time in CSV format. In multithread,
-                           the 4th column in the output is the number of
-                           threads.
+ -setElements,--settingElements   User defined valences
 
- -o,--outputFile <arg>     Store output file
+ -v,--verbose                     print message
 
- -m,--multithread          Use multi thread
+ -t,--tsvoutput                   Output formula, number of structures and
+                                  execution time in CSV format. In
+                                  multithread, the 4th column in the
+                                  output is the number of threads.
 
- -smi,--SMILES             Output in SMILES format
+ -o,--outputFile <arg>            Store output file
 
- -sdf,--SDF                Output in SDF format
+ -b,--boundaryConditions          Setting the boundary conditions option
 
- -sdfCoord,--coordinates   Output in SDF format with atom coordinates
+ -m,--multithread                 Use multi thread
 
- -h,--help                 Displays help message
+ -smi,--SMILES                    Output in SMILES format
+
+ -sdf,--SDF                       Output in SDF format
+
+ -sdfCoord,--coordinates          Output in SDF format with atom
+                                  coordinates
+
+ -h,--help                        Displays help message
 
 Please report issues at https://github.com/MehmetAzizYirik/MAYGEN
 ```
