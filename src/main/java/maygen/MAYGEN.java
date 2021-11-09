@@ -3887,29 +3887,15 @@ public class MAYGEN {
                     && !(nextSize == graphSize
                             && leftEquivalents != graphSize
                             && nodeLabels[graphSize] == nodeLabels[1])) {
-                if (leftEquivalents == rightEquivalents) {
-                    int reverse = reverseComparison(nextSize, leftEquivalents);
-                    runDistributeSymbols(
-                            nextSize,
-                            currentSize,
-                            reversedLength,
-                            leftEquivalents,
-                            rightEquivalents,
-                            reversalIsSmaller,
-                            oxy2,
-                            sul2,
-                            reverse);
-                } else {
-                    distributeSymbols(
-                            oxy2,
-                            sul2,
-                            nextSize + 1,
-                            currentSize,
-                            reversedLength,
-                            leftEquivalents,
-                            rightEquivalents,
-                            reversalIsSmaller);
-                }
+                doDistributeSymbols(
+                        nextSize,
+                        currentSize,
+                        reversedLength,
+                        leftEquivalents,
+                        rightEquivalents,
+                        reversalIsSmaller,
+                        oxy2,
+                        sul2);
             }
 
             if (leftEquivalents == nextSize) {
@@ -3923,6 +3909,41 @@ public class MAYGEN {
                     currentSize,
                     reversedLength,
                     leftEquivalents,
+                    reversalIsSmaller);
+        }
+    }
+
+    private void doDistributeSymbols(
+            int nextSize,
+            int currentSize,
+            int reversedLength,
+            int leftEquivalents,
+            int rightEquivalents,
+            boolean reversalIsSmaller,
+            int oxy2,
+            int sul2)
+            throws CDKException, CloneNotSupportedException, IOException {
+        if (leftEquivalents == rightEquivalents) {
+            int reverse = reverseComparison(nextSize, leftEquivalents);
+            runDistributeSymbols(
+                    nextSize,
+                    currentSize,
+                    reversedLength,
+                    leftEquivalents,
+                    rightEquivalents,
+                    reversalIsSmaller,
+                    oxy2,
+                    sul2,
+                    reverse);
+        } else {
+            distributeSymbols(
+                    oxy2,
+                    sul2,
+                    nextSize + 1,
+                    currentSize,
+                    reversedLength,
+                    leftEquivalents,
+                    rightEquivalents,
                     reversalIsSmaller);
         }
     }
@@ -4102,8 +4123,8 @@ public class MAYGEN {
                 Option.builder("f")
                         .required(false)
                         .hasArg()
-                        .longOpt("formula")
-                        .desc("formula")
+                        .longOpt(FORMULA_TEXT)
+                        .desc(FORMULA_TEXT)
                         .build();
         options.addOption(formulaOption);
         Option fuzzyFormulaOption =
