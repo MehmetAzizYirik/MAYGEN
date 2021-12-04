@@ -79,7 +79,7 @@
                     <archive>
                         <manifestEntries>
                             <Automatic-Module-Name>maygen</Automatic-Module-Name>
-                            <Main-Class>maygen.MAYGEN</Main-Class>
+                            <Main-Class>maygen.Maygen</Main-Class>
                             <Built-By></Built-By>
                             <Created-By></Created-By>
                             <Build-Jdk></Build-Jdk>
