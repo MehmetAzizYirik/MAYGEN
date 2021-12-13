@@ -35,6 +35,7 @@ import org.openscience.cdk.exception.CDKException;
  *
  * @author MehmetAzizYirik mehmetazizyirik@outlook.com 0000-0001-7520-7215@orcid.org
  */
+@SuppressWarnings("java:S5976")
 public class MaygenTest {
 
     @Test

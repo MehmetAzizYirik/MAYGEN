@@ -154,6 +154,7 @@ class HydrogenDistributor {
      * @param lists LinkedList<List<int[]>> lists
      * @return List<int[]>
      */
+    @SuppressWarnings("java:S1319")
     public List<int[]> combineArrays(LinkedList<List<int[]>> lists) {
         List<int[]> comb = new ArrayList<>(lists.removeFirst());
         while (!lists.isEmpty()) {
