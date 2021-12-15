@@ -152,8 +152,9 @@ class HydrogenDistributor {
      * Combining list of int arrays.
      *
      * @param lists LinkedList<List<int[]>> lists
-     * @return List<int[]>
+     * @return the list of integer arrays
      */
+    @SuppressWarnings("java:S1319")
     public List<int[]> combineArrays(LinkedList<List<int[]>> lists) {
         List<int[]> comb = new ArrayList<>(lists.removeFirst());
         while (!lists.isEmpty()) {
@@ -174,7 +175,7 @@ class HydrogenDistributor {
      *
      * @param partition int[] partition
      * @param degrees int[] degrees
-     * @return List<int[]>
+     * @return the list of integer arrays
      */
     public List<int[]> run(int[] partition, int[] degrees) {
         int partitionSize = partition.length;
@@ -214,7 +215,7 @@ class HydrogenDistributor {
      * @param n int total number of hydrogens
      * @param d int total number of isotopes to distribute hydrogens
      * @param depth int starting from zero until the number of isotopes recursively filling.
-     * @return List<int[]>
+     * @return the list of integer arrays
      */
     public List<int[]> partition(int n, int d, int depth) {
         if (d == depth) {
@@ -232,7 +233,7 @@ class HydrogenDistributor {
      * @param n int total number of hydrogens
      * @param d int total number of isotopes to distribute hydrogens
      * @param depth int starting from zero until the number of isotopes recursively filling.
-     * @return List<int[]>
+     * @return the list of integer arrays
      */
     public List<int[]> buildArray(int n, int d, int depth) {
         List<int[]> array = new ArrayList<>();
@@ -249,10 +250,10 @@ class HydrogenDistributor {
      * These functions are built for the integer partitioning problem.
      *
      * @param d int total number of isotopes to distribute hydrogens
-     * @param List<int[]> List<int[]> list of partition
+     * @param array the list of partition
      * @param i int entry
      * @param item int[] new partition
-     * @return List<int[]>
+     * @return the list of integer arrays
      */
     public void buildArrayItem(int d, List<int[]> array, int i, int[] item) {
         if (i <= capacity[item.length]) {
@@ -270,7 +271,7 @@ class HydrogenDistributor {
     /**
      * Adding zeros to the end of an array.
      *
-     * @param array int[] partition
+     * @param array the partition
      * @param zeros int number of zeros
      * @return int[]
      */
@@ -284,7 +285,7 @@ class HydrogenDistributor {
     /**
      * Ordering the int array in descending order.
      *
-     * @param array int[] array
+     * @param arr the integer array
      * @return int[]
      */
     public int[] descendingOrderArray(int[] arr) {
@@ -294,9 +295,9 @@ class HydrogenDistributor {
     /**
      * Distributing number of hydrogens in an unique way to a number of isotopes.
      *
-     * @param arrays List<int[]> list of output arrays
+     * @param arrays the list of output arrays
      * @param hydrogen int number of hydrogens to add
-     * @param array int[] array
+     * @param arr the integer array
      * @param valence int atom valence
      * @param numAtom int number of atoms in a given index
      */
@@ -324,9 +325,9 @@ class HydrogenDistributor {
     /**
      * Subfunction of the distribute functon for the case when (numAtom - arr.length == 1)
      *
-     * @param arrays List<int[]> list of output arrays
+     * @param arrays the list of output arrays
      * @param hydrogen int number of hydrogens to add
-     * @param array int[] array
+     * @param arr the integer array
      * @param valence int atom valence
      * @param numAtom int number of atoms in a given index
      */

@@ -73,6 +73,13 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  *
  * @author MehmetAzizYirik mehmetazizyirik@outlook.com 0000-0001-7520-7215@orcid.org
  */
+@SuppressWarnings({
+    "common-java:DuplicatedBlocks",
+    "java:S107",
+    "java:S3776",
+    "java:S106",
+    "java:S135"
+})
 public class Maygen {
     public static final String VERSION = "1.8";
     private static final String NUMBERS_FROM_0_TO_9 = "(?=[0-9])";
@@ -3938,7 +3945,8 @@ public class Maygen {
      */
     public void getHigherValences(String localFormula) {
         String[] atoms = localFormula.split(LETTERS_FROM_A_TO_Z);
-        String[] info, info2;
+        String[] info;
+        String[] info2;
         String valence;
         String symbol;
         for (String atom : atoms) {

@@ -59,6 +59,7 @@ import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 /**
  * Writes MDL SD files. A MDL SD file contains one or more molecules, complemented by properties.
  */
+@SuppressWarnings("java:S112")
 public class SDFWriter extends DefaultChemObjectWriter {
 
     private static final ILoggingTool logger =
@@ -244,27 +245,26 @@ public class SDFWriter extends DefaultChemObjectWriter {
             boolean writeAllProperties,
             Object propKey) {
         String headerKey = propKey.toString();
-        if (!isCDKInternalProperty(headerKey)) {
-            if (writeAllProperties || propertiesToWrite.contains(headerKey)) {
-                String cleanHeaderKey = replaceInvalidHeaderChars(headerKey);
-                if (!cleanHeaderKey.equals(headerKey))
-                    logger.info(
-                            "Replaced characters in SDfile data header: ",
-                            headerKey,
-                            " written as: ",
-                            cleanHeaderKey);
+        if (!isCDKInternalProperty(headerKey)
+                && (writeAllProperties || propertiesToWrite.contains(headerKey))) {
+            String cleanHeaderKey = replaceInvalidHeaderChars(headerKey);
+            if (!cleanHeaderKey.equals(headerKey))
+                logger.info(
+                        "Replaced characters in SDfile data header: ",
+                        headerKey,
+                        " written as: ",
+                        cleanHeaderKey);
 
-                Object val = sdFields.get(propKey);
+            Object val = sdFields.get(propKey);
 
-                if (isPrimitiveDataValue(val)) {
-                    processWriteMolecule(stringWriter, cleanHeaderKey, val);
-                } else {
+            if (isPrimitiveDataValue(val)) {
+                processWriteMolecule(stringWriter, cleanHeaderKey, val);
+            } else {
 
-                    logger.info(
-                            "Skipped property "
-                                    + propKey
-                                    + " because only primitive and string properties can be written by SDFWriter");
-                }
+                logger.info(
+                        "Skipped property "
+                                + propKey
+                                + " because only primitive and string properties can be written by SDFWriter");
             }
         }
     }
