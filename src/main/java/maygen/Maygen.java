@@ -631,28 +631,30 @@ public class Maygen {
         return hydrogens;
     }
 
-    public int[] nextCount(int index, int i, int localSize, List<String> symbols, int[] partition) {
+    public int[] nextCount(
+            final int index, int i, int localSize, List<String> localSymbols, int[] partition) {
         int localCount = 1;
+        int localIndex = index;
         if (i == (localSize - 1)) {
-            partition[index] = 1;
-            index++;
+            partition[localIndex] = 1;
+            localIndex++;
         } else {
             for (int j = i + 1; j < localSize; j++) {
-                if (symbols.get(i).equals(symbols.get(j))) {
+                if (localSymbols.get(i).equals(localSymbols.get(j))) {
                     localCount++;
                     if (j == (localSize - 1)) {
-                        partition[index] = localCount;
-                        index++;
+                        partition[localIndex] = localCount;
+                        localIndex++;
                         break;
                     }
                 } else {
-                    partition[index] = localCount;
-                    index++;
+                    partition[localIndex] = localCount;
+                    localIndex++;
                     break;
                 }
             }
         }
-        return new int[] {localCount, index};
+        return new int[] {localCount, localIndex};
     }
 
     /**
