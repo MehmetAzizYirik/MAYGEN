@@ -33,27 +33,27 @@
         <dependency>
             <groupId>org.openscience.cdk</groupId>
             <artifactId>cdk-group</artifactId>
-            <version>[2.5,)</version>
+            <version>[2.6,)</version>
         </dependency>
         <dependency>
             <groupId>org.openscience.cdk</groupId>
             <artifactId>cdk-pdb</artifactId>
-            <version>[2.5,)</version>
+            <version>[2.6,)</version>
         </dependency>
         <dependency>
             <groupId>org.openscience.cdk</groupId>
             <artifactId>cdk-sdg</artifactId>
-            <version>[2.5,)</version>
+            <version>[2.6,)</version>
         </dependency>
         <dependency>
             <groupId>org.openscience.cdk</groupId>
             <artifactId>cdk-data</artifactId>
-            <version>[2.5,)</version>
+            <version>[2.6,)</version>
         </dependency>
         <dependency>
             <groupId>org.openscience.cdk</groupId>
             <artifactId>cdk-smiles</artifactId>
-            <version>[2.5,)</version>
+            <version>[2.6,)</version>
         </dependency>
     </dependencies>
     <build>
