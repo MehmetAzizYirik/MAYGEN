@@ -73,13 +73,7 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  *
  * @author MehmetAzizYirik mehmetazizyirik@outlook.com 0000-0001-7520-7215@orcid.org
  */
-@SuppressWarnings({
-    "common-java:DuplicatedBlocks",
-    "java:S107",
-    "java:S3776",
-    "java:S106",
-    "java:S135"
-})
+@SuppressWarnings({"java:S107", "java:S3776", "java:S106", "java:S135"})
 public class Maygen {
     public static final String VERSION = "1.8";
     private static final String NUMBERS_FROM_0_TO_9 = "(?=[0-9])";
@@ -504,8 +498,8 @@ public class Maygen {
         for (String atom : atoms) {
             info = atom.split("\\("); // to get the higher valence value
             if (info.length != 1) {
-                symbol = info[0];
-                symbol += info[1].split("\\)")[0]; // to get the valence and frequency from x)y
+                // to get the valence and frequency from x)y
+                symbol = info[0] + info[1].split("\\)")[0];
             } else {
                 symbol = info[0].split(NUMBERS_FROM_0_TO_9)[0];
             }
@@ -637,28 +631,30 @@ public class Maygen {
         return hydrogens;
     }
 
-    public int[] nextCount(int index, int i, int localSize, List<String> symbols, int[] partition) {
+    public int[] nextCount(
+            final int index, int i, int localSize, List<String> localSymbols, int[] partition) {
         int localCount = 1;
+        int localIndex = index;
         if (i == (localSize - 1)) {
-            partition[index] = 1;
-            index++;
+            partition[localIndex] = 1;
+            localIndex++;
         } else {
             for (int j = i + 1; j < localSize; j++) {
-                if (symbols.get(i).equals(symbols.get(j))) {
+                if (localSymbols.get(i).equals(localSymbols.get(j))) {
                     localCount++;
                     if (j == (localSize - 1)) {
-                        partition[index] = localCount;
-                        index++;
+                        partition[localIndex] = localCount;
+                        localIndex++;
                         break;
                     }
                 } else {
-                    partition[index] = localCount;
-                    index++;
+                    partition[localIndex] = localCount;
+                    localIndex++;
                     break;
                 }
             }
         }
-        return new int[] {localCount, index};
+        return new int[] {localCount, localIndex};
     }
 
     /**
@@ -2266,7 +2262,7 @@ public class Maygen {
             long startTime = System.nanoTime();
             fuzzyCount = 0;
             List<String> formulae = getFormulaList(fuzzyFormula);
-            if (formulae.size() == 0) {
+            if (formulae.isEmpty()) {
                 if (verbose)
                     System.out.println(
                             THE_INPUT_FORMULA + fuzzyFormula + DOES_NOT_REPRESENT_ANY_MOLECULE);
@@ -3562,7 +3558,7 @@ public class Maygen {
         return symbolsMap;
     }
 
-    public HashMap<String, Integer[]> getFuzzyFormulaRangesWithNewElements(
+    public Map<String, Integer[]> getFuzzyFormulaRangesWithNewElements(
             String localFormula, List<String> symbolList) {
         String[] atoms = localFormula.split(LETTERS_FROM_A_TO_Z);
         HashMap<String, Integer[]> symbolsMap = new HashMap<>();
