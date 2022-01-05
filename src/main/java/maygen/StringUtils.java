@@ -23,6 +23,7 @@ package maygen;
 
 import java.lang.reflect.Array;
 
+@SuppressWarnings("java:S3776")
 public class StringUtils {
     private StringUtils() {}
 
