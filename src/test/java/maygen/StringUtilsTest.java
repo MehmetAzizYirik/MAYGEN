@@ -21,24 +21,30 @@
 
 package maygen;
 
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.junit.Test;
 
 public class StringUtilsTest {
 
     @Test
     public void replaceEach() {
-       assertThat(StringUtils.replaceEach(null, new String[] {}, new String[] {}), equalTo(null));
+        assertThat(StringUtils.replaceEach(null, new String[] {}, new String[] {}), equalTo(null));
         assertThat(StringUtils.replaceEach("", new String[] {}, new String[] {}), equalTo(""));
         assertThat(StringUtils.replaceEach("aba", null, null), equalTo("aba"));
         assertThat(StringUtils.replaceEach("aba", new String[0], null), equalTo("aba"));
         assertThat(StringUtils.replaceEach("aba", null, new String[0]), equalTo("aba"));
-        assertThat(StringUtils.replaceEach("aba", new String[]{"a"}, null), equalTo("aba"));
-        assertThat(StringUtils.replaceEach("aba", new String[]{"a"}, new String[]{""}), equalTo("b"));
-        assertThat(StringUtils.replaceEach("aba", new String[]{null}, new String[]{"a"}), equalTo("aba"));
-        assertThat(StringUtils.replaceEach("abcde", new String[]{"ab", "d"}, new String[]{"w", "t"}), equalTo("wcte"));
+        assertThat(StringUtils.replaceEach("aba", new String[] {"a"}, null), equalTo("aba"));
+        assertThat(
+                StringUtils.replaceEach("aba", new String[] {"a"}, new String[] {""}),
+                equalTo("b"));
+        assertThat(
+                StringUtils.replaceEach("aba", new String[] {null}, new String[] {"a"}),
+                equalTo("aba"));
+        assertThat(
+                StringUtils.replaceEach("abcde", new String[] {"ab", "d"}, new String[] {"w", "t"}),
+                equalTo("wcte"));
     }
 
     @Test
