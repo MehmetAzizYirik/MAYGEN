@@ -23,6 +23,7 @@ package maygen;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 
@@ -45,6 +46,15 @@ public class StringUtilsTest {
         assertThat(
                 StringUtils.replaceEach("abcde", new String[] {"ab", "d"}, new String[] {"w", "t"}),
                 equalTo("wcte"));
+    }
+
+    @Test
+    public void replaceEachError() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        StringUtils.replaceEach(
+                                "abcde", new String[] {"ab", "d"}, new String[] {"w"}));
     }
 
     @Test

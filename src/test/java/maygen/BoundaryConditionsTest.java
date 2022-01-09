@@ -39,8 +39,22 @@ public class BoundaryConditionsTest {
     }
 
     @Test
+    public void detectTripleBonds2() {
+        assertTrue(
+                BoundaryConditions.detectTripleBonds(
+                        new int[][] {{1, 1, 1}, {2, 2, 2}, {3, 3, 3}}));
+    }
+
+    @Test
     public void detectAdjacentDoubleBonds() {
         assertFalse(BoundaryConditions.detectAdjacentDoubleBonds(new int[][] {}));
+    }
+
+    @Test
+    public void detectAdjacentDoubleBonds2() {
+        assertTrue(
+                BoundaryConditions.detectAdjacentDoubleBonds(
+                        new int[][] {{1, 1, 1}, {2, 2, 2}, {3, 3, 3}}));
     }
 
     @Test
@@ -49,7 +63,23 @@ public class BoundaryConditionsTest {
     }
 
     @Test
+    public void detectAllenes2() {
+        assertTrue(
+                BoundaryConditions.detectAllenes(
+                        new int[][] {{1, 1, 1}, {2, 2, 2}, {3, 3, 3}},
+                        new String[] {"C", "C", "C"}));
+    }
+
+    @Test
     public void boundaryConditionCheck() {
         assertTrue(BoundaryConditions.boundaryConditionCheck(new int[][] {}, new String[] {}));
+    }
+
+    @Test
+    public void boundaryConditionCheck2() {
+        assertFalse(
+                BoundaryConditions.boundaryConditionCheck(
+                        new int[][] {{1, 1, 1}, {2, 2, 2}, {3, 3, 3}},
+                        new String[] {"C", "C", "C"}));
     }
 }
