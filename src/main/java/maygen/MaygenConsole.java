@@ -37,6 +37,7 @@ import org.apache.commons.cli.ParseException;
  *
  * @author MehmetAzizYirik mehmetazizyirik@outlook.com 0000-0001-7520-7215@orcid.org
  */
+@SuppressWarnings("java:S3776")
 public class MaygenConsole {
     private static final String FORMULA_TEXT = "formula";
     private static final String OUTPUT_FILE = "outputFile";
