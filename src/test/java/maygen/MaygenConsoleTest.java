@@ -53,9 +53,10 @@ public class MaygenConsoleTest {
         Options options = new MaygenConsole(new Maygen()).setupOptions();
         CommandLineParser parser = new DefaultParser();
         CommandLine commandLine =
-                parser.parse(options, new String[] {"-f", "C5N3H9", "-v", "-o", "-smi"});
+                parser.parse(options, new String[] {"-f", "C5N3H9", "-v", "-o", "-smi", "-sdf"});
         new MaygenConsole(new Maygen()).checkSmiAndSdf(commandLine);
         assertTrue(commandLine.hasOption("smi"));
+        assertTrue(commandLine.hasOption("sdf"));
     }
 
     @Test
@@ -63,6 +64,12 @@ public class MaygenConsoleTest {
         MaygenConsole maygenConsole = new MaygenConsole(new Maygen());
         Options options = maygenConsole.setupOptions();
         maygenConsole.displayHelpMessage(options);
+        assertTrue(true);
+    }
+
+    @Test
+    public void main() {
+        MaygenConsole.main(new String[] {"-f", "C5N3H9", "-v", "-o", "-smi", "-h"});
         assertTrue(true);
     }
 }
