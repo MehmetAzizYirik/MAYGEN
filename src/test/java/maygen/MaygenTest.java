@@ -1,640 +1,51 @@
 /*
- MIT License
-
- Copyright (c) 2021 Mehmet Aziz Yirik <mehmetazizyirik@outlook.com> <0000-0001-7520-7215@orcid.org>
-
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- and associated documentation files (the "Software"), to deal in the Software without restriction,
- including without limitation the rights to use, copy, modify, merge, publish, distribute,
- sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all copies or
- substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ * Copyright (c) 2021 Mehmet Aziz Yirik <mehmetazizyirik@outlook.com> <0000-0001-7520-7215@orcid.org>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 package maygen;
 
+import org.junit.Test;
+import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
+
+import java.io.IOException;
+import java.io.StringWriter;
+
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import org.junit.Test;
-import org.openscience.cdk.exception.CDKException;
-
 /**
- * Unit test class for the MAYGEN class. Randomly selected molecular formulae are tested. The number
- * of generated structures are checked. The number of isomers are also tested with MOLGEN algorithm.
- * MAYGEN generates same number of isomers like MOLGEN.
+ * <p>
+ * Unit test class for the MAYGEN class. Randomly selected molecular formulae are tested.
+ * The number of generated structures are checked. The number of isomers are also tested with
+ * MOLGEN algorithm. MAYGEN generates same number of isomers like MOLGEN.
+ * </p>
  *
- * @author MehmetAzizYirik mehmetazizyirik@outlook.com 0000-0001-7520-7215@orcid.org
+ * @author MehmetAzizYirik <mehmetazizyirik@outlook.com> <0000-0001-7520-7215@orcid.org>
+ * @cdk.module structgen
  */
-@SuppressWarnings("java:S5976")
 public class MaygenTest {
 
     @Test
-    public void test_C3Cl2H4() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C3Cl2H4");
-        maygen.run();
-        assertEquals(7, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(7, maygen.getCount());
-    }
-
-    @Test
-    public void test_CClH10() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("CClH10");
-        maygen.run();
-        assertEquals(0, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(0, maygen.getCount());
-    }
-
-    @Test
-    public void test_H3() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("H3");
-        maygen.run();
-        assertEquals(0, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(0, maygen.getCount());
-    }
-
-    @Test
-    public void test_N2() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("N2");
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-    }
-
-    @Test
-    public void test_C4Cl2() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C4Cl2");
-        maygen.run();
-        assertEquals(7, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(7, maygen.getCount());
-    }
-
-    @Test
-    public void test_H2() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("H2");
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-    }
-
-    @Test
-    public void test_O13S7() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("O13S7");
-        maygen.run();
-        assertEquals(1980, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1980, maygen.getCount());
-    }
-
-    @Test
-    public void test_O10S10() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("O10S10");
-        maygen.run();
-        assertEquals(4752, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(4752, maygen.getCount());
-    }
-
-    @Test
-    public void test_S27() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("S27");
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-    }
-
-    @Test
-    public void test_O18() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("O18");
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-    }
-
-    @Test
-    public void test_C2NO2H5() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C2NO2H5");
-        maygen.run();
-        assertEquals(84, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(84, maygen.getCount());
-    }
-
-    @Test
-    public void test_H2O() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("H2O");
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-    }
-
-    @Test
-    public void test_NH3() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("NH3");
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1, maygen.getCount());
-    }
-
-    @Test
-    public void test_C6H6() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C6H6");
-        maygen.run();
-        assertEquals(217, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(217, maygen.getCount());
-    }
-
-    @Test
-    public void test_C3O3H4() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C3O3H4");
-        maygen.run();
-        assertEquals(152, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(152, maygen.getCount());
-    }
-
-    @Test
-    public void test_Cl2C5H4() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("Cl2C5H4");
-        maygen.run();
-        assertEquals(217, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(217, maygen.getCount());
-    }
-
-    @Test
-    public void test_C5H9ClO() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C5H9ClO");
-        maygen.run();
-        assertEquals(334, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(334, maygen.getCount());
-    }
-
-    @Test
-    public void test_C6OF2H12() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C6OF2H12");
-        maygen.run();
-        assertEquals(536, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(536, maygen.getCount());
-    }
-
-    @Test
-    public void test_C7H10() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C7H10");
-        maygen.run();
-        assertEquals(575, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(575, maygen.getCount());
-    }
-
-    @Test
-    public void test_C6O2H12() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C6O2H12");
-        maygen.run();
-        assertEquals(1313, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1313, maygen.getCount());
-    }
-
-    @Test
-    public void test_F2P3BrNO2H() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("F2P3BrNO2H");
-        maygen.run();
-        assertEquals(1958, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1958, maygen.getCount());
-    }
-
-    @Test
-    public void test_C6OH6() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C6OH6");
-        maygen.run();
-        assertEquals(2237, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(2237, maygen.getCount());
-    }
-
-    @Test
-    public void test_C5H6BrN() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C5H6BrN");
-        maygen.run();
-        assertEquals(2325, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(2325, maygen.getCount());
-    }
-
-    @Test
-    public void test_C6H7F2I() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C6H7F2I");
-        maygen.run();
-        assertEquals(3523, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(3523, maygen.getCount());
-    }
-
-    @Test
-    public void test_C5F2O2H2() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C5F2O2H2");
-        maygen.run();
-        assertEquals(7094, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(7094, maygen.getCount());
-    }
-
-    @Test
-    public void test_C7OH10() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C7OH10");
-        maygen.run();
-        assertEquals(7166, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(7166, maygen.getCount());
-    }
-
-    @Test
-    public void test_C4ClHF2O3() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C4ClHF2O3");
-        maygen.run();
-        assertEquals(7346, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(7346, maygen.getCount());
-    }
-
-    @Test
-    public void test_C4O5H6() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C4O5H6");
-        maygen.run();
-        assertEquals(8070, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(8070, maygen.getCount());
-    }
-
-    @Test
-    public void test_C5ClHF2O2() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C5ClHF2O2");
-        maygen.run();
-        assertEquals(12400, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(12400, maygen.getCount());
-    }
-
-    @Test
-    public void test_C5H10BrF2OP() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C5H10BrF2OP");
-        maygen.run();
-        assertEquals(15009, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(15009, maygen.getCount());
-    }
-
-    @Test
-    public void test_C9H12() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C9H12");
-        maygen.run();
-        assertEquals(19983, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(19983, maygen.getCount());
-    }
-
-    @Test
-    public void test_C6H10O2Br2() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C6H10O2Br2");
-        maygen.run();
-        assertEquals(24201, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(24201, maygen.getCount());
-    }
-
-    @Test
-    public void test_C10H16() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C10H16");
-        maygen.run();
-        assertEquals(24938, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(24938, maygen.getCount());
-    }
-
-    @Test
-    public void test_C6H6ClOI() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C6H6ClOI");
-        maygen.run();
-        assertEquals(30728, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(30728, maygen.getCount());
-    }
-
-    @Test
-    public void test_C4H5O2Br2N() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C4H5O2Br2N");
-        maygen.run();
-        assertEquals(41067, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(41067, maygen.getCount());
-    }
-
-    @Test
-    public void test_C4H10NOSP() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C4H10NOSP");
-        maygen.run();
-        assertEquals(52151, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(52151, maygen.getCount());
-    }
-
-    @Test
-    public void test_C7O2H10() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C7O2H10");
-        maygen.run();
-        assertEquals(54641, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(54641, maygen.getCount());
-    }
-
-    @Test
-    public void test_P3O3NCl2() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("P3O3NCl2");
-        maygen.run();
-        assertEquals(665, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(665, maygen.getCount());
-    }
-
-    @Test
-    public void test_C5H5SI5() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C5H5SI5");
-        maygen.run();
-        assertEquals(2619, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(2619, maygen.getCount());
-    }
-
-    @Test
-    public void test_C3O3NH5() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C3O3NH5");
-        maygen.run();
-        assertEquals(2644, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(2644, maygen.getCount());
-    }
-
-    @Test
-    public void test_C5H9ClOS() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C5H9ClOS");
-        maygen.run();
-        assertEquals(3763, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(3763, maygen.getCount());
-    }
-
-    @Test
-    public void test_C3NO2SH7() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C3NO2SH7");
-        maygen.run();
-        assertEquals(3838, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(3838, maygen.getCount());
-    }
-
-    @Test
-    public void test_C4H8Cl3O2P() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C4H8Cl3O2P");
-        maygen.run();
-        assertEquals(9313, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(9313, maygen.getCount());
-    }
-
-    @Test
-    public void test_C5H2F2SO() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C5H2F2SO");
-        maygen.run();
-        assertEquals(13446, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(13446, maygen.getCount());
-    }
-
-    @Test
-    public void test_C7H11ClS() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C7H11ClS");
-        maygen.run();
-        assertEquals(15093, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(15093, maygen.getCount());
-    }
-
-    @Test
-    public void test_C4NO3H7() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C4NO3H7");
-        maygen.run();
-        assertEquals(18469, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(18469, maygen.getCount());
-    }
-
-    @Test
-    public void test_C4H5O2F2P() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C4H5O2F2P");
-        maygen.run();
-        assertEquals(41067, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(41067, maygen.getCount());
-    }
-
-    @Test
-    public void test_C3N3O2H7() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C3N3O2H7");
-        maygen.run();
-        assertEquals(45626, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(45626, maygen.getCount());
-    }
-
-    @Test
-    public void test_C5N3H9() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C5N3H9");
-        maygen.run();
-        assertEquals(46125, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(46125, maygen.getCount());
-    }
-
-    @Test
-    public void test_C3O6PH5() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C3O6PH5");
-        maygen.run();
-        assertEquals(51323, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(51323, maygen.getCount());
-    }
-
-    @Test
-    public void test_C5H5POBr2() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("C5H5POBr2");
-        maygen.run();
-        assertEquals(62886, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(62886, maygen.getCount());
-    }
-
-    @Test
-    public void test_C_1_6_Cl2_H_4_8()
-            throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFuzzyFormula("C[1-6]Cl2H[4-8]");
-        maygen.run();
-        assertEquals(4141, maygen.getFuzzyCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(4141, maygen.getFuzzyCount());
-    }
-
-    @Test
-    public void test_C_1_2_H_3_8() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFuzzyFormula("C[1-2]H[3-8]");
-        maygen.run();
-        assertEquals(3, maygen.getFuzzyCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(3, maygen.getFuzzyCount());
-    }
-
-    @Test
     public void test_gettersAndSetters() {
-        Maygen maygen = new Maygen();
-        maygen.setWriteSDF(true);
-        assertTrue(maygen.isWriteSDF());
-        maygen.setWriteSMILES(true);
-        assertTrue(maygen.isWriteSMILES());
-        maygen.setPrintSDF(true);
-        assertTrue(maygen.isPrintSDF());
-        maygen.setPrintSMILES(true);
-        assertTrue(maygen.isPrintSMILES());
-        maygen.setCoordinates(true);
-        assertTrue(maygen.isCoordinates());
+        Maygen maygen = new Maygen(SilentChemObjectBuilder.getInstance());
         maygen.setTsvoutput(true);
         assertTrue(maygen.isTsvoutput());
         maygen.isMultiThread();
@@ -646,118 +57,137 @@ public class MaygenTest {
         maygen.getOxygenSulfur();
         maygen.getTotalHydrogen();
         maygen.isOnSm();
-        maygen.setFiledir(".");
-        maygen.getFiledir();
         maygen.setVerbose(true);
         maygen.getVerbose();
         maygen.isSetElement();
     }
 
     @Test
-    public void test_C3Cl2H4_writeSdfAndSmiles()
+    public void test_C3Cl2H4_writeSmiles()
             throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
+        Maygen maygen = new Maygen(SilentChemObjectBuilder.getInstance());
         maygen.setFormula("C3Cl2H4");
-        maygen.setWriteSDF(true);
-        maygen.setWriteSMILES(true);
+        StringWriter sw = new StringWriter();
+        maygen.setConsumer(new SmiOutputConsumer(sw));
         maygen.run();
         assertEquals(7, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(7, maygen.getCount());
+        assertEquals("C1(Cl)(Cl)CC1\n" +
+                        "C(Cl)(=C)CCl\n" +
+                        "C(=CCl)(C)Cl\n" +
+                        "C(=CC)(Cl)Cl\n" +
+                        "C(Cl)C=CCl\n" +
+                        "C=CC(Cl)Cl\n" +
+                        "C1C(Cl)C1Cl\n",
+                sw.toString());
     }
 
+    @Test
+    public void test_C3Cl2H4_writeSdf()
+            throws IOException, CDKException, CloneNotSupportedException {
+        Maygen maygen = new Maygen(SilentChemObjectBuilder.getInstance());
+        maygen.setFormula("C3Cl2H4");
+        StringWriter sw = new StringWriter();
+        maygen.setConsumer(new SdfOutputConsumer(sw));
+        maygen.run();
+        assertEquals(7, maygen.getCount());
+        String res = sw.toString();
+        assertThat(res,
+                containsString("  5  5  0  0  0  0  0  0  0  0999 V2000\n" +
+                        "    0.0000    0.0000    0.0000 C   0  0\n" +
+                        "    0.0000    0.0000    0.0000 Cl  0  0\n" +
+                        "    0.0000    0.0000    0.0000 Cl  0  0\n" +
+                        "    0.0000    0.0000    0.0000 C   0  0\n" +
+                        "    0.0000    0.0000    0.0000 C   0  0\n" +
+                        "  1  2  1  0\n" +
+                        "  1  3  1  0\n" +
+                        "  1  4  1  0\n" +
+                        "  1  5  1  0\n" +
+                        "  4  5  1  0\n" +
+                        "M  END\n"));
+        assertThat(res,
+                containsString("  5  4  0  0  0  0  0  0  0  0999 V2000\n" +
+                        "    0.0000    0.0000    0.0000 C   0  0\n" +
+                        "    0.0000    0.0000    0.0000 Cl  0  0\n" +
+                        "    0.0000    0.0000    0.0000 Cl  0  0\n" +
+                        "    0.0000    0.0000    0.0000 C   0  0\n" +
+                        "    0.0000    0.0000    0.0000 C   0  0\n" +
+                        "  1  2  1  0\n" +
+                        "  1  4  2  0\n" +
+                        "  1  5  1  0\n" +
+                        "  3  5  1  0\n" +
+                        "M  END\n"));
+    }
+
+    // important! SDG changes may affect this test!
     @Test
     public void test_C3Cl2H4_sdfCoordinates()
             throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
+        Maygen maygen = new Maygen(SilentChemObjectBuilder.getInstance());
         maygen.setFormula("C3Cl2H4");
-        maygen.setWriteSDF(true);
-        maygen.setCoordinates(true);
+        StringWriter sw = new StringWriter();
+        SdfOutputConsumer consumer = new SdfOutputConsumer(sw);
+        consumer.setCoordinates(true);
+        maygen.setConsumer(consumer);
         maygen.run();
-        assertEquals(7, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(7, maygen.getCount());
+        String res = sw.toString();
+        assertThat(res,
+                containsString("  5  5  0  0  0  0  0  0  0  0999 V2000\n" +
+                        "   -0.7883   -0.4645    0.0000 C   0  0\n" +
+                        "   -2.2654   -0.7252    0.0000 Cl  0  0\n" +
+                        "   -0.2751   -1.8739    0.0000 Cl  0  0\n" +
+                        "   -0.7887    1.0364    0.0000 C   0  0\n" +
+                        "    0.5108    0.2855    0.0000 C   0  0\n" +
+                        "  1  2  1  0\n" +
+                        "  1  3  1  0\n" +
+                        "  1  4  1  0\n" +
+                        "  1  5  1  0\n" +
+                        "  4  5  1  0\n" +
+                        "M  END"));
+        assertThat(res,
+                containsString("  5  4  0  0  0  0  0  0  0  0999 V2000\n" +
+                        "    0.0000    1.5000    0.0000 C   0  0\n" +
+                        "   -1.2990    2.2500    0.0000 C   0  0\n" +
+                        "    0.0000    0.0000    0.0000 C   0  0\n" +
+                        "    1.2990    2.2500    0.0000 Cl  0  0\n" +
+                        "   -1.2990    3.7500    0.0000 Cl  0  0\n" +
+                        "  1  2  2  0\n" +
+                        "  1  3  1  0\n" +
+                        "  1  4  1  4\n" +
+                        "  2  5  1  0\n" +
+                        "M  END"));
     }
 
     @Test
-    public void test_O13S7_writeSdfAndSmiles()
+    public void test_C_1_6_Cl2_H_4_8_writeSmiles()
             throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFormula("O13S7");
-        maygen.setWriteSDF(true);
-        maygen.setWriteSMILES(true);
-        maygen.run();
-        assertEquals(1980, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(1980, maygen.getCount());
-    }
-
-    @Test
-    public void test_C_1_6_Cl2_H_4_8_writeSdfAndSmiles()
-            throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
+        Maygen maygen = new Maygen(SilentChemObjectBuilder.getInstance());
         maygen.setFuzzyFormula("C[1-6]Cl2H[4-8]");
-        maygen.setWriteSDF(true);
-        maygen.setWriteSMILES(true);
+        StringWriter sw = new StringWriter();
+        maygen.setConsumer(new SmiOutputConsumer(sw));
         maygen.run();
         assertEquals(4141, maygen.getFuzzyCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(4141, maygen.getFuzzyCount());
-    }
-
-    @Test
-    public void test_C_1_2_H_3_8_writeSdfAndSmiles()
-            throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFuzzyFormula("C[1-2]H[3-8]");
-        maygen.setWriteSDF(true);
-        maygen.setWriteSMILES(true);
-        maygen.run();
-        assertEquals(3, maygen.getFuzzyCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(3, maygen.getFuzzyCount());
-    }
-
-    @Test
-    public void test_C_1_2_O_H_3_8_writeSdfAndSmiles()
-            throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setFuzzyFormula("C[1-2]OH[3-8]");
-        maygen.setWriteSDF(true);
-        maygen.setWriteSMILES(true);
-        maygen.run();
-        assertEquals(6, maygen.getFuzzyCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(6, maygen.getFuzzyCount());
+        assertThat(sw.toString(),
+                allOf(containsString("C12CC(=C1C)C2(Cl)Cl\n"),
+                        containsString("C12CC3(Cl)C1(C)C23Cl\n"),
+                        containsString("C12CC(Cl)(Cl)C1=C2C\n"),
+                        containsString("C12CC(C)=C1C2(Cl)Cl\n"),
+                        containsString("C12CC3(C)C1(Cl)C23Cl\n"),
+                        containsString("C12CC(C)(Cl)C1=C2Cl\n"),
+                        containsString("C1(CC(C)(Cl)Cl)C#C1\n"),
+                        containsString("C(C)(Cl)C1(CCl)C#C1\n"),
+                        containsString("C(C)(Cl)C=1C(CCl)=C1\n"),
+                        containsString("C(C)(Cl)C(=C)C#CCl\n")));
     }
 
     @Test
     public void test_C_1_2_O_H_3_8_falseFormat()
             throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
+        Maygen maygen = new Maygen(SilentChemObjectBuilder.getInstance());
         maygen.setFuzzyFormula("C(1-2}OH[3-8]");
         maygen.run();
         assertEquals(0, maygen.getFuzzyCount());
         maygen.setMultiThread(true);
         maygen.run();
         assertEquals(0, maygen.getFuzzyCount());
-    }
-
-    @Test
-    public void test_userDefined() throws IOException, CDKException, CloneNotSupportedException {
-        Maygen maygen = new Maygen();
-        maygen.setSetElement(true);
-        maygen.setFormula("C(val=4)6H(val=1)6");
-        maygen.run();
-        assertEquals(217, maygen.getCount());
-        maygen.setMultiThread(true);
-        maygen.run();
-        assertEquals(217, maygen.getCount());
     }
 }

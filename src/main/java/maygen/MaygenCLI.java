@@ -1,29 +1,23 @@
 /*
- MIT License
-
- Copyright (c) 2021-2022 Mehmet Aziz Yirik <mehmetazizyirik@outlook.com> <0000-0001-7520-7215@orcid.org>
-
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- and associated documentation files (the "Software"), to deal in the Software without restriction,
- including without limitation the rights to use, copy, modify, merge, publish, distribute,
- sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all copies or
- substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ * Copyright (c) 2021 Mehmet Aziz Yirik <mehmetazizyirik@outlook.com> <0000-0001-7520-7215@orcid.org>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 package maygen;
 
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -31,21 +25,29 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 
-/**
- * The maygen console class is given here.
- *
- * @author MehmetAzizYirik mehmetazizyirik@outlook.com 0000-0001-7520-7215@orcid.org
- */
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
+
 @SuppressWarnings("java:S3776")
-public class MaygenConsole {
+public class MaygenCLI {
+
+    public static final String VERSION = "1.8";
     private static final String FORMULA_TEXT = "formula";
     private static final String OUTPUT_FILE = "outputFile";
     private static final String SDF_COORD = "sdfCoord";
-    private final Maygen maygen;
 
-    public MaygenConsole(Maygen maygen) {
-        this.maygen = maygen;
+    private Maygen maygen = new Maygen(SilentChemObjectBuilder.getInstance());
+
+    private final File getFileDir(CommandLine cmd) {
+        if (cmd.hasOption(OUTPUT_FILE)) {
+            String localFiledir = cmd.getOptionValue(OUTPUT_FILE);
+            return localFiledir != null ? new File(localFiledir) : new File(".");
+        }
+        return null;
     }
 
     public boolean parseArgs(String[] args) throws ParseException {
@@ -59,25 +61,30 @@ public class MaygenConsole {
                 maygen.setFuzzyFormula(cmd.getOptionValue("fuzzyFormula"));
             }
             if (cmd.hasOption("help")
-                    || (Objects.isNull(maygen.getFormula())
-                            && Objects.isNull(maygen.getFuzzyFormula()))) {
+                    || (Objects.isNull(maygen.getFormula()) && Objects.isNull(maygen.getFuzzyFormula()))) {
                 displayHelpMessage(options);
                 helpIsPresent = true;
             } else {
-                if (cmd.hasOption(OUTPUT_FILE)) {
-                    checkSmiAndSdf(cmd);
-                } else {
-                    if (cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
-                        maygen.setPrintSMILES(true);
-                    }
-                    if (cmd.hasOption("sdf")) {
-                        maygen.setPrintSDF(true);
-                    } else if (cmd.hasOption(SDF_COORD)) {
-                        maygen.setPrintSDF(true);
-                        maygen.setCoordinates(true);
+                if (cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
+                    maygen.setConsumer(new SmiOutputConsumer(getFileDir(cmd)));
+                }
+                if (cmd.hasOption("sdf") || cmd.hasOption(SDF_COORD)) {
+                    if (cmd.hasOption("smi")) {
+                        SdfAndSmiOutputConsumer sdfAndSmiOut = new SdfAndSmiOutputConsumer(getFileDir(cmd));
+                        if (cmd.hasOption(SDF_COORD))
+                            sdfAndSmiOut.setCoordinates(true);
+                        maygen.setConsumer(sdfAndSmiOut);
+                    } else{
+                        SdfOutputConsumer sdfout = new SdfOutputConsumer(getFileDir(cmd));
+                        if (cmd.hasOption(SDF_COORD))
+                            sdfout.setCoordinates(true);
+                        maygen.setConsumer(sdfout);
                     }
                 }
-                if (cmd.hasOption("verbose")) maygen.setVerbose(true);
+
+                if (cmd.hasOption("verbose")) {
+                    maygen.setVerbose(true);
+                }
                 if (cmd.hasOption("boundaryConditions")) maygen.setBoundary(true);
                 if (cmd.hasOption("settingElements")) maygen.setSetElement(true);
                 if (cmd.hasOption("tsvoutput")) maygen.setTsvoutput(true);
@@ -88,23 +95,6 @@ public class MaygenConsole {
             throw new ParseException("Problem parsing command line");
         }
         return helpIsPresent;
-    }
-
-    public void checkSmiAndSdf(CommandLine cmd) {
-        String localFiledir = cmd.getOptionValue(OUTPUT_FILE);
-        maygen.setFiledir(Objects.isNull(localFiledir) ? "." : localFiledir);
-        if (cmd.hasOption("smi")) {
-            maygen.setWriteSMILES(true);
-        }
-        if (cmd.hasOption("sdf")) {
-            maygen.setWriteSDF(true);
-        } else if (cmd.hasOption(SDF_COORD)) {
-            maygen.setWriteSDF(true);
-            maygen.setCoordinates(true);
-        }
-        if (!cmd.hasOption("smi") && !cmd.hasOption("sdf")) {
-            maygen.setWriteSDF(true);
-        }
     }
 
     public void displayHelpMessage(Options options) {
@@ -119,8 +109,7 @@ public class MaygenConsole {
                         + " the generation time. For this, use the '-smi' option."
                         + "\n\n";
         String footer = "\nPlease report issues at https://github.com/MehmetAzizYirik/MAYGEN";
-        formatter.printHelp(
-                "java -jar MAYGEN-" + Maygen.VERSION + ".jar", header, options, footer, true);
+        formatter.printHelp("java -jar MAYGEN-" + VERSION + ".jar", header, options, footer, true);
     }
 
     public Options setupOptions() {
@@ -218,22 +207,20 @@ public class MaygenConsole {
         return options;
     }
 
+    public void run() throws CDKException, IOException, CloneNotSupportedException {
+        maygen.run();
+    }
+
     public static void main(String[] args) {
-        Maygen maygen = new Maygen();
-        MaygenConsole maygenConsole = new MaygenConsole(maygen);
+        MaygenCLI cli = new MaygenCLI();
         try {
-            if (!maygenConsole.parseArgs(args)) {
-                maygen.run();
+            if (!cli.parseArgs(args)) {
+                cli.run();
             }
         } catch (Exception ex) {
-            if (maygen.getVerbose()) {
-                String localFormula =
-                        Objects.nonNull(maygen.getFormula())
-                                ? maygen.getFormula()
-                                : maygen.getFuzzyFormula();
-                Logger.getLogger(Maygen.class.getName())
-                        .log(Level.SEVERE, ex, () -> "Formula " + localFormula);
-            }
+            String localFormula = Objects.nonNull(cli.maygen.getFormula()) ? cli.maygen.getFormula() : cli.maygen.getFuzzyFormula();
+            System.err.println("ERROR: could not parse options for " +
+                    localFormula + ": " + ex.getMessage());
         }
     }
 }

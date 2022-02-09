@@ -36,7 +36,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: 5a1be5d0e34e5043a1aac2121560eb45d2a53427
-        run: mvn -B com.coveo:fmt-maven-plugin:2.9.1:check -Dstyle=aosp test jacoco:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.organization=mehmetazizyirik -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=MehmetAzizYirik_MAYGEN
+        run: mvn -B -Dstyle=aosp test jacoco:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.organization=mehmetazizyirik -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=MehmetAzizYirik_MAYGEN
       - uses: codecov/codecov-action@v1
         with:
           file: ./**/target/site/jacoco/jacoco.xml

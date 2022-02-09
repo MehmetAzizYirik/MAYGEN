@@ -1,29 +1,27 @@
 /*
- MIT License
-
- Copyright (c) 2018 Mehmet Aziz Yirik <mehmetazizyirik@outlook.com> <0000-0001-7520-7215@orcid.org>
-
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- and associated documentation files (the "Software"), to deal in the Software without restriction,
- including without limitation the rights to use, copy, modify, merge, publish, distribute,
- sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all copies or
- substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ * Copyright (c) 2021 Mehmet Aziz Yirik <mehmetazizyirik@outlook.com> <0000-0001-7520-7215@orcid.org>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 package maygen;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Deque;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -34,7 +32,8 @@ import java.util.stream.IntStream;
  * hydrogens and 6 carbons. There are 7 unique possible distribution of these hydrogens to these
  * carbons.
  *
- * @author MehmetAzizYirik mehmetazizyirik@outlook.com 0000-0001-7520-7215@orcid.org
+ * @author MehmetAzizYirik <mehmetazizyirik@outlook.com> <0000-0001-7520-7215@orcid.org>
+ * @cdk.module structgen
  */
 class HydrogenDistributor {
     private int[] capacity;
@@ -151,11 +150,10 @@ class HydrogenDistributor {
     /**
      * Combining list of int arrays.
      *
-     * @param lists LinkedList<List<int[]>> lists
-     * @return the list of integer arrays
+     * @param lists Deque<List<int[]>> lists
+     * @return List<int[]>
      */
-    @SuppressWarnings("java:S1319")
-    public List<int[]> combineArrays(LinkedList<List<int[]>> lists) {
+    public List<int[]> combineArrays(Deque<List<int[]>> lists) {
         List<int[]> comb = new ArrayList<>(lists.removeFirst());
         while (!lists.isEmpty()) {
             List<int[]> list = lists.removeFirst();
@@ -175,7 +173,7 @@ class HydrogenDistributor {
      *
      * @param partition int[] partition
      * @param degrees int[] degrees
-     * @return the list of integer arrays
+     * @return List<int[]>
      */
     public List<int[]> run(int[] partition, int[] degrees) {
         int partitionSize = partition.length;
@@ -193,7 +191,7 @@ class HydrogenDistributor {
         } else {
             List<int[]> distributions = new ArrayList<>();
             for (int[] dene : partition(totalHydrogen, isotopes, 0)) {
-                LinkedList<List<int[]>> lists = new LinkedList<>();
+                Deque<List<int[]>> lists = new ArrayDeque<>();
                 for (int i = 0; i < dene.length; i++) {
                     hydrogens2distribute = dene[i];
                     List<int[]> iarrays = new ArrayList<>();
@@ -215,7 +213,7 @@ class HydrogenDistributor {
      * @param n int total number of hydrogens
      * @param d int total number of isotopes to distribute hydrogens
      * @param depth int starting from zero until the number of isotopes recursively filling.
-     * @return the list of integer arrays
+     * @return List<int[]>
      */
     public List<int[]> partition(int n, int d, int depth) {
         if (d == depth) {
@@ -233,7 +231,7 @@ class HydrogenDistributor {
      * @param n int total number of hydrogens
      * @param d int total number of isotopes to distribute hydrogens
      * @param depth int starting from zero until the number of isotopes recursively filling.
-     * @return the list of integer arrays
+     * @return List<int[]>
      */
     public List<int[]> buildArray(int n, int d, int depth) {
         List<int[]> array = new ArrayList<>();
@@ -250,10 +248,10 @@ class HydrogenDistributor {
      * These functions are built for the integer partitioning problem.
      *
      * @param d int total number of isotopes to distribute hydrogens
-     * @param array the list of partition
+     * @param List<int[]> List<int[]> list of partition
      * @param i int entry
      * @param item int[] new partition
-     * @return the list of integer arrays
+     * @return List<int[]>
      */
     public void buildArrayItem(int d, List<int[]> array, int i, int[] item) {
         if (i <= capacity[item.length]) {
@@ -271,7 +269,7 @@ class HydrogenDistributor {
     /**
      * Adding zeros to the end of an array.
      *
-     * @param array the partition
+     * @param array int[] partition
      * @param zeros int number of zeros
      * @return int[]
      */
@@ -285,7 +283,7 @@ class HydrogenDistributor {
     /**
      * Ordering the int array in descending order.
      *
-     * @param arr the integer array
+     * @param array int[] array
      * @return int[]
      */
     public int[] descendingOrderArray(int[] arr) {
@@ -295,9 +293,9 @@ class HydrogenDistributor {
     /**
      * Distributing number of hydrogens in an unique way to a number of isotopes.
      *
-     * @param arrays the list of output arrays
+     * @param arrays List<int[]> list of output arrays
      * @param hydrogen int number of hydrogens to add
-     * @param arr the integer array
+     * @param array int[] array
      * @param valence int atom valence
      * @param numAtom int number of atoms in a given index
      */
@@ -325,9 +323,9 @@ class HydrogenDistributor {
     /**
      * Subfunction of the distribute functon for the case when (numAtom - arr.length == 1)
      *
-     * @param arrays the list of output arrays
+     * @param arrays List<int[]> list of output arrays
      * @param hydrogen int number of hydrogens to add
-     * @param arr the integer array
+     * @param array int[] array
      * @param valence int atom valence
      * @param numAtom int number of atoms in a given index
      */
