@@ -107,8 +107,8 @@ class HydrogenDistributor {
      */
     public int sum(int[] array) {
         int sum = 0;
-        for (int i = 0; i < array.length; i++) {
-            sum = sum + array[i];
+        for (int j : array) {
+            sum = sum + j;
         }
         return sum;
     }
@@ -253,7 +253,6 @@ class HydrogenDistributor {
      * @param array the list of partition
      * @param i int entry
      * @param item int[] new partition
-     * @return the list of integer arrays
      */
     public void buildArrayItem(int d, List<int[]> array, int i, int[] item) {
         if (i <= capacity[item.length]) {

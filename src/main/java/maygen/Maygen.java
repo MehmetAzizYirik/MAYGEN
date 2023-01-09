@@ -53,6 +53,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IBond.Order;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.io.SDFWriter;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
 import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
@@ -308,8 +309,8 @@ public class Maygen {
      */
     public int sum(int[] array) {
         int sum = 0;
-        for (int i = 0; i < array.length; i++) {
-            sum = sum + array[i];
+        for (int j : array) {
+            sum = sum + j;
         }
         return sum;
     }
@@ -345,7 +346,7 @@ public class Maygen {
                 String[] info2 = info[0].split(NUMBERS_FROM_0_TO_9, 2);
                 if (info2.length == 1) return 1;
                 else {
-                    return Integer.valueOf(info2[1]);
+                    return Integer.parseInt(info2[1]);
                 }
             }
         } else {
@@ -409,12 +410,12 @@ public class Maygen {
      */
     public void sortAscending(List<String> symbols) {
         HashMap<String, Integer> inputs = new HashMap<>();
-        for (int i = 0; i < symbols.size(); i++) {
-            if (inputs.containsKey(symbols.get(i))) {
-                Integer localCount = inputs.get(symbols.get(i)) + 1;
-                inputs.put(symbols.get(i), localCount);
+        for (String symbol : symbols) {
+            if (inputs.containsKey(symbol)) {
+                Integer localCount = inputs.get(symbol) + 1;
+                inputs.put(symbol, localCount);
             } else {
-                inputs.put(symbols.get(i), 1);
+                inputs.put(symbol, 1);
             }
         }
 
@@ -731,7 +732,7 @@ public class Maygen {
             else info = atom.split(NUMBERS_FROM_0_TO_9, 2);
             symbol = info[0].split("\\(")[0];
             if (setElement && info[0].contains("(")) {
-                valence = Integer.valueOf(info[0].split("\\(")[1]);
+                valence = Integer.parseInt(info[0].split("\\(")[1]);
             } else {
                 valence = valences.get(symbol);
             }
@@ -767,7 +768,7 @@ public class Maygen {
                 hydrogens = atomOccurrence(info);
             } else {
                 if (setElement) {
-                    nonHydrogen = Integer.valueOf(info[1].split("\\)")[0]);
+                    nonHydrogen = Integer.parseInt(info[1].split("\\)")[0]);
                 } else {
                     nonHydrogen = valences.get(symbol);
                 }
@@ -2219,7 +2220,7 @@ public class Maygen {
             String[] info = atoms[0].split(NUMBERS_FROM_0_TO_9, 2);
             if (atoms[0].contains("(")) {
                 info2 = info[1].split("\\)");
-                if (info2[1].equals("2") && Integer.valueOf(info2[0]) > 3) {
+                if (info2[1].equals("2") && Integer.parseInt(info2[0]) > 3) {
                     check = false;
                 }
             } else {
@@ -2790,8 +2791,8 @@ public class Maygen {
      */
     public boolean allIs0(int[] list) {
         boolean check = true;
-        for (int i = 0; i < list.length; i++) {
-            if (list[i] != 0) {
+        for (int j : list) {
+            if (j != 0) {
                 check = false;
                 break;
             }
@@ -3716,8 +3717,8 @@ public class Maygen {
     /** Setting the initial atom container of a molecular formula with a single heavy atom */
     public void initSingleAC() {
         atomContainer = builder.newInstance(IAtomContainer.class);
-        for (int i = 0; i < symbolArray.length; i++) {
-            atomContainer.addAtom(new Atom(symbolArray[i]));
+        for (String s : symbolArray) {
+            atomContainer.addAtom(new Atom(s));
         }
         for (IAtom atom : atomContainer.atoms()) {
             atom.setImplicitHydrogenCount(0);
@@ -3760,8 +3761,8 @@ public class Maygen {
      * @return IAtomContainer
      */
     public IAtomContainer initAC(IAtomContainer ac, String[] symbolArrayCopy) {
-        for (int i = 0; i < symbolArrayCopy.length; i++) {
-            ac.addAtom(new Atom(symbolArrayCopy[i].split(NUMBERS_FROM_0_TO_9)[0]));
+        for (String s : symbolArrayCopy) {
+            ac.addAtom(new Atom(s.split(NUMBERS_FROM_0_TO_9)[0]));
         }
         for (IAtom atom : ac.atoms()) {
             atom.setImplicitHydrogenCount(0);
