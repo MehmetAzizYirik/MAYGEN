@@ -107,6 +107,9 @@ java -jar MAYGEN-1.8.jar -fuzzy C[2-5]O2H[4-8] -v -t -o C:\Users\UserName\Deskto
 
 java -jar MAYGEN-1.8.jar -f N(val=4)6H6 -setElements -v -t -o C:\Users\UserName\Desktop\
 ```
+## Webservice
+
+A [webservice](https://www.cheminfo.org/?viewURL=https%3A%2F%2Fcouch.cheminfo.org%2Fcheminfo-public%2F7cead2ae3da71090cb17baa3856ea38b%2Fview.json) is also developed for MAYGEN software for easy usage and educational purposes. The documentation for the webservice is given [here](https://maygen.cheminfo.org/documentation/static/index.html). 
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/MehmetAzizYirik/MAYGEN/blob/master/LICENSE) file for details
