@@ -1,11 +1,5 @@
 <img src="docs/logo.png" alt="drawing" width="100" align = "right"/> [![DOI](https://zenodo.org/badge/359922963.svg)](https://zenodo.org/badge/latestdoi/359922963)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=sqale_rating)](https://sonarcloud.io/summary/overall?id=MehmetAzizYirik_MAYGEN)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=reliability_rating)](https://sonarcloud.io/summary/overall?id=MehmetAzizYirik_MAYGEN)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=security_rating)](https://sonarcloud.io/summary/overall?id=MehmetAzizYirik_MAYGEN)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=ncloc)](https://sonarcloud.io/summary/overall?id=MehmetAzizYirik_MAYGEN)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=MehmetAzizYirik_MAYGEN&metric=bugs)](https://sonarcloud.io/summary/overall?id=MehmetAzizYirik_MAYGEN)
 [![Build](https://github.com/MehmetAzizYirik/MAYGEN/actions/workflows/maven.yml/badge.svg)](https://github.com/MehmetAzizYirik/MAYGEN/actions/workflows/maven.yml)
-[![CodeQL](https://github.com/MehmetAzizYirik/MAYGEN/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/MehmetAzizYirik/MAYGEN/actions/workflows/codeql-analysis.yml)
 # MAYGEN - A chemical structure generator for constitutional isomers based on the orderly generation principle
 
 Copyright 2021 Mehmet Aziz Yirik

@@ -13,7 +13,7 @@ jobs:
       matrix:
         java: [11]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK ${{ matrix.java }}
@@ -35,8 +35,7 @@ jobs:
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: 5a1be5d0e34e5043a1aac2121560eb45d2a53427
-        run: mvn -B com.coveo:fmt-maven-plugin:2.9.1:check -Dstyle=aosp test jacoco:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.organization=mehmetazizyirik -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=MehmetAzizYirik_MAYGEN
+        run: mvn -B com.coveo:fmt-maven-plugin:2.9.1:check -Dstyle=aosp test jacoco:report
       - uses: codecov/codecov-action@v1
         with:
           file: target/site/jacoco/jacoco.xml
